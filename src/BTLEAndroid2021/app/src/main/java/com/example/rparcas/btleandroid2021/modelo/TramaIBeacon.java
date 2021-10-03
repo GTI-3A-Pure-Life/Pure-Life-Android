@@ -1,4 +1,4 @@
-package com.example.rparcas.btleandroid2021;
+package com.example.rparcas.btleandroid2021.modelo;
 
 import java.util.Arrays;
 

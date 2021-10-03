@@ -1,8 +1,7 @@
 package com.example.rparcas.btleandroid2021;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 
 import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
@@ -17,14 +16,33 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import com.example.rparcas.btleandroid2021.logica.Logica;
+import com.example.rparcas.btleandroid2021.modelo.MedicionCO2;
+import com.example.rparcas.btleandroid2021.modelo.Posicion;
+import com.example.rparcas.btleandroid2021.modelo.TramaIBeacon;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
+import java.util.ArrayList;
 import java.util.List;
 
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+
+/**
+ * Activity principal del proyecto de Biometría GTI-3A
+ * Gestiona un servicio en segundo plano que escanea iBeacons
+ * @author Rubén Pardo Casanova 21/09/2021
+ */
 public class MainActivity extends AppCompatActivity {
 
+    // --------------------------------------------------------------
+    // --------------------------------------------------------------
     private static final String ETIQUETA_LOG = ">>>>";
 
     private static final int CODIGO_PETICION_PERMISOS = 11223344;
-
 
     // --------------------------------------------------------------
     // --------------------------------------------------------------
@@ -36,7 +54,13 @@ public class MainActivity extends AppCompatActivity {
 
     // --------------------------------------------------------------
     // --------------------------------------------------------------
-
+    /**
+     * Metodo para buscar cualquier iBeacon que se encuentre
+     * buscarTodosLosDispositivosBTLE()
+     *
+     * @author Rubén Pardo Casanova
+     *
+     */
     private void buscarTodosLosDispositivosBTLE() {
         Log.d(ETIQUETA_LOG, " buscarTodosLosDispositivosBTL(): empieza ");
 
@@ -74,6 +98,13 @@ public class MainActivity extends AppCompatActivity {
 
     // --------------------------------------------------------------
     // --------------------------------------------------------------
+    /**
+     * Metodo para mostrar la infrmación bluetooth escaneada
+     * ScanResult -> mostrarInformacionDispositivoBTLE()
+     *
+     * @author Rubén Pardo Casanova
+     * @param resultado información bluetooth escaneada a mostrar
+     */
     private void mostrarInformacionDispositivoBTLE( ScanResult resultado ) {
 
         BluetoothDevice bluetoothDevice = resultado.getDevice();
@@ -122,6 +153,14 @@ public class MainActivity extends AppCompatActivity {
 
     // --------------------------------------------------------------
     // --------------------------------------------------------------
+
+    /**
+     * Metodo para buscar iBeacons con el nombre indicado para mostrarlo posteriormente
+     * Texto -> buscarEsteDispositivoBTLE()
+     *
+     * @author Rubén Pardo Casanova
+     * @param dispositivoBuscado nombre del iBeacon a encontrar
+     */
     private void buscarEsteDispositivoBTLE(final String dispositivoBuscado ) {
         Log.d(ETIQUETA_LOG, " buscarEsteDispositivoBTLE(): empieza ");
 
@@ -244,7 +283,6 @@ public class MainActivity extends AppCompatActivity {
         }
     } // ()
 
-
     // ---------------------------------------------------------------------------------------------
     // ---------------------------------------------------------------------------------------------
     public void botonArrancarServicioPulsado( View v ) {
@@ -257,7 +295,7 @@ public class MainActivity extends AppCompatActivity {
 
         Log.d(ETIQUETA_LOG, " MainActivity.constructor : voy a arrancar el servicio");
 
-        this.elIntentDelServicio = new Intent(this, ServicioEscuharBeacons.class);
+        this.elIntentDelServicio = new Intent(this, ServicioEscucharBeacons.class);
 
         this.elIntentDelServicio.putExtra("tiempoDeEspera", (long) 5000);
         startService( this.elIntentDelServicio );
@@ -282,6 +320,7 @@ public class MainActivity extends AppCompatActivity {
 
     } // ()
 
+
     // --------------------------------------------------------------
     // --------------------------------------------------------------
     @Override
@@ -291,11 +330,27 @@ public class MainActivity extends AppCompatActivity {
 
         Log.d(ETIQUETA_LOG, " onCreate(): empieza ");
 
+
+
         inicializarBlueTooth();
 
         Log.d(ETIQUETA_LOG, " onCreate(): termina ");
 
     } // onCreate()
+
+    public void prueba(View v) {
+
+        MedicionCO2 m = new MedicionCO2(1.2,4,"GTI-3A-1",new Posicion(31.56,32.5323));
+        MedicionCO2 m2 = new MedicionCO2(2.51,4,"GTI-3A-1",new Posicion(31.56,32.7));
+        List<MedicionCO2> lm = new ArrayList<>();
+        lm.add(m);
+        lm.add(m2);
+        Log.d("PRUEBA",MedicionCO2.listaMedicionesToJSON(lm));
+
+        Logica l = new Logica();
+        l.publicarMediciones(lm);
+
+    }
 
     // --------------------------------------------------------------
     // --------------------------------------------------------------
@@ -322,12 +377,6 @@ public class MainActivity extends AppCompatActivity {
         // Other 'case' lines to check for other
         // permissions this app might request.
     } // ()
-
-
-
-
-
-
 
 } // class
 // --------------------------------------------------------------
