@@ -1,11 +1,11 @@
-
 package com.example.rparcas.btleandroid2021;
 
 import java.util.Arrays;
 
-// -----------------------------------------------------------------------------------
-// @author: Jordi Bataller i Mascarell
-// -----------------------------------------------------------------------------------
+/**
+ * POJO para guardar la información de la trama IBeacon
+ * @author Rubén Pardo Casanova 21/09/2021
+ */
 public class TramaIBeacon {
     private byte[] prefijo = null; // 9 bytes
     private byte[] uuid = null; // 16 bytes
@@ -89,6 +89,12 @@ public class TramaIBeacon {
 
     // -------------------------------------------------------------------------------
     // -------------------------------------------------------------------------------
+
+    /**
+     * Constructor de la clase TramaIBeacon
+     * Texto -> TramaIBeacon()
+     * @param bytes Información de la trama IBeacon
+     */
     public TramaIBeacon(byte[] bytes ) {
         this.losBytes = bytes;
 
