@@ -10,6 +10,7 @@ import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanFilter;
 import android.bluetooth.le.ScanResult;
+import android.bluetooth.le.ScanSettings;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -30,6 +31,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import java.util.ArrayList;
 import java.util.List;
 
 // ------------------------------------------------------------------
@@ -47,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String ETIQUETA_LOG = ">>>>";
 
     private static final int CODIGO_PETICION_PERMISOS = 11223344;
+    public static final String NOMBRE_DISPOSITIVO_INTENT_SERVICIO = "intent_servicio_nombre_dispositivo";
 
     // --------------------------------------------------------------
     // --------------------------------------------------------------
@@ -55,6 +58,9 @@ public class MainActivity extends AppCompatActivity {
     private ScanCallback callbackDelEscaneo = null;
 
     private Intent elIntentDelServicio = null;
+
+    private BroadcastReceiver conexionBroadcast;
+    private String nombreDispositivoABuscar = "GTI-3A-1"; // esta variable se modificara cuando se seleccione un item de la lista de beacons
 
     // --------------------------------------------------------------
     // --------------------------------------------------------------
@@ -158,53 +164,7 @@ public class MainActivity extends AppCompatActivity {
     // --------------------------------------------------------------
     // --------------------------------------------------------------
 
-    /**
-     * Metodo para buscar iBeacons con el nombre indicado para mostrarlo posteriormente
-     * Texto -> buscarEsteDispositivoBTLE()
-     *
-     * @author Rubén Pardo Casanova
-     * @param dispositivoBuscado nombre del iBeacon a encontrar
-     */
-    private void buscarEsteDispositivoBTLE(final String dispositivoBuscado ) {
-        Log.d(ETIQUETA_LOG, " buscarEsteDispositivoBTLE(): empieza ");
 
-        Log.d(ETIQUETA_LOG, "  buscarEsteDispositivoBTLE(): instalamos scan callback ");
-
-
-        // super.onScanResult(ScanSettings.SCAN_MODE_LOW_LATENCY, result); para ahorro de energía
-
-        this.callbackDelEscaneo = new ScanCallback() {
-            @Override
-            public void onScanResult( int callbackType, ScanResult resultado ) {
-                super.onScanResult(callbackType, resultado);
-                Log.d(ETIQUETA_LOG, "  buscarEsteDispositivoBTLE(): onScanResult() ");
-
-                mostrarInformacionDispositivoBTLE( resultado );
-            }
-
-            @Override
-            public void onBatchScanResults(List<ScanResult> results) {
-                super.onBatchScanResults(results);
-                Log.d(ETIQUETA_LOG, "  buscarEsteDispositivoBTLE(): onBatchScanResults() ");
-
-            }
-
-            @Override
-            public void onScanFailed(int errorCode) {
-                super.onScanFailed(errorCode);
-                Log.d(ETIQUETA_LOG, "  buscarEsteDispositivoBTLE(): onScanFailed() ");
-
-            }
-        };
-
-        ScanFilter sf = new ScanFilter.Builder().setDeviceName( dispositivoBuscado ).build();
-
-        Log.d(ETIQUETA_LOG, "  buscarEsteDispositivoBTLE(): empezamos a escanear buscando: " + dispositivoBuscado );
-        //Log.d(ETIQUETA_LOG, "  buscarEsteDispositivoBTLE(): empezamos a escanear buscando: " + dispositivoBuscado
-        //      + " -> " + Utilidades.stringToUUID( dispositivoBuscado ) );
-
-        this.elEscanner.startScan( this.callbackDelEscaneo );
-    } // ()
 
     // --------------------------------------------------------------
     // --------------------------------------------------------------
@@ -233,7 +193,7 @@ public class MainActivity extends AppCompatActivity {
         //this.buscarEsteDispositivoBTLE( Utilidades.stringToUUID( "EPSG-GTI-PROY-3A" ) );
 
         //this.buscarEsteDispositivoBTLE( "EPSG-GTI-PROY-3A" );
-        this.buscarEsteDispositivoBTLE( "fistro" );
+        //this.buscarEsteDispositivoBTLE( "GTI-3A-1" );
 
     } // ()
 
@@ -294,13 +254,14 @@ public class MainActivity extends AppCompatActivity {
 
         if ( this.elIntentDelServicio != null ) {
             // ya estaba arrancado
+
             return;
         }
 
         Log.d(ETIQUETA_LOG, " MainActivity.constructor : voy a arrancar el servicio");
 
         this.elIntentDelServicio = new Intent(this, ServicioEscucharBeacons.class);
-
+        this.elIntentDelServicio.putExtra(NOMBRE_DISPOSITIVO_INTENT_SERVICIO,this.nombreDispositivoABuscar);
         this.elIntentDelServicio.putExtra("tiempoDeEspera", (long) 5000);
         startService( this.elIntentDelServicio );
 
@@ -324,6 +285,48 @@ public class MainActivity extends AppCompatActivity {
 
     } // ()
 
+    // --------------------------------------------------------------
+    // --------------------------------------------------------------
+
+    /**
+     * Registrar el broadcast receiver ConexionChangeReciver
+     */
+    private void inicializarBroadcastCambioConexion() {
+
+        conexionBroadcast = new ConexionChangeReceiver();
+
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        filter.addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED);
+        this.registerReceiver(conexionBroadcast, filter);
+    }
+
+    // --------------------------------------------------------------
+    // --------------------------------------------------------------
+
+    /**
+     * Metodo que se llama desde el broadcast receiver ConexionChangeReceiver
+     *
+     */
+    public static void onConexionChange(Context context){
+
+        ServicioEscucharBeacons.onConexionChange(Utilidades.hayConexion(context), context);
+
+    }
+
+    // --------------------------------------------------------------
+    // --------------------------------------------------------------
+
+    /**
+     * Metodo para des registrar el broadcast ConexionChangeReceiver
+     */
+    protected void unregisterNetworkChanges() {
+        try {
+            unregisterReceiver(conexionBroadcast);
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     // --------------------------------------------------------------
     // --------------------------------------------------------------
@@ -341,21 +344,8 @@ public class MainActivity extends AppCompatActivity {
         Log.d(ETIQUETA_LOG, " onCreate(): termina ");
 
     } // onCreate()
-    private BroadcastReceiver conexionBroadcast;
-    private void inicializarBroadcastCambioConexion() {
 
-        conexionBroadcast = new ConexionChangeReceiver();
 
-        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-        filter.addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED);
-        this.registerReceiver(conexionBroadcast, filter);
-    }
-
-    public static void onConexionChange(Context context){
-
-        ServicioEscucharBeacons.onConexionChange(Utilidades.hayConexion(context), context);
-
-    }
 
     public void prueba(View v) {
 
@@ -365,12 +355,12 @@ public class MainActivity extends AppCompatActivity {
         lm.add(m);
         lm.add(m2);*/
 
-        Logica l = new Logica();
+        /*Logica l = new Logica();
         Log.d("PRUEBA", "prueba: AÑADIR 51");
         for(int i = 1; i<=120;i++){
             MedicionCO2 m = new MedicionCO2(i,4,"GTI-3A-1",new Posicion(31.56,32.5323));
-            l.guardarMedicionEnLocal(m,this);
-        }
+            l.guardarMedicionesEnLocal(m,this);
+        }*/
 
 
        /* Log.d("PRUEBA", "prueba: LISTAR TODAS");
@@ -385,13 +375,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    protected void unregisterNetworkChanges() {
-        try {
-            unregisterReceiver(conexionBroadcast);
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        }
-    }
+
 
     @Override
     public void onDestroy() {

@@ -27,18 +27,20 @@ public class MedicionDBHelper extends SQLiteOpenHelper {
 
 
     /**
-     * guardarMedicionSQLITE() -> MedicionCO2
+     * Lista<MedicionCO2> -> guardarMedicionSQLITE()
      *
-     * Guardar una medicion co2 en la base de datos interna
-     * @param medicionCO2 medicion a guardar
+     * Guardar mediciones co2 en la base de datos interna
+     * @param mediciones mediciones a guardar
      */
-    public void guardarMedicionSQLITE(MedicionCO2 medicionCO2) {
+    public void guardarMedicionesSQLITE(List<MedicionCO2> mediciones) {
         SQLiteDatabase sqLiteDatabase = getWritableDatabase();
 
-        sqLiteDatabase.insert(
-                MedicionCO2Contract.MedicionCO2Entry.NOMBRE_TABLA,
-                null,
-                medicionCO2.toContentValues());
+        for (MedicionCO2 m: mediciones) {
+            sqLiteDatabase.insert(
+                    MedicionCO2Contract.MedicionCO2Entry.NOMBRE_TABLA,
+                    null,
+                    m.toContentValues());
+        }
 
     }
 

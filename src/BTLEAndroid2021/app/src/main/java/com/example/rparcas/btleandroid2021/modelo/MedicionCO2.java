@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.util.Log;
 
 import com.example.rparcas.btleandroid2021.SQLITE.MedicionCO2Contract;
+import com.example.rparcas.btleandroid2021.Utilidades;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -62,7 +63,7 @@ public class MedicionCO2 {
        // pasar de texto a timestamp
         this.medicion_fecha = new Timestamp(0);
         try {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
+            SimpleDateFormat dateFormat = new SimpleDateFormat(FECHA_FROMATO);
             java.util.Date parsedDate = null;
             parsedDate = dateFormat.parse(cursor.getString(6));
             this.medicion_fecha = new java.sql.Timestamp(parsedDate.getTime());
@@ -74,12 +75,24 @@ public class MedicionCO2 {
     }
 
 
+    public MedicionCO2(TramaIBeacon tramaIBeacon) {
+        this.medicion_valor = Utilidades.bytesToInt(tramaIBeacon.getMinor());
+        this.posicion = new Posicion(0,0);
+        this.sensor_id = Utilidades.bytesToString(tramaIBeacon.getUUID()).split("%")[0];
+        this.usuario_id = 4;
+
+        // obtener la fecha actual en formato Timestamp
+        this.medicion_fecha = new Timestamp(System.currentTimeMillis());
+
+
+    }
+
     /**
      * toJSON() -> String
      * @return string en formato json del objeto
      */
     public String toJSON(){
-        String fechaConFormato = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").format(this.medicion_fecha);
+        String fechaConFormato = new SimpleDateFormat(FECHA_FROMATO).format(this.medicion_fecha);
 
         String res = "{" +
                 "\"medicion_valor\":\""+this.medicion_valor+ "\", " +

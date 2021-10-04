@@ -56,23 +56,25 @@ public class Logica {
                 new PeticionarioREST.RespuestaREST () {
                     @Override
                     public void callback(int codigo, String cuerpo) {
+
                         Log.d ("PRUEBA","codigo respuesta: " + codigo + " <-> \n" + cuerpo);
+
                     }
                 });
     }
 
 
     /**
-     * MedicionCO2 -> guardarMedicionEnLocal()
+     * Lista<MedicionCO2> -> guardarMedicionEnLocal()
      *
-     * Guardar una medicion co2 en la base de datos interna
-     * @param medicionCO2 medicion a guardar
+     * Guardar mediciones co2 en la base de datos interna
+     * @param mediciones mediciones a guardar
      * @param context Contexto de la aplicacion
      */
-    public void guardarMedicionEnLocal(MedicionCO2 medicionCO2, Context context) {
+    public void guardarMedicionesEnLocal(List<MedicionCO2> mediciones, Context context) {
 
         MedicionDBHelper medicionDBHelper = new MedicionDBHelper(context);
-        medicionDBHelper.guardarMedicionSQLITE(medicionCO2);
+        medicionDBHelper.guardarMedicionesSQLITE(mediciones);
     }
 
     /**
