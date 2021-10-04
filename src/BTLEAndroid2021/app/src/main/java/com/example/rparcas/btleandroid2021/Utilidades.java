@@ -1,13 +1,18 @@
 package com.example.rparcas.btleandroid2021;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.util.Log;
 
 import java.math.BigInteger;
+import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.UUID;
 
-// -----------------------------------------------------------------------------------
-// @author: Jordi Bataller i Mascarell
-// -----------------------------------------------------------------------------------
+/**
+ * Clase con metodo utiles para el proyecto
+ * @author Rubén Pardo Casanova 21/09/2021
+ */
 public class Utilidades {
 
     // -------------------------------------------------------------------------------
@@ -136,10 +141,22 @@ public class Utilidades {
         }
         return sb.toString();
     } // ()
+
+
+    /**
+     * hayConexion() -> T/F
+     *
+     * @return T/F si el dispositivo tiene conexion a internet
+     */
+    public static boolean hayConexion(Context context){
+        ConnectivityManager connectivityManager = (ConnectivityManager)
+                context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        return connectivityManager.getActiveNetworkInfo() != null
+                && connectivityManager.getActiveNetworkInfo().isAvailable();
+    }
+
 } // class
 // -----------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------
-
-

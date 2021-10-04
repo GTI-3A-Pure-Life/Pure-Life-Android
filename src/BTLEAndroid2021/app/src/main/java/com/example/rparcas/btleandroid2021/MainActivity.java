@@ -10,12 +10,17 @@ import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanFilter;
 import android.bluetooth.le.ScanResult;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import com.example.rparcas.btleandroid2021.BroadCastReceiver.ConexionChangeReceiver;
 import com.example.rparcas.btleandroid2021.logica.Logica;
 import com.example.rparcas.btleandroid2021.modelo.MedicionCO2;
 import com.example.rparcas.btleandroid2021.modelo.Posicion;
@@ -25,7 +30,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import java.util.ArrayList;
 import java.util.List;
 
 // ------------------------------------------------------------------
@@ -330,26 +334,69 @@ public class MainActivity extends AppCompatActivity {
 
         Log.d(ETIQUETA_LOG, " onCreate(): empieza ");
 
-
+        inicializarBroadcastCambioConexion();
 
         inicializarBlueTooth();
 
         Log.d(ETIQUETA_LOG, " onCreate(): termina ");
 
     } // onCreate()
+    private BroadcastReceiver conexionBroadcast;
+    private void inicializarBroadcastCambioConexion() {
+
+        conexionBroadcast = new ConexionChangeReceiver();
+
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        filter.addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED);
+        this.registerReceiver(conexionBroadcast, filter);
+    }
+
+    public static void onConexionChange(Context context){
+
+        ServicioEscucharBeacons.onConexionChange(Utilidades.hayConexion(context), context);
+
+    }
 
     public void prueba(View v) {
 
-        MedicionCO2 m = new MedicionCO2(1.2,4,"GTI-3A-1",new Posicion(31.56,32.5323));
+        /*MedicionCO2 m = new MedicionCO2(1.2,4,"GTI-3A-1",new Posicion(31.56,32.5323));
         MedicionCO2 m2 = new MedicionCO2(2.51,4,"GTI-3A-1",new Posicion(31.56,32.7));
         List<MedicionCO2> lm = new ArrayList<>();
         lm.add(m);
-        lm.add(m2);
-        Log.d("PRUEBA",MedicionCO2.listaMedicionesToJSON(lm));
+        lm.add(m2);*/
 
         Logica l = new Logica();
-        l.publicarMediciones(lm);
+        Log.d("PRUEBA", "prueba: AÑADIR 51");
+        for(int i = 1; i<=120;i++){
+            MedicionCO2 m = new MedicionCO2(i,4,"GTI-3A-1",new Posicion(31.56,32.5323));
+            l.guardarMedicionEnLocal(m,this);
+        }
 
+
+       /* Log.d("PRUEBA", "prueba: LISTAR TODAS");
+        List<MedicionCO2> mediciones2 = l.obtenerPrimeras50MedicionesDeBDLocal(this);
+        Log.d("PRUEBA", "SE VAN A BORRAR: M-> "+MedicionCO2.listaMedicionesToJSON(mediciones2));
+        Log.d("PRUEBA", "prueba: BORRAR 50");
+        l.borrarPrimeras50MedicionesDeBDLocal(this);*/
+
+
+
+        //l.publicarMediciones(lm);
+
+    }
+
+    protected void unregisterNetworkChanges() {
+        try {
+            unregisterReceiver(conexionBroadcast);
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        unregisterNetworkChanges();
     }
 
     // --------------------------------------------------------------
