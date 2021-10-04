@@ -1,13 +1,17 @@
 package com.example.rparcas.btleandroid2021.modelo;
 
+import android.content.ContentValues;
+import android.database.Cursor;
 import android.util.Log;
 
+import com.example.rparcas.btleandroid2021.SQLITE.MedicionCO2Contract;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import java.sql.Date;
 import java.sql.Timestamp;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -24,7 +28,7 @@ public class MedicionCO2 {
     private final int usuario_id;
     private final String sensor_id;
     private final Posicion posicion;
-    private final Timestamp medicion_fecha;
+    private  Timestamp medicion_fecha;
 
     public MedicionCO2(double valor, int usuarioID, String sensorID, Posicion posicion) {
         this.medicion_valor = valor;
@@ -34,6 +38,38 @@ public class MedicionCO2 {
 
         // obtener la fecha actual en formato Timestamp
         this.medicion_fecha = new Timestamp(System.currentTimeMillis());
+
+    }
+
+    /**
+     * Constructor de MedicionCO2 a partir de un cursor de sqlite
+     * indices del cursor:
+     * 1 - valor | double
+     * 2 - latitud | double
+     * 3 - longitud | double
+     * 4 - sensor | TEXTO
+     * 5 - usuario | INTEGER
+     * 6 - fecha | TEXTO
+     * @param cursor cursor de sqlite
+     */
+    public MedicionCO2(Cursor cursor) {
+        this.medicion_valor = cursor.getDouble(1);
+        this.posicion = new Posicion(cursor.getDouble(2),cursor.getDouble(3));
+        this.sensor_id = cursor.getString(4);
+        this.usuario_id = cursor.getInt(5);
+
+
+       // pasar de texto a timestamp
+        this.medicion_fecha = new Timestamp(0);
+        try {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
+            java.util.Date parsedDate = null;
+            parsedDate = dateFormat.parse(cursor.getString(6));
+            this.medicion_fecha = new java.sql.Timestamp(parsedDate.getTime());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
 
     }
 
@@ -59,6 +95,24 @@ public class MedicionCO2 {
 
 
     }
+
+
+    /**
+     * toContentValues() -> ContentValues
+     * @return content values con los datos del objeto
+     */
+    public ContentValues toContentValues(){
+        ContentValues values = new ContentValues();
+        values.put(MedicionCO2Contract.MedicionCO2Entry.VALOR, this.medicion_valor);
+        values.put(MedicionCO2Contract.MedicionCO2Entry.LATITUD, this.posicion.getLatitud());
+        values.put(MedicionCO2Contract.MedicionCO2Entry.LONGITUD, this.posicion.getLongitud());
+        values.put(MedicionCO2Contract.MedicionCO2Entry.FECHA, this.medicion_fecha.toString());
+        values.put(MedicionCO2Contract.MedicionCO2Entry.SENSOR, this.sensor_id);
+        values.put(MedicionCO2Contract.MedicionCO2Entry.USUARIO, this.usuario_id);
+
+        return values;
+    }
+
 
     /**
      *
