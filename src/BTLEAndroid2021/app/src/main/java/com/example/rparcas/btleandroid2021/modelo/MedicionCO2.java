@@ -155,4 +155,8 @@ public class MedicionCO2 {
      
              
     }
+
+    public String getSensorID() {
+        return this.sensor_id;
+    }
 }

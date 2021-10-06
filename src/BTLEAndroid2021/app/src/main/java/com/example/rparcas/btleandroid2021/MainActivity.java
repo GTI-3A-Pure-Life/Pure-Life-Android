@@ -11,27 +11,26 @@ import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanFilter;
 import android.bluetooth.le.ScanResult;
 import android.bluetooth.le.ScanSettings;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
-import com.example.rparcas.btleandroid2021.BroadCastReceiver.ConexionChangeReceiver;
-import com.example.rparcas.btleandroid2021.logica.Logica;
-import com.example.rparcas.btleandroid2021.modelo.MedicionCO2;
-import com.example.rparcas.btleandroid2021.modelo.Posicion;
+import com.example.rparcas.btleandroid2021.adapters.DispositivosBLEAdapter;
 import com.example.rparcas.btleandroid2021.modelo.TramaIBeacon;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 // ------------------------------------------------------------------
@@ -42,14 +41,14 @@ import java.util.List;
  * Gestiona un servicio en segundo plano que escanea iBeacons
  * @author Rubén Pardo Casanova 21/09/2021
  */
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity /*implements BeaconConsumer*/ {
 
     // --------------------------------------------------------------
     // --------------------------------------------------------------
     private static final String ETIQUETA_LOG = ">>>>";
 
     private static final int CODIGO_PETICION_PERMISOS = 11223344;
-    public static final String NOMBRE_DISPOSITIVO_INTENT_SERVICIO = "intent_servicio_nombre_dispositivo";
+    public static final String NOMBRE_DISPOSITIVO_A_ESCUCHAR_INTENT = "intent_servicio_nombre_dispositivo";
 
     // --------------------------------------------------------------
     // --------------------------------------------------------------
@@ -57,52 +56,80 @@ public class MainActivity extends AppCompatActivity {
 
     private ScanCallback callbackDelEscaneo = null;
 
-    private Intent elIntentDelServicio = null;
+    private final String prefijoDeDispositivosAbuscar = "GTI-3A-"; // buscar todos los dispositivos que empiecen por este prefijo
 
-    private BroadcastReceiver conexionBroadcast;
-    private String nombreDispositivoABuscar = "GTI-3A-1"; // esta variable se modificara cuando se seleccione un item de la lista de beacons
+
+
+    private RecyclerView recyclerView;
+    private TextView emptyView;
+    private DispositivosBLEAdapter dispositivosBLEAdapter;
+    private HashSet<String> listaDipositivos;
 
     // --------------------------------------------------------------
     // --------------------------------------------------------------
     /**
-     * Metodo para buscar cualquier iBeacon que se encuentre
-     * buscarTodosLosDispositivosBTLE()
+     * Metodo para buscar cualquier iBeacon que se encuentre con nuestro prefijo
+     * buscarTodosLosDispositivosConPrefijoBTLE()
      *
      * @author Rubén Pardo Casanova
      *
      */
-    private void buscarTodosLosDispositivosBTLE() {
-        Log.d(ETIQUETA_LOG, " buscarTodosLosDispositivosBTL(): empieza ");
+    private void buscarTodosLosDispositivosConPrefijoBTLE() {
+        Log.d(ETIQUETA_LOG, " buscarTodosLosDispositivosConPrefijoBTLE(): empieza ");
 
-        Log.d(ETIQUETA_LOG, " buscarTodosLosDispositivosBTL(): instalamos scan callback ");
+        Log.d(ETIQUETA_LOG, " buscarTodosLosDispositivosConPrefijoBTLE(): instalamos scan callback ");
+
+        this.detenerBusquedaDispositivosBTLE();
+
+
 
         this.callbackDelEscaneo = new ScanCallback() {
             @Override
             public void onScanResult( int callbackType, ScanResult resultado ) {
                 super.onScanResult(callbackType, resultado);
-                Log.d(ETIQUETA_LOG, " buscarTodosLosDispositivosBTL(): onScanResult() ");
+                Log.d(ETIQUETA_LOG, " buscarTodosLosDispositivosConPrefijoBTLE(): onScanResult() ");
 
-                mostrarInformacionDispositivoBTLE( resultado );
+                //mostrarInformacionDispositivoBTLE( resultado );
+
+                // obtenemos la trama ibeacon
+                byte[] bytes = resultado.getScanRecord().getBytes();
+                TramaIBeacon tib = new TramaIBeacon(bytes);
+                // vemos si empieza por el prefijo de neustros dispositivos
+                // ( no se puede hacer por filtro, el filtro solo si es nombre exacto)
+                if(Utilidades.bytesToString(tib.getUUID()).contains(prefijoDeDispositivosAbuscar)){
+
+                    // añadimos al hashset y actualizamos la lista
+                    Log.d(ETIQUETA_LOG, " buscarTodosLosDispositivosConPrefijoBTLE(): UUID CON EL PREFIJO ");
+                    listaDipositivos.add(Utilidades.bytesToString(tib.getUUID()).split("%")[0]);
+                    actualizarRecyvlerView(listaDipositivos);
+                }
+
+
             }
 
             @Override
             public void onBatchScanResults(List<ScanResult> results) {
                 super.onBatchScanResults(results);
-                Log.d(ETIQUETA_LOG, " buscarTodosLosDispositivosBTL(): onBatchScanResults() ");
+                Log.d(ETIQUETA_LOG, " buscarTodosLosDispositivosConPrefijoBTLE(): onBatchScanResults() ");
 
             }
 
             @Override
             public void onScanFailed(int errorCode) {
                 super.onScanFailed(errorCode);
-                Log.d(ETIQUETA_LOG, " buscarTodosLosDispositivosBTL(): onScanFailed() ");
+                Log.d(ETIQUETA_LOG, " buscarTodosLosDispositivosConPrefijoBTLE(): onScanFailed(): "+errorCode);
 
             }
         };
 
-        Log.d(ETIQUETA_LOG, " buscarTodosLosDispositivosBTL(): empezamos a escanear ");
+
+
+        Log.d(ETIQUETA_LOG, "  buscarTodosLosDispositivosConPrefijoBTLE(): empezamos a escanear buscando: " + prefijoDeDispositivosAbuscar );
+        //Log.d(ETIQUETA_LOG, "  buscarEsteDispositivoBTLE(): empezamos a escanear buscando: " + dispositivoBuscado
+        //      + " -> " + Utilidades.stringToUUID( dispositivoBuscado ) );
 
         this.elEscanner.startScan( this.callbackDelEscaneo);
+
 
     } // ()
 
@@ -177,32 +204,11 @@ public class MainActivity extends AppCompatActivity {
         this.elEscanner.stopScan( this.callbackDelEscaneo );
         this.callbackDelEscaneo = null;
 
-    } // ()
 
-    // --------------------------------------------------------------
-    // --------------------------------------------------------------
-    public void botonBuscarDispositivosBTLEPulsado( View v ) {
-        Log.d(ETIQUETA_LOG, " boton buscar dispositivos BTLE Pulsado" );
-        this.buscarTodosLosDispositivosBTLE();
-    } // ()
-
-    // --------------------------------------------------------------
-    // --------------------------------------------------------------
-    public void botonBuscarNuestroDispositivoBTLEPulsado( View v ) {
-        Log.d(ETIQUETA_LOG, " boton nuestro dispositivo BTLE Pulsado" );
-        //this.buscarEsteDispositivoBTLE( Utilidades.stringToUUID( "EPSG-GTI-PROY-3A" ) );
-
-        //this.buscarEsteDispositivoBTLE( "EPSG-GTI-PROY-3A" );
-        //this.buscarEsteDispositivoBTLE( "GTI-3A-1" );
 
     } // ()
 
-    // --------------------------------------------------------------
-    // --------------------------------------------------------------
-    public void botonDetenerBusquedaDispositivosBTLEPulsado( View v ) {
-        Log.d(ETIQUETA_LOG, " boton detener busqueda dispositivos BTLE Pulsado" );
-        this.detenerBusquedaDispositivosBTLE();
-    } // ()
+
 
     // --------------------------------------------------------------
     // --------------------------------------------------------------
@@ -247,105 +253,9 @@ public class MainActivity extends AppCompatActivity {
         }
     } // ()
 
-    // ---------------------------------------------------------------------------------------------
-    // ---------------------------------------------------------------------------------------------
-    public void botonArrancarServicioPulsado( View v ) {
-        Log.d(ETIQUETA_LOG, " boton arrancar servicio Pulsado" );
-
-        if ( this.elIntentDelServicio != null ) {
-            // ya estaba arrancado
-
-            return;
-        }
-
-        Log.d(ETIQUETA_LOG, " MainActivity.constructor : voy a arrancar el servicio");
-
-        this.elIntentDelServicio = new Intent(this, ServicioEscucharBeacons.class);
-        this.elIntentDelServicio.putExtra(NOMBRE_DISPOSITIVO_INTENT_SERVICIO,this.nombreDispositivoABuscar);
-        this.elIntentDelServicio.putExtra("tiempoDeEspera", (long) 5000);
-        startService( this.elIntentDelServicio );
-
-    } // ()
-
-    // ---------------------------------------------------------------------------------------------
-    // ---------------------------------------------------------------------------------------------
-    public void botonDetenerServicioPulsado( View v ) {
-
-        if ( this.elIntentDelServicio == null ) {
-            // no estaba arrancado
-            return;
-        }
-
-        stopService( this.elIntentDelServicio );
-
-        this.elIntentDelServicio = null;
-
-        Log.d(ETIQUETA_LOG, " boton detener servicio Pulsado" );
-
-
-    } // ()
 
     // --------------------------------------------------------------
     // --------------------------------------------------------------
-
-    /**
-     * Registrar el broadcast receiver ConexionChangeReciver
-     */
-    private void inicializarBroadcastCambioConexion() {
-
-        conexionBroadcast = new ConexionChangeReceiver();
-
-        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-        filter.addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED);
-        this.registerReceiver(conexionBroadcast, filter);
-    }
-
-    // --------------------------------------------------------------
-    // --------------------------------------------------------------
-
-    /**
-     * Metodo que se llama desde el broadcast receiver ConexionChangeReceiver
-     *
-     */
-    public static void onConexionChange(Context context){
-
-        ServicioEscucharBeacons.onConexionChange(Utilidades.hayConexion(context), context);
-
-    }
-
-    // --------------------------------------------------------------
-    // --------------------------------------------------------------
-
-    /**
-     * Metodo para des registrar el broadcast ConexionChangeReceiver
-     */
-    protected void unregisterNetworkChanges() {
-        try {
-            unregisterReceiver(conexionBroadcast);
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        }
-    }
-
-
-    // --------------------------------------------------------------
-    // --------------------------------------------------------------
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        Log.d(ETIQUETA_LOG, " onCreate(): empieza ");
-
-        inicializarBroadcastCambioConexion();
-
-        inicializarBlueTooth();
-
-        Log.d(ETIQUETA_LOG, " onCreate(): termina ");
-
-    } // onCreate()
-
-
 
     public void prueba(View v) {
 
@@ -375,13 +285,112 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    // --------------------------------------------------------------
+    // --------------------------------------------------------------
+
+    private void inicializarVistas() {
+
+        recyclerView = findViewById(R.id.beacon_recyclerView);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        emptyView = (TextView) findViewById(R.id.empty_view);
 
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        unregisterNetworkChanges();
+
+
+        listaDipositivos = new HashSet<>();
+        dispositivosBLEAdapter = new DispositivosBLEAdapter(this,new ArrayList<>(listaDipositivos));
+
+        comprobarVacioRecyvlerView();
+
+
+        recyclerView.setAdapter(dispositivosBLEAdapter);
+        dispositivosBLEAdapter.setOnItemClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                Log.d(ETIQUETA_LOG,"BEACON ADAPTER ONCLICK()");
+                if(recyclerView!=null){
+
+                   itemListaDispositivosPulsado(v);
+                }
+            }
+        });
+
+
+
     }
+
+    // --------------------------------------------------------------
+    // --------------------------------------------------------------
+    private void actualizarRecyvlerView(HashSet<String> listaDipositivos){
+
+        dispositivosBLEAdapter.updateData(new ArrayList<>(listaDipositivos));
+        comprobarVacioRecyvlerView();
+    }
+
+    // --------------------------------------------------------------
+    // --------------------------------------------------------------
+    /**
+     * Metodo que esconde/muestra el recycler view o el emptytext
+     * dependiendo de si hay items o no
+     */
+    private void comprobarVacioRecyvlerView() {
+        if (listaDipositivos.isEmpty()) {
+            recyclerView.setVisibility(View.GONE);
+            emptyView.setVisibility(View.VISIBLE);
+        }
+        else {
+            recyclerView.setVisibility(View.VISIBLE);
+            emptyView.setVisibility(View.GONE);
+        }
+    }
+
+    // --------------------------------------------------------------
+    // --------------------------------------------------------------
+
+    /**
+     * Callback de los elementos de la lista de dispositivos bluetooth
+     * @param v elementos pulsado
+     */
+    private void itemListaDispositivosPulsado(View v) {
+        int pos = recyclerView.getChildAdapterPosition(v);
+
+        String dispositivoPulsado = dispositivosBLEAdapter.getItemAtPosition(pos);
+
+        Log.d(ETIQUETA_LOG,"item pulsado: "+ dispositivoPulsado);
+
+        // paramos la busqueda
+        detenerBusquedaDispositivosBTLE();
+
+        // nos dirgimos a la activity que lanza el servicio
+        Intent intentActivityEscuchar = new Intent(this,ActivityEscucharBeacons.class);
+        intentActivityEscuchar.putExtra(NOMBRE_DISPOSITIVO_A_ESCUCHAR_INTENT,dispositivoPulsado);
+
+        startActivity(intentActivityEscuchar);
+
+    }
+
+
+    // --------------------------------------------------------------
+    // --------------------------------------------------------------
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        Log.d(ETIQUETA_LOG, " onCreate(): empieza ");
+
+        inicializarVistas();
+
+        inicializarBlueTooth();
+
+        Log.d(ETIQUETA_LOG, " onCreate(): termina ");
+
+    } // onCreate()
+
+
 
     // --------------------------------------------------------------
     // --------------------------------------------------------------
@@ -408,6 +417,51 @@ public class MainActivity extends AppCompatActivity {
         // Other 'case' lines to check for other
         // permissions this app might request.
     } // ()
+
+    // --------------------------------------------------------------
+    // --------------------------------------------------------------
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main_activity_menu, menu);
+        return true;
+    }
+    // --------------------------------------------------------------
+    // --------------------------------------------------------------
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        int id = item.getItemId();
+        if (id == R.id.menu_item_escanear) {
+
+
+
+            // true = cambiar a escanear, false cambiar a parar
+            if(item.isChecked()){
+                item.setIcon(android.R.drawable.ic_media_play);
+                Log.d(ETIQUETA_LOG, "onOptionsItemSelected: parar escanear: ");
+
+                detenerBusquedaDispositivosBTLE();
+
+            }else{
+                item.setIcon(android.R.drawable.ic_media_pause);
+                Log.d(ETIQUETA_LOG, "onOptionsItemSelected: escanear: ");
+
+                buscarTodosLosDispositivosConPrefijoBTLE();
+
+            }
+
+
+
+            item.setChecked(!item.isChecked());
+
+
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
 
 } // class
 // --------------------------------------------------------------

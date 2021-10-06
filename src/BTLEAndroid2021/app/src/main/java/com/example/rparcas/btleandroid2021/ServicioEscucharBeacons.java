@@ -1,8 +1,6 @@
 package com.example.rparcas.btleandroid2021;
 
-import android.Manifest;
 import android.app.IntentService;
-import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.le.BluetoothLeScanner;
@@ -10,26 +8,16 @@ import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanFilter;
 import android.bluetooth.le.ScanResult;
 import android.bluetooth.le.ScanSettings;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.pm.PackageManager;
-import android.net.ConnectivityManager;
 import android.util.Log;
 
-import com.example.rparcas.btleandroid2021.BroadCastReceiver.ConexionChangeReceiver;
 import com.example.rparcas.btleandroid2021.logica.Logica;
-import com.example.rparcas.btleandroid2021.logica.PeticionarioREST;
 import com.example.rparcas.btleandroid2021.modelo.MedicionCO2;
-import com.example.rparcas.btleandroid2021.modelo.Posicion;
 import com.example.rparcas.btleandroid2021.modelo.TramaIBeacon;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 
 // -------------------------------------------------------------------------------------------------
@@ -203,7 +191,7 @@ public class ServicioEscucharBeacons extends IntentService {
      */
     private void inicializarServicio(Intent intent) {
         this.tiempoDeEspera = intent.getLongExtra("tiempoDeEspera", /* default */ 50000);
-        this.dispositivoABuscar = intent.getStringExtra(MainActivity.NOMBRE_DISPOSITIVO_INTENT_SERVICIO);
+        this.dispositivoABuscar = intent.getStringExtra(MainActivity.NOMBRE_DISPOSITIVO_A_ESCUCHAR_INTENT);
         inicializarBlueTooth();
         buscarEsteDispositivoBTLE(this.dispositivoABuscar);
 
@@ -243,13 +231,14 @@ public class ServicioEscucharBeacons extends IntentService {
     // ---------------------------------------------------------------------------------------------
     // ---------------------------------------------------------------------------------------------
     /**
-     * Metodo para mostrar la infrmación bluetooth escaneada
-     * ScanResult -> mostrarInformacionDispositivoBTLE()
+     *
+     * ScanResult -> scanResultToTramaIBeacon() -> TramaIBeacon
      *
      * @author Rubén Pardo Casanova
      * @param resultado información bluetooth escaneada a mostrar
+     * @return TramaIBeacon del scanresult
      */
-    private TramaIBeacon mostrarInformacionDispositivoBTLE( ScanResult resultado ) {
+    private TramaIBeacon scanResultToTramaIBeacon(ScanResult resultado ) {
 
         BluetoothDevice bluetoothDevice = resultado.getDevice();
         byte[] bytes = resultado.getScanRecord().getBytes();
@@ -320,8 +309,16 @@ public class ServicioEscucharBeacons extends IntentService {
                 super.onScanResult(callbackType, resultado);
                 Log.d(ETIQUETA_LOG, "  buscarEsteDispositivoBTLE(): onScanResult() ");
 
-                MedicionCO2 m = new MedicionCO2(mostrarInformacionDispositivoBTLE( resultado ));
-                medicionesAEnviar.add(m);
+
+                TramaIBeacon tib = scanResultToTramaIBeacon( resultado );
+                MedicionCO2 m = new MedicionCO2(tib);
+
+                if(m.getSensorID().equals(dispositivoBuscado)){
+
+                    medicionesAEnviar.add(m);
+                }
+
+
             }
 
             @Override
@@ -338,21 +335,21 @@ public class ServicioEscucharBeacons extends IntentService {
 
             }
         };
-        List<ScanFilter> filters = new ArrayList<>();;
+        /*List<ScanFilter> filters = new ArrayList<>();;
         ScanFilter sf = new ScanFilter.Builder().setDeviceName( dispositivoBuscado ).build();
         filters.add(sf);
 
 
         ScanSettings settings = new ScanSettings.Builder()
                 .setScanMode(ScanSettings.SCAN_MODE_LOW_POWER)
-                .build();
+                .build();*/
 
 
         Log.d(ETIQUETA_LOG, "  buscarEsteDispositivoBTLE(): empezamos a escanear buscando: " + dispositivoBuscado );
         //Log.d(ETIQUETA_LOG, "  buscarEsteDispositivoBTLE(): empezamos a escanear buscando: " + dispositivoBuscado
         //      + " -> " + Utilidades.stringToUUID( dispositivoBuscado ) );
 
-        this.elEscanner.startScan( filters,settings, this.callbackDelEscaneo);
+        this.elEscanner.startScan( /*filters,settings, */this.callbackDelEscaneo);
     } // ()
 
     // ---------------------------------------------------------------------------------------------

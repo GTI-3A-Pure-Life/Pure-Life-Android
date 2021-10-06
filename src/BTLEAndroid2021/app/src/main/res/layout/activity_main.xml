@@ -6,70 +6,34 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <Button
-        android:id="@+id/btnBuscarDispositivos"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/beacon_recyclerView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView2" />
+
+    <TextView
+        android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:onClick="botonBuscarDispositivosBTLEPulsado"
-        android:text="Bluetooth Buscar todos"
-        app:layout_constraintBottom_toTopOf="@+id/btnBuscarNuestroBluetooth"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="Dispositivos"
+        android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/btnBuscarNuestroBluetooth"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:onClick="botonBuscarNuestroDispositivoBTLEPulsado"
-        android:text="Bluetooth buscar nuestro"
-        app:layout_constraintBottom_toTopOf="@+id/btnDetenerBusqueda"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnBuscarDispositivos" />
 
-    <Button
-        android:id="@+id/btnDetenerBusqueda"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:onClick="botonDetenerBusquedaDispositivosBTLEPulsado"
-        android:text="Bluetooth Detener"
-        app:layout_constraintBottom_toTopOf="@+id/btnArrancarSerivcio"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnBuscarNuestroBluetooth" />
-
-    <Button
-        android:id="@+id/btnArrancarSerivcio"
-        style="@style/Widget.AppCompat.Button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:onClick="botonArrancarServicioPulsado"
-        android:text="Arrancar Servicio"
-        app:layout_constraintBottom_toTopOf="@+id/btnDetenerServicio"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnDetenerBusqueda" />
-
-    <Button
-        android:id="@+id/btnDetenerServicio"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:onClick="botonDetenerServicioPulsado"
-        android:text="Detener Servicio"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnArrancarSerivcio" />
+    <TextView
+        android:id="@+id/empty_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:visibility="gone"
+        android:text="No hay dispositivos" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

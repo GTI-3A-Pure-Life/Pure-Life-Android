@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+import com.example.rparcas.btleandroid2021.ActivityEscucharBeacons;
 import com.example.rparcas.btleandroid2021.MainActivity;
 import com.example.rparcas.btleandroid2021.ServicioEscucharBeacons;
 
@@ -17,7 +18,7 @@ public class ConexionChangeReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        MainActivity.onConexionChange(context);
+        ActivityEscucharBeacons.onConexionChange(context);
 
     }
 }
