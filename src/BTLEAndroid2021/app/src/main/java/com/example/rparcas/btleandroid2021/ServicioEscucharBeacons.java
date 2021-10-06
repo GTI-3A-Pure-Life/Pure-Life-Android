@@ -38,7 +38,7 @@ public class ServicioEscucharBeacons extends IntentService {
 
     private boolean seguir = true;
 
-    public static boolean hayConexion = true;
+    private static boolean hayConexion = true;
 
 
     private BluetoothLeScanner elEscanner;
@@ -46,7 +46,6 @@ public class ServicioEscucharBeacons extends IntentService {
     private ScanCallback callbackDelEscaneo = null;
     private String dispositivoABuscar;
 
-    private boolean hayMedicionesPendientes = false;
     private static List<MedicionCO2> medicionesAEnviar;
 
     // ---------------------------------------------------------------------------------------------

@@ -25,7 +25,7 @@ public class ActivityEscucharBeacons extends AppCompatActivity {
     // ---------------------------------------------------------------------------------------------
     private static final String ETIQUETA_LOG = ">>>>";
 
-    private String nombreBeaconAEscuchar = "";
+    private String nombreDispositivoAEscuchar = "";
 
     private Intent elIntentDelServicio = null;
 
@@ -39,7 +39,7 @@ public class ActivityEscucharBeacons extends AppCompatActivity {
 
     // ---------------------------------------------------------------------------------------------
     // ---------------------------------------------------------------------------------------------
-    public void arrancarServicio( ) {
+    private void arrancarServicio( ) {
         Log.d(ETIQUETA_LOG, " boton arrancar servicio Pulsado" );
 
         if ( this.elIntentDelServicio != null ) {
@@ -51,7 +51,7 @@ public class ActivityEscucharBeacons extends AppCompatActivity {
         Log.d(ETIQUETA_LOG, " MainActivity.constructor : voy a arrancar el servicio");
 
         this.elIntentDelServicio = new Intent(this, ServicioEscucharBeacons.class);
-        this.elIntentDelServicio.putExtra(MainActivity.NOMBRE_DISPOSITIVO_A_ESCUCHAR_INTENT,this.nombreBeaconAEscuchar);
+        this.elIntentDelServicio.putExtra(MainActivity.NOMBRE_DISPOSITIVO_A_ESCUCHAR_INTENT,this.nombreDispositivoAEscuchar);
         this.elIntentDelServicio.putExtra("tiempoDeEspera", (long) 5000);
         startService( this.elIntentDelServicio );
 
@@ -133,10 +133,10 @@ public class ActivityEscucharBeacons extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_escuchar_beacons);
 
-        nombreBeaconAEscuchar = getIntent().getExtras().getString(MainActivity.NOMBRE_DISPOSITIVO_A_ESCUCHAR_INTENT);
+        nombreDispositivoAEscuchar = getIntent().getExtras().getString(MainActivity.NOMBRE_DISPOSITIVO_A_ESCUCHAR_INTENT);
 
         TextView tvNombre = findViewById(R.id.tvNombreIBeacons);
-        tvNombre.setText(nombreBeaconAEscuchar);
+        tvNombre.setText(nombreDispositivoAEscuchar);
 
         inicializarBroadcastCambioConexion();
         arrancarServicio();
