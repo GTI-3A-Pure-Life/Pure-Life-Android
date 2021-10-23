@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">BTLEAndroid2021</string>
+    <string name="menu_item_escanear">Escanear</string>
+    <string name="menu_item_parar_escanear">Parar</string>
+</resources>
