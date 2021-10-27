@@ -2,4 +2,26 @@
     <string name="app_name">BTLEAndroid2021</string>
     <string name="menu_item_escanear">Escanear</string>
     <string name="menu_item_parar_escanear">Parar</string>
+    <string name="title_activity_ajustes">AjustesActivity</string>
+
+    <!-- Preference Titles -->
+    <string name="messages_header">Messages</string>
+    <string name="sync_header">Sync</string>
+
+    <!-- Messages Preferences -->
+    <string name="signature_title">Your signature</string>
+    <string name="reply_title">Default reply action</string>
+
+    <!-- Sync Preferences -->
+    <string name="sync_title">Sync email periodically</string>
+    <string name="attachment_title">Download incoming attachments</string>
+    <string name="attachment_summary_on">Automatically download attachments for incoming emails
+    </string>
+    <string name="attachment_summary_off">Only download attachments when manually requested</string>
+    <string name="ajustes_alerta_notificacion_gas_titulo">Tengo problemas respiratorios</string>
+    <string name="ajustes_notificaciones_cabezera">Notificaciones</string>
+    <string name="ajustes_alerta_notificacion_gas_descripcion">Avisame cuando los niveles sean moderados</string>
+    <string name="notificacion_titulo_alerta_calidad_moderado">Calidad de aire moderado</string>
+    <string name="notificacion_titulo_alerta_calidad_alto">Calidad del aire mala</string>
+    <string name="notificacion_contenido_alerta_calidad">Estas expuesto a gases dañinos para tu salud</string>
 </resources>

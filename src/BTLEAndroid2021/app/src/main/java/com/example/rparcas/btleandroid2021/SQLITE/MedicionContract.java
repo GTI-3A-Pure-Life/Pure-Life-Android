@@ -3,12 +3,12 @@ package com.example.rparcas.btleandroid2021.SQLITE;
 import android.provider.BaseColumns;
 
 /**
- * Esquema de MedicionCO2 para la base de datos interna
+ * Esquema de Medicion para la base de datos interna
  * @author Rubén Pardo Casanova
  */
-public class MedicionCO2Contract {
+public class MedicionContract {
 
-    public static abstract class MedicionCO2Entry implements BaseColumns {
+    public static abstract class MedicionEntry implements BaseColumns {
 
         public static final String NOMBRE_TABLA ="medicionco2";
 
@@ -18,5 +18,6 @@ public class MedicionCO2Contract {
         public static final String FECHA = "fecha";
         public static final String USUARIO = "usuario";
         public static final String SENSOR = "sensor";
+        public static final String TIPO_MEDICION = "tipo";
     }
 }

@@ -4,13 +4,13 @@ package com.example.rparcas.btleandroid2021;
 // ------------------------------------------------------------------
 
 import android.Manifest;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
-import android.bluetooth.le.ScanFilter;
 import android.bluetooth.le.ScanResult;
-import android.bluetooth.le.ScanSettings;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -21,10 +21,13 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.example.rparcas.btleandroid2021.adapters.DispositivosBLEAdapter;
+import com.example.rparcas.btleandroid2021.logica.ManejadorNotificaciones;
+import com.example.rparcas.btleandroid2021.modelo.Medicion.TipoMedicion;
 import com.example.rparcas.btleandroid2021.modelo.TramaIBeacon;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -259,6 +262,32 @@ public class MainActivity extends AppCompatActivity /*implements BeaconConsumer*
 
     public void prueba(View v) {
 
+        ManejadorNotificaciones manejadorNotif = new ManejadorNotificaciones(
+                "CANAL-1",
+                "CANAL-PRUEBA",
+                "PRUEBA",
+                NotificationManager.IMPORTANCE_DEFAULT,
+                android.R.drawable.stat_notify_chat,
+                this
+                );
+
+
+        PendingIntent intencionPendiente = PendingIntent.getActivity(
+                this, 0, new Intent(this, MainActivity.class), 0);
+
+        NotificationCompat.Builder noti = manejadorNotif.crearNotificacion("TITULO","CONTENDIO", intencionPendiente);
+        NotificationCompat.Builder notiCustom = manejadorNotif.crearNotificacionPersonalizada(
+                "TITULO-CUSTOM","Contenido-Custom",
+                R.layout.notificacion_pequenya,
+                R.mipmap.ic_launcher,
+                intencionPendiente);
+
+
+
+        manejadorNotif.lanzarNotificacion(100,notiCustom);
+
+
+
         /*MedicionCO2 m = new MedicionCO2(1.2,4,"GTI-3A-1",new Posicion(31.56,32.5323));
         MedicionCO2 m2 = new MedicionCO2(2.51,4,"GTI-3A-1",new Posicion(31.56,32.7));
         List<MedicionCO2> lm = new ArrayList<>();
@@ -372,6 +401,13 @@ public class MainActivity extends AppCompatActivity /*implements BeaconConsumer*
 
     }
 
+    // --------------------------------------------------------------
+    // --------------------------------------------------------------
+    public void botonIrAjustesPulsado(View v){
+        Intent intent = new Intent(this, AjustesActivity.class);
+        startActivity(intent);
+    }
+
 
     // --------------------------------------------------------------
     // --------------------------------------------------------------
@@ -381,6 +417,11 @@ public class MainActivity extends AppCompatActivity /*implements BeaconConsumer*
         setContentView(R.layout.activity_main);
 
         Log.d(ETIQUETA_LOG, " onCreate(): empieza ");
+        Log.d(ETIQUETA_LOG, String.valueOf(TipoMedicion.CO));
+        TipoMedicion a = TipoMedicion.CO;
+        Log.d(ETIQUETA_LOG, a.getIdGas()+"");
+
+
 
         inicializarVistas();
 
@@ -430,6 +471,11 @@ public class MainActivity extends AppCompatActivity /*implements BeaconConsumer*
     // --------------------------------------------------------------
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
+        Intent intentActivityEscuchar = new Intent(this,ActivityEscucharBeacons.class);
+        intentActivityEscuchar.putExtra(NOMBRE_DISPOSITIVO_A_ESCUCHAR_INTENT,"xdd");
+
+        startActivity(intentActivityEscuchar);
 
         int id = item.getItemId();
         if (id == R.id.menu_item_escanear) {

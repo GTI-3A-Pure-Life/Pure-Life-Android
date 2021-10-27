@@ -1,13 +1,11 @@
 package com.example.rparcas.btleandroid2021.logica;
 
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.example.rparcas.btleandroid2021.Constantes.RESTConstantes;
-import com.example.rparcas.btleandroid2021.SQLITE.MedicionCO2Contract;
 import com.example.rparcas.btleandroid2021.SQLITE.MedicionDBHelper;
-import com.example.rparcas.btleandroid2021.modelo.MedicionCO2;
+import com.example.rparcas.btleandroid2021.modelo.Medicion;
 
 import java.util.List;
 
@@ -43,7 +41,7 @@ public class Logica {
      *
      * @param mediciones a enviar
      */
-    public void publicarMediciones(List<MedicionCO2> mediciones){
+    public void publicarMediciones(List<Medicion> mediciones){
 
         PeticionarioREST elPeticionarioREST = new PeticionarioREST();
 
@@ -52,7 +50,7 @@ public class Logica {
         Log.d("PRUEBA", "publicarMediciones endpoint: "+restEndpoint);
 
         elPeticionarioREST.hacerPeticionREST("PUT", restEndpoint,
-                "{\"res\": "+MedicionCO2.listaMedicionesToJSON(mediciones)+"}" ,
+                "{\"res\": "+ Medicion.listaMedicionesToJSON(mediciones)+"}" ,
                 new PeticionarioREST.RespuestaREST () {
                     @Override
                     public void callback(int codigo, String cuerpo) {
@@ -71,7 +69,7 @@ public class Logica {
      * @param mediciones mediciones a guardar
      * @param context Contexto de la aplicacion
      */
-    public void guardarMedicionesEnLocal(List<MedicionCO2> mediciones, Context context) {
+    public void guardarMedicionesEnLocal(List<Medicion> mediciones, Context context) {
 
         MedicionDBHelper medicionDBHelper = new MedicionDBHelper(context);
         medicionDBHelper.guardarMedicionesSQLITE(mediciones);
@@ -84,9 +82,9 @@ public class Logica {
      * @param context contexto de la aplicacion
      * @return Lista de mediciones
      */
-    public List<MedicionCO2> obtenerPrimeras50MedicionesDeBDLocal(Context context){
+    public List<Medicion> obtenerPrimeras50MedicionesDeBDLocal(Context context){
         MedicionDBHelper medicionDBHelper = new MedicionDBHelper(context);
-        List<MedicionCO2> mediciones = medicionDBHelper.obtener50Mediciones();
+        List<Medicion> mediciones = medicionDBHelper.obtener50Mediciones();
 
         return mediciones;
     }
