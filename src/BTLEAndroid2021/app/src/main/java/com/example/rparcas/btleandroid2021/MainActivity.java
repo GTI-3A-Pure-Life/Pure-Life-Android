@@ -1,6 +1,7 @@
 package com.example.rparcas.btleandroid2021;
 
 import android.os.Bundle;
+import android.util.Log;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -20,6 +21,7 @@ import com.example.rparcas.btleandroid2021.databinding.ActivityMainBinding;
 public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
+    private NavController navController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,9 +37,18 @@ public class MainActivity extends AppCompatActivity {
                 R.id.navigation_escaner, R.id.navigation_mapa, R.id.navigation_estadisticas,
                 R.id.navigation_perfil)
                 .build();
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
+        navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
     }
 
+    @Override
+    public void onBackPressed() {
+        // TODO esta es la solucion rapida para que no vuelva a login cuando sales de esta
+        // si no hay mas activities en la pila y pulsas atras la app muere y inicia de cero
+        // aun no hay metodo para comprobar si ya estas logeado para entrar directo al main
+        if(navController.getPreviousBackStackEntry() != null){
+            super.onBackPressed();
+        }
+    }
 }

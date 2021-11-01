@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_autentificacion"
+    app:startDestination="@id/navigation_login">
+
+    <fragment
+        android:id="@+id/navigation_login"
+        android:name="com.example.rparcas.btleandroid2021.ui.autentificacion.Login.LoginFragment"
+        android:label="@string/inicia_sesion"
+        tools:layout="@layout/fragment_login" />
+
+    <fragment
+        android:id="@+id/navigation_register"
+        android:name="com.example.rparcas.btleandroid2021.ui.autentificacion.Registro.RegistroFragment"
+        android:label="@string/crear_cuenta_pure_life"
+        tools:layout="@layout/fragment_registro" />
+
+</navigation>

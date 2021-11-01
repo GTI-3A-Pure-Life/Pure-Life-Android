@@ -29,4 +29,22 @@
     <string name="title_mapa">Mapa</string>
     <string name="title_estadisticas">Estadísticas</string>
     <string name="title_perfil">Perfil</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_autentificacion">AutentificacionActivity</string>
+ 
+
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="correo">Correo</string>
+    <string name="Contrasenya">Contraseña</string>
+    <string name="iniciar_sesion">Iniciar sesión</string>
+    <string name="inicia_sesion">Inicia sesión</string>
+    <string name="crear_cuenta">Crear cuenta</string>
+    <string name="nombre">Nombre</string>
+    <string name="apellidos">Apellidos</string>
+    <string name="telefono">Teléfono</string>
+    <string name="repetir_contrasenya">Repetir Contraseña</string>
+    <string name="crear_cuenta_pure_life">Crea tu cuenta Pure Life</string>
+    <string name="no_tienes_cuenta">¿No tienes cuenta? Créate una ahora.</string>
 </resources>
