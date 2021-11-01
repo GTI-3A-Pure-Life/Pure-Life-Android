@@ -1,5 +1,7 @@
 package com.example.rparcas.btleandroid2021.ui.escaner;
 
+import com.example.rparcas.btleandroid2021.modelo.Medicion;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -12,14 +14,14 @@ import androidx.lifecycle.ViewModel;
  */
 public class EscanerViewModel extends ViewModel {
 
-    private MutableLiveData<String> mText;
+    private MutableLiveData<Medicion.NivelPeligro> nivelPeligro;
 
     public EscanerViewModel() {
-        mText = new MutableLiveData<>();
-        mText.setValue("This is escaner fragment");
+        nivelPeligro = new MutableLiveData<>();
+        nivelPeligro.setValue(Medicion.NivelPeligro.ALTO);
     }
 
-    public LiveData<String> getText() {
-        return mText;
+    public LiveData<Medicion.NivelPeligro> getNivelPeligro() {
+        return nivelPeligro;
     }
 }

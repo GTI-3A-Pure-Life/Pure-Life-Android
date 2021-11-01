@@ -47,4 +47,6 @@
     <string name="repetir_contrasenya">Repetir Contraseña</string>
     <string name="crear_cuenta_pure_life">Crea tu cuenta Pure Life</string>
     <string name="no_tienes_cuenta">¿No tienes cuenta? Créate una ahora.</string>
+    <string name="escanear">Escanear</string>
+    <string name="desconectar">Desconectar</string>
 </resources>
