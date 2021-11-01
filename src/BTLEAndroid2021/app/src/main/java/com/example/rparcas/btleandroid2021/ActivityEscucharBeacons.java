@@ -51,7 +51,7 @@ public class ActivityEscucharBeacons extends AppCompatActivity {
         Log.d(ETIQUETA_LOG, " MainActivity.constructor : voy a arrancar el servicio");
 
         this.elIntentDelServicio = new Intent(this, ServicioEscucharBeacons.class);
-        this.elIntentDelServicio.putExtra(MainActivity.NOMBRE_DISPOSITIVO_A_ESCUCHAR_INTENT,this.nombreDispositivoAEscuchar);
+        this.elIntentDelServicio.putExtra(MainActivityTEMP.NOMBRE_DISPOSITIVO_A_ESCUCHAR_INTENT,this.nombreDispositivoAEscuchar);
         this.elIntentDelServicio.putExtra("tiempoDeEspera", (long) 5000);
         startService( this.elIntentDelServicio );
 
@@ -133,7 +133,7 @@ public class ActivityEscucharBeacons extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_escuchar_beacons);
 
-        nombreDispositivoAEscuchar = getIntent().getExtras().getString(MainActivity.NOMBRE_DISPOSITIVO_A_ESCUCHAR_INTENT);
+        nombreDispositivoAEscuchar = getIntent().getExtras().getString(MainActivityTEMP.NOMBRE_DISPOSITIVO_A_ESCUCHAR_INTENT);
 
         TextView tvNombre = findViewById(R.id.tvNombreIBeacons);
         tvNombre.setText(nombreDispositivoAEscuchar);

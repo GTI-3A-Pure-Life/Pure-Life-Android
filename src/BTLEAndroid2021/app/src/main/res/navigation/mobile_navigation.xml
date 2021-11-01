@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/navigation_escaner">
+
+    <fragment
+        android:id="@+id/navigation_escaner"
+        android:name="com.example.rparcas.btleandroid2021.ui.escaner.EscanerFragment"
+        android:label="@string/title_escaner"
+        tools:layout="@layout/fragment_escaner" />
+
+    <fragment
+        android:id="@+id/navigation_mapa"
+        android:name="com.example.rparcas.btleandroid2021.ui.mapa.MapaFragment"
+        android:label="@string/title_mapa"
+        tools:layout="@layout/fragment_mapa" />
+
+
+    <fragment
+        android:id="@+id/navigation_estadisticas"
+        android:name="com.example.rparcas.btleandroid2021.ui.estadisticas.EstadisticasFragment"
+        android:label="@string/title_estadisticas"
+        tools:layout="@layout/fragment_estadisticas" />
+
+    <fragment
+        android:id="@+id/navigation_perfil"
+        android:name="com.example.rparcas.btleandroid2021.ui.perfil.PerfilFragment"
+        android:label="@string/title_perfil"
+        tools:layout="@layout/fragment_perfil" />
+
+</navigation>

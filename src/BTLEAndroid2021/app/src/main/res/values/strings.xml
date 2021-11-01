@@ -24,4 +24,9 @@
     <string name="notificacion_titulo_alerta_calidad_moderado">Calidad de aire moderado</string>
     <string name="notificacion_titulo_alerta_calidad_alto">Calidad del aire mala</string>
     <string name="notificacion_contenido_alerta_calidad">Estas expuesto a gases dañinos para tu salud</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_escaner">Escanear</string>
+    <string name="title_mapa">Mapa</string>
+    <string name="title_estadisticas">Estadísticas</string>
+    <string name="title_perfil">Perfil</string>
 </resources>
