@@ -38,7 +38,7 @@ public class AutentificacionActivity extends AppCompatActivity implements Navega
                 R.id.navigation_login, R.id.navigation_register)
                 .build();
         navController = Navigation.findNavController(this, R.id.nav_host_fragment_auth_activity);
-        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
+        //NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
 
 
     }

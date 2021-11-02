@@ -7,13 +7,27 @@
     android:layout_height="match_parent"
     tools:context=".ui.escaner.EscanerFragment">
 
-    <Button
-        android:id="@+id/botonEscanear"
+    <TextView
+        android:id="@+id/tituloDeActividadEscaner"
+        style="@style/TituloDeActivity"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="32dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="25dp"
+        android:layout_marginEnd="25dp"
+        android:text="Escáner"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/botonEscanear"
+        style="@style/BotonPrimario"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="25dp"
+        android:layout_marginEnd="25dp"
+        android:layout_marginBottom="25dp"
         android:tag="escanear"
         android:text="@string/escanear"
         app:layout_constraintBottom_toBottomOf="parent"
