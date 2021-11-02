@@ -13,7 +13,8 @@
         <activity
             android:name=".ui.autentificacion.AutentificacionActivity"
             android:exported="true"
-            android:label="@string/title_activity_autentificacion">
+            android:label="@string/title_activity_autentificacion"
+            android:theme="@style/Theme.BTLEAndroid2021.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -23,7 +24,8 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:label="@string/title_activity_main">
+            android:label="@string/title_activity_main"
+            android:theme="@style/Theme.BTLEAndroid2021.NoActionBar">
 
         </activity>
         <activity

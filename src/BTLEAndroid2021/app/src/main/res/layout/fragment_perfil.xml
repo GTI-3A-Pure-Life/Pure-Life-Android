@@ -7,16 +7,113 @@
     tools:context=".ui.perfil.PerfilFragment">
 
     <TextView
-        android:id="@+id/text_perfil"
-        android:layout_width="match_parent"
+        android:id="@+id/tituloDeActividadPerfil"
+        style="@style/TituloDeActivity"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:textAlignment="center"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="25dp"
+        android:text="Perfil"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textViewNombre"
+        style="@style/Texto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:text="Nombre: "
+        app:layout_constraintStart_toStartOf="@+id/tituloDeActividadPerfil"
+        app:layout_constraintTop_toBottomOf="@+id/tituloDeActividadPerfil" />
+
+    <TextView
+        android:id="@+id/textViewCorreo"
+        style="@style/Texto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:text="Correo: "
+        app:layout_constraintStart_toStartOf="@+id/textViewNombre"
+        app:layout_constraintTop_toBottomOf="@+id/textViewNombre" />
+
+    <TextView
+        android:id="@+id/textViewUbiCasa"
+        style="@style/Texto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:text="Ubicación casa: "
+        app:layout_constraintStart_toStartOf="@+id/textViewCorreo"
+        app:layout_constraintTop_toBottomOf="@+id/textViewCorreo" />
+
+    <TextView
+        android:id="@+id/textViewUbiTrabajo"
+        style="@style/Texto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:text="Ubicación trabajo: "
+        app:layout_constraintStart_toStartOf="@+id/textViewUbiCasa"
+        app:layout_constraintTop_toBottomOf="@+id/textViewUbiCasa" />
+
+    <Button
+        android:id="@+id/button3"
+        style="@style/BotonPrimario"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="25dp"
+        android:layout_marginEnd="25dp"
+        android:layout_marginBottom="25dp"
+        android:text="Cerrar sesión"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/textPerfil"
+        style="@style/Texto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        app:layout_constraintStart_toEndOf="@+id/textViewNombre"
+        app:layout_constraintTop_toTopOf="@+id/textViewNombre" />
+
+    <TextView
+        android:id="@+id/textCorreo"
+        style="@style/Texto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        app:layout_constraintStart_toEndOf="@+id/textViewCorreo"
+        app:layout_constraintTop_toTopOf="@+id/textViewCorreo" />
+
+    <TextView
+        android:id="@+id/textUbiCasa"
+        style="@style/Texto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        app:layout_constraintStart_toEndOf="@+id/textViewUbiCasa"
+        app:layout_constraintTop_toTopOf="@+id/textViewUbiCasa" />
+
+    <TextView
+        android:id="@+id/textubiTrabajo"
+        style="@style/Texto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        app:layout_constraintStart_toEndOf="@+id/textViewUbiTrabajo"
+        app:layout_constraintTop_toTopOf="@+id/textViewUbiTrabajo" />
+
+    <ImageButton
+        android:id="@+id/botonPerfil"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="25dp"
+        android:src="@drawable/ic_baseline_settings_24"
+        app:layout_constraintBottom_toBottomOf="@+id/tituloDeActividadPerfil"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/tituloDeActividadPerfil" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

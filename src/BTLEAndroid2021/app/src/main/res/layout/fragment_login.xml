@@ -7,24 +7,40 @@
     android:layout_height="match_parent"
     tools:context=".ui.autentificacion.Login.LoginFragment">
 
+    <TextView
+        android:id="@+id/tituloDeActividadLogin"
+        style="@style/TituloDeActivity"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="25dp"
+        android:layout_marginEnd="25dp"
+        android:text="Inicia sesión"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
         android:id="@+id/editTextCorreo"
+        style="@style/EditTextPrimario"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
         android:autofillHints="emailAddress"
         android:ems="10"
         android:hint="@string/correo"
         android:inputType="textEmailAddress"
         android:minHeight="48dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toEndOf="@+id/tituloDeActividadLogin"
+        app:layout_constraintStart_toStartOf="@+id/tituloDeActividadLogin"
+        app:layout_constraintTop_toBottomOf="@+id/tituloDeActividadLogin" />
 
     <Button
         android:id="@+id/botonLogin"
+        style="@style/BotonPrimario"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
         android:text="@string/iniciar_sesion"
         app:layout_constraintEnd_toEndOf="@+id/editTextContrasenyaLogin"
         app:layout_constraintStart_toStartOf="@+id/editTextContrasenyaLogin"
@@ -32,16 +48,19 @@
 
     <TextView
         android:id="@+id/textViewError"
+        style="@style/TextoDeError"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text=""
-        app:layout_constraintStart_toStartOf="@+id/botonCrearCuenta"
+        app:layout_constraintStart_toStartOf="@+id/botonNoTienesCuenta"
         app:layout_constraintTop_toBottomOf="@+id/editTextContrasenyaLogin" />
 
     <EditText
         android:id="@+id/editTextContrasenyaLogin"
+        style="@style/EditTextPrimario"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
         android:autofillHints="password"
         android:ems="10"
         android:hint="@string/Contrasenya"
@@ -54,10 +73,11 @@
 
     <Button
         android:id="@+id/botonNoTienesCuenta"
+        style="@style/BotonSinBordes"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
         android:text="@string/no_tienes_cuenta"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/botonLogin"
         app:layout_constraintTop_toBottomOf="@+id/botonLogin" />
 
@@ -70,5 +90,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/editTextCorreo" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
