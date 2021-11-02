@@ -8,17 +8,17 @@
 
     <item
         android:id="@+id/navigation_mapa"
-        android:icon="@drawable/ic_dashboard_black_24dp"
+        android:icon="@drawable/ic_baseline_map_24"
         android:title="@string/title_mapa" />
 
     <item
         android:id="@+id/navigation_estadisticas"
-        android:icon="@drawable/ic_notifications_black_24dp"
+        android:icon="@drawable/ic_baseline_equalizer_24"
         android:title="@string/title_estadisticas" />
 
     <item
         android:id="@+id/navigation_perfil"
-        android:icon="@drawable/ic_notifications_black_24dp"
+        android:icon="@drawable/ic_baseline_person_24"
         android:title="@string/title_perfil" />
 
 </menu>

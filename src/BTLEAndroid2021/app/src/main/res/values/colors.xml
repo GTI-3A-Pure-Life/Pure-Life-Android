@@ -9,4 +9,6 @@
     <color name="rojo_e23636">#e23636</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="amarillo_ffc300">#ffc300</color>
+    <color name="rojo_e43939">#e43939</color>
 </resources>

@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -54,13 +55,13 @@ public class EscanerFragment extends Fragment {
 
                 switch (nivelPeligro){
                     case LEVE:
-                        binding.fondoEscaner.setBackgroundColor(Color.GREEN);
+                        binding.fondoEscaner.setBackgroundColor(ResourcesCompat.getColor(getResources(),R.color.verde_008a62,null));
                         break;
                     case MODERADO:
-                        binding.fondoEscaner.setBackgroundColor(Color.YELLOW);
+                        binding.fondoEscaner.setBackgroundColor(ResourcesCompat.getColor(getResources(),R.color.amarillo_ffc300,null));
                         break;
                     case ALTO:
-                        binding.fondoEscaner.setBackgroundColor(Color.RED);
+                        binding.fondoEscaner.setBackgroundColor(ResourcesCompat.getColor(getResources(),R.color.rojo_e43939,null));
                         break;
                 }
 

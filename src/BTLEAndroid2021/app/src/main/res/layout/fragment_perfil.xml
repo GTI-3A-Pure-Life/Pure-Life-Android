@@ -71,7 +71,7 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
-        android:id="@+id/textPerfil"
+        android:id="@+id/textNombre"
         style="@style/Texto"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -108,6 +108,7 @@
 
     <ImageButton
         android:id="@+id/botonPerfil"
+        style="@style/BotonEnImagen"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="25dp"
