@@ -33,6 +33,7 @@ public class MapaFragment extends Fragment {
         binding = FragmentMapaBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
+        /*
         final TextView textView = binding.textMapa;
         mapaViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
@@ -40,6 +41,7 @@ public class MapaFragment extends Fragment {
                 textView.setText(s);
             }
         });
+         */
         return root;
     }
 
