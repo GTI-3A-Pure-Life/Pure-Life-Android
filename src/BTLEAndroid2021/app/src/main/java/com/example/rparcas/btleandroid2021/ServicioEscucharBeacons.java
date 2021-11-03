@@ -1,5 +1,6 @@
 package com.example.rparcas.btleandroid2021;
 
+import android.app.Activity;
 import android.app.IntentService;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -10,14 +11,21 @@ import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanResult;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
 import android.util.Log;
 
 import com.example.rparcas.btleandroid2021.logica.Logica;
 import com.example.rparcas.btleandroid2021.logica.ManejadorNotificaciones;
 import com.example.rparcas.btleandroid2021.logica.SharedPreferencesHelper;
+import com.example.rparcas.btleandroid2021.modelo.InformeCalidadAire;
 import com.example.rparcas.btleandroid2021.modelo.Medicion;
 import com.example.rparcas.btleandroid2021.modelo.Posicion;
 import com.example.rparcas.btleandroid2021.modelo.TramaIBeacon;
+import com.example.rparcas.btleandroid2021.ui.autentificacion.NavegacionAutentificacionListener;
+import com.example.rparcas.btleandroid2021.ui.escaner.EscanerFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,6 +61,8 @@ public class ServicioEscucharBeacons extends IntentService {
 
     private static List<Medicion> medicionesAEnviar;
 
+    private Messenger messageHandler;
+
     // esta variable sirve para que no notifique cada vez que llegue una medicion nociva
     // sino que cuando entres en una zona nociva te avise y hasta que no salgas y vuelvas a entrar
     // te avise
@@ -69,29 +79,9 @@ public class ServicioEscucharBeacons extends IntentService {
      * Constructor de la clase ServicioEscucharBeacons
      * constructor()
      */
-    public ServicioEscucharBeacons( ) {
+    public ServicioEscucharBeacons() {
         super("HelloIntentService");
 
-        manejadorNotifNivelPeligro = new ManejadorNotificaciones(
-                "alertas-calidad-aire",
-                "Alertas del nivel de peligro de la calidad de aire",
-                "Recibirás las alertas cuando entres en una zona donde la calidad del aire no es buena para tu salud",
-                NotificationManager.IMPORTANCE_HIGH,
-                android.R.drawable.stat_notify_chat,
-                this
-        );
-
-        manejadorNotifNivelPeligro = new ManejadorNotificaciones(
-                "alertas-estado-nodo",
-                "Alertas del estado del nodo",
-                "Recibirás las alertas cuando el nodo este inactivo o tenga poca batería",
-                NotificationManager.IMPORTANCE_HIGH,
-                android.R.drawable.stat_notify_chat,
-                this
-        );
-
-        estoyEnZonaPeligrosa = false;
-        Log.d(ETIQUETA_LOG, " ServicioEscucharBeacons.constructor: termina");
     }
 
 
@@ -175,11 +165,15 @@ public class ServicioEscucharBeacons extends IntentService {
                 Thread.sleep(tiempoDeEspera);
                 Log.d(ETIQUETA_LOG, "ServicioEscucharBeacons.onHandleIntent: hay "+medicionesAEnviar.size() + " mediciones");
 
-                valor += 10;
-                valor = valor > 100 ? 0 : valor;
-                Log.d(ETIQUETA_LOG,"VOY A COMPROBAR: Valor: "+valor);
+                valor += 20;
+                valor = valor > 70 ? 0 : valor;
+               
                 Medicion m = new Medicion(valor,1,"1",new Posicion(1,1), Medicion.TipoMedicion.CO);
                 comprobarNivelPeligroGas(m);
+
+
+                enviarMensajeALaHostActivity(m.getNivelPeligro());
+
                 /*if(medicionesAEnviar.size() >= topeMesurasParaEnviar){
 
                     if(hayConexion){
@@ -219,6 +213,26 @@ public class ServicioEscucharBeacons extends IntentService {
 
     }
 
+
+    // --------------------------------------------------------------
+    // --------------------------------------------------------------
+    /**
+     * @author Ruben Pardo Casanova
+     * Metodo para enviarle mensajes a la activity que arranco el servico
+     * @param mensaje el mensaje a enviar
+     */
+    private void enviarMensajeALaHostActivity(Object mensaje) {
+
+        Message message = Message.obtain();
+        message.obj = mensaje;
+
+        try {
+            messageHandler.send(message);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
     // --------------------------------------------------------------
     // --------------------------------------------------------------
 
@@ -238,7 +252,36 @@ public class ServicioEscucharBeacons extends IntentService {
         medicionesAEnviar = new ArrayList<>();
 
         this.seguir = true;
+
+        // creamos los dos canales de notificaciones
+        manejadorNotifNivelPeligro = new ManejadorNotificaciones(
+                "alertas-calidad-aire",
+                "Alertas del nivel de peligro de la calidad de aire",
+                "Recibirás las alertas cuando entres en una zona donde la calidad del aire no es buena para tu salud",
+                NotificationManager.IMPORTANCE_HIGH,
+                android.R.drawable.stat_notify_chat,
+                this
+        );
+
+        manejadorNotifEstadoNodo = new ManejadorNotificaciones(
+                "alertas-estado-nodo",
+                "Alertas del estado del nodo",
+                "Recibirás las alertas cuando el nodo este inactivo o tenga poca batería",
+                NotificationManager.IMPORTANCE_HIGH,
+                android.R.drawable.stat_notify_chat,
+                this
+        );
+
+        // obtenemos el canal de mensajeria con la actividad que arranco el servicio
+        Bundle extras = intent.getExtras();
+        messageHandler = (Messenger) extras.get("MESSENGER");
+
+
+        estoyEnZonaPeligrosa = false;
+        Log.d(ETIQUETA_LOG, " ServicioEscucharBeacons.constructor: termina");
     }
+
+
 
     // --------------------------------------------------------------
     // --------------------------------------------------------------

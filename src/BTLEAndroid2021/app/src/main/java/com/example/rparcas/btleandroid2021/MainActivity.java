@@ -1,8 +1,16 @@
 package com.example.rparcas.btleandroid2021;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 
+import com.example.rparcas.btleandroid2021.BroadCastReceiver.ConexionChangeReceiver;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -23,6 +31,11 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
     private NavController navController;
 
+    private BroadcastReceiver conexionBroadcast;
+
+    // ---------------------------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,6 +53,21 @@ public class MainActivity extends AppCompatActivity {
         navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
         //NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
+
+
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        inicializarBroadcastCambioConexion();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterNetworkChanges();
     }
 
     @Override
@@ -51,4 +79,57 @@ public class MainActivity extends AppCompatActivity {
             super.onBackPressed();
         }
     }
+
+
+    // --------------------------------------------------------------
+    // --------------------------------------------------------------
+
+    /**
+     * Registrar el broadcast receiver ConexionChangeReciver
+     */
+    private void inicializarBroadcastCambioConexion() {
+
+        conexionBroadcast = new ConexionChangeReceiver();
+
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        filter.addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED);
+        this.registerReceiver(conexionBroadcast, filter);
+    }
+
+    // --------------------------------------------------------------
+    // --------------------------------------------------------------
+
+    /**
+     * Metodo que se llama desde el broadcast receiver ConexionChangeReceiver
+     *
+     */
+    public static void onConexionChange(Context context){
+
+        ServicioEscucharBeacons.onConexionChange(Utilidades.hayConexion(context), context);
+
+    }
+
+    // --------------------------------------------------------------
+    // --------------------------------------------------------------
+
+    /**
+     * Metodo para des registrar el broadcast ConexionChangeReceiver
+     */
+    protected void unregisterNetworkChanges() {
+        try {
+            unregisterReceiver(conexionBroadcast);
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
+    }
+    // --------------------------------------------------------------
+    // --------------------------------------------------------------
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        unregisterNetworkChanges();
+    }
+
+
 }

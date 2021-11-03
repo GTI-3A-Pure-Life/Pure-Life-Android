@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.os.Build;
+import android.util.Log;
 import android.widget.RemoteViews;
 import com.example.rparcas.btleandroid2021.R;
 import androidx.core.app.NotificationCompat;
@@ -41,9 +42,12 @@ public class ManejadorNotificaciones extends ContextWrapper {
      */
     public ManejadorNotificaciones(String canal_id, String nombre_canal, String descripcion_canal,
                                    int importancia, int icono_notificacion,Context context) {
-        super(context);
 
-        manejadorNotificaciones = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        super(context);
+        Log.d("PRUEBA", "ManejadorNotificaciones: context "+context);
+        Log.d("PRUEBA", "ManejadorNotificaciones: this "+this);
+        Log.d("PRUEBA", "ManejadorNotificaciones: base context "+getBaseContext());
+        manejadorNotificaciones = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
         this.icono_notificacion = icono_notificacion;
         this.id_canal = canal_id;
 

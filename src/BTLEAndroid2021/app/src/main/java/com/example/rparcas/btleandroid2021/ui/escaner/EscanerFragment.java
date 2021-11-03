@@ -6,8 +6,11 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.os.Messenger;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,11 +24,16 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+
+import com.example.rparcas.btleandroid2021.MainActivityTEMP;
 import com.example.rparcas.btleandroid2021.R;
+import com.example.rparcas.btleandroid2021.ServicioEscucharBeacons;
 import com.example.rparcas.btleandroid2021.databinding.FragmentEscanerBinding;
 import com.example.rparcas.btleandroid2021.modelo.Medicion;
 
 import com.blikoon.qrcodescanner.QrCodeActivity;
+
+import java.util.ArrayList;
 
 
 /**
@@ -36,15 +44,17 @@ import com.blikoon.qrcodescanner.QrCodeActivity;
  */
 public class EscanerFragment extends Fragment {
 
-    private EscanerViewModel escanerViewModel;
+    private static EscanerViewModel escanerViewModel;
     private FragmentEscanerBinding binding; // este objeto hace referncia a un xml layout, no es una clase creada
 
     //codigos de peticion de permisos
     private static final int REQUEST_CODE_QR_SCAN = 101;
     private final int REQUEST_CODE_CAMERA = 123;
 
-    private static String prefijo = "GTI-3A-";
+    private final String PREFIJO = "GTI-3A-";
+    private Intent elIntentDelServicio = null;
 
+    public Handler messageHandler = new MessageHandler();
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -67,7 +77,7 @@ public class EscanerFragment extends Fragment {
         escanerViewModel.getNivelPeligro().observe(getViewLifecycleOwner(), new Observer<Medicion.NivelPeligro>() {
             @Override
             public void onChanged(@Nullable Medicion.NivelPeligro nivelPeligro) {
-
+                Log.d("PRUEBA", "onChanged: observ: "+nivelPeligro);
                 switch (nivelPeligro){
                     case LEVE:
                         binding.fondoEscaner.setBackgroundColor(ResourcesCompat.getColor(getResources(),R.color.verde_008a62,null));
@@ -83,16 +93,17 @@ public class EscanerFragment extends Fragment {
             }
         });
 
+    }
 
-        /*escanerViewModel.getResultadoEscaner().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
-            @Override
-            public void onChanged(@Nullable Boolean lectura) {
-                if(lectura)
-                    Toast.makeText(getContext(), "Leído: " + escanerViewModel.getNombreDispositivo(), Toast.LENGTH_SHORT).show();
-                else
-                    Toast.makeText(getContext(), "Código QR no valido", Toast.LENGTH_SHORT).show();
-            }
-        });*/
+    //----------------------------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------
+    @Override
+    public void onResume() {
+        super.onResume();
+        // necesitamos refrescar el valor cuando volvemos a la activity
+        if(escanerViewModel.getNivelPeligro().getValue()!=null){
+            escanerViewModel.setNivelPeligro(escanerViewModel.getNivelPeligro().getValue());
+        }
 
     }
 
@@ -104,7 +115,18 @@ public class EscanerFragment extends Fragment {
         binding.botonEscanear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if(v.getTag().equals("escanear")){
                     empezarAEscanear();
+
+                }else if(v.getTag().equals("desconectar")){
+
+                    // TODO parar servicio
+                    v.setTag("escanear");
+                    binding.botonEscanear.setText(getString(R.string.escanear));
+                    binding.tituloDeActividadEscaner.setText(getString(R.string.escanear));
+                }
+
             }
         });
     }
@@ -115,37 +137,87 @@ public class EscanerFragment extends Fragment {
      * @version 02/11/2021
      */
     private void empezarAEscanear() {
-        if(ActivityCompat.checkSelfPermission(getActivity().getBaseContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+
+
+        // permisos de camara y bluetooth
+        if(ActivityCompat.checkSelfPermission(getActivity().getBaseContext(),
+                Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(getActivity().getBaseContext(),
+                        Manifest.permission.BLUETOOTH) == PackageManager.PERMISSION_GRANTED) {
+
             //lanzamos actividad cuando hacemos click en el boton
             Intent i = new Intent(getActivity(), QrCodeActivity.class);
             startActivityForResult(i, REQUEST_CODE_QR_SCAN);
         } else {
-            solicitarPermiso(Manifest.permission.CAMERA, "Sin el permiso de cámara no se puede acceder a la lectura de código QR",
+            solicitarPermiso(new String[] {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.CAMERA},
+                    "Sin el permiso de cámara no se puede acceder a la lectura de código QR",
                     this.getActivity(), REQUEST_CODE_CAMERA);
         }
     }
 
     /**
+     * Cuando en el activity for result se ejecute y vea que la lectura es buena empezamos el servicio
+     * de leer beacons
+     * @author Ruben Pardo Casanova
+     * @version 03/11/2021
+     */
+    private void finalizarEscanerQR() {
+        binding.botonEscanear.setTag("desconectar");
+        binding.botonEscanear.setText(getString(R.string.desconectar));
+        binding.tituloDeActividadEscaner.setText(getString(R.string.calidad_del_aire));
+        arrancarServicio();
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------
+    private void arrancarServicio( ) {
+
+
+        if ( this.elIntentDelServicio != null ) {
+            // ya estaba arrancado
+
+            return;
+        }
+
+        this.elIntentDelServicio = new Intent(getActivity(), ServicioEscucharBeacons.class);
+        this.elIntentDelServicio.putExtra(MainActivityTEMP.NOMBRE_DISPOSITIVO_A_ESCUCHAR_INTENT,escanerViewModel.getNombreDispositivo());
+        this.elIntentDelServicio.putExtra("tiempoDeEspera", (long) 5000);
+        this.elIntentDelServicio.putExtra("MESSENGER", new Messenger(messageHandler)); // le pasamos el messenger para que se pueda comunicar con la activity
+        getActivity().startService( this.elIntentDelServicio );
+
+    } // ()
+
+
+    /**
      * Metodo para pedir el permiso de cámara
      * @author Lorena Florescu
      * @version 02/11/2021
-     * @param permiso el nombre del permiso que queremos
+     * @param permisos el nombre de los permisos que queremos
      * @param justificacion justificacion que usaremos para mostrar por pantalla al usuario
      * @param activity la actividad en la que se produce
      * @param requestCode codigo para identificar la peticion
      */
-    public static void solicitarPermiso(final String permiso, String justificacion, final Activity activity, final int requestCode){
+    public void solicitarPermiso(final String[] permisos, String justificacion, final Activity activity, final int requestCode){
 
-        if(ActivityCompat.shouldShowRequestPermissionRationale(activity,permiso)) {
+        boolean deboPreguntarPermisos = false;
+        for (String permiso: permisos) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(activity, permiso)) {
+                deboPreguntarPermisos = true;
+                break;
+            }
+
+        }
+
+        if(deboPreguntarPermisos){
             new AlertDialog.Builder(activity).setTitle("Solicitud de permiso")
                     .setMessage(justificacion).setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
-                    ActivityCompat.requestPermissions(activity,new String[]{permiso}, requestCode);
+                    ActivityCompat.requestPermissions(activity,permisos, requestCode);
                 }
             }).show();
         } else{
-            ActivityCompat.requestPermissions(activity,new String[]{permiso}, requestCode);
+            ActivityCompat.requestPermissions(activity,permisos, requestCode);
         }
     }
 
@@ -192,8 +264,9 @@ public class EscanerFragment extends Fragment {
             if (data != null) {
                 String lectura = data.getStringExtra("com.blikoon.qrcodescanner.got_qr_scan_relult");
                 //escanerViewModel.arrancarServicio(lectura);
-                if(!lectura.equals(null) &&lectura.indexOf(prefijo)!= -1) {
-                    Toast.makeText(getContext(), "Leído: " + lectura, Toast.LENGTH_SHORT).show();
+                if(!lectura.equals(null) &&lectura.indexOf(PREFIJO)!= -1) {
+                    escanerViewModel.setNombreDispositivo(lectura);
+                    finalizarEscanerQR();
                 }
                 else
                     Toast.makeText(getContext(), "Código QR no valido", Toast.LENGTH_SHORT).show();
@@ -203,9 +276,27 @@ public class EscanerFragment extends Fragment {
 
     }
 
+
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
     }
+
+
+    /**
+     * MessageHanlder.java
+     * Clase para comunicar el servicio con la activity
+     * @author Ruben Pardo Casanova
+     * 03/11/2021
+     */
+    public static class MessageHandler extends Handler {
+
+        @Override
+        public void handleMessage(Message message) {
+            escanerViewModel.setNivelPeligro((Medicion.NivelPeligro) message.obj);
+        }
+    }
+
 }

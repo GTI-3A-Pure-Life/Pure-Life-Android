@@ -49,4 +49,5 @@
     <string name="no_tienes_cuenta">¿No tienes cuenta? Créate una ahora.</string>
     <string name="escanear">Escanear</string>
     <string name="desconectar">Desconectar</string>
+    <string name="calidad_del_aire">Calidad del aire</string>
 </resources>
