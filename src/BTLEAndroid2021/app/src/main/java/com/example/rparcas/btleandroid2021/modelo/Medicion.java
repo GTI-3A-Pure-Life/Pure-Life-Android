@@ -121,63 +121,83 @@ public class Medicion {
      * @return valor de nivel de peligros del enum NivelPeligro (LEVE/MODERADO/ALTO/MUY_ALTO)
      */
     private NivelPeligro calcularNivelPeligroGas(TipoMedicion tipoMedicion, double valor) {
-        // TODO cambiar a los valores reales
+        // valores en ppm
         NivelPeligro nivelPeligro;
         switch (tipoMedicion){
             case CO:
-                if(valor>=0 && valor<30){
+                if(valor>=0 && valor<5){
                     //leve
                     nivelPeligro = NivelPeligro.LEVE;
                 }
-                else if(valor>=30 && valor<50){
+                else if(valor>=5 && valor<13){
                     // moderado
                     nivelPeligro = NivelPeligro.MODERADO;
                 }
-                else {
+                else if(valor>=13 && valor<16){
                     // alto
                     nivelPeligro = NivelPeligro.ALTO;
+                }else{
+                    nivelPeligro = NivelPeligro.MUY_ALTO;
                 }
                 break;
             case O3:
-                if(valor>=0 && valor<80){
+                // leve 0-70, moderado 70-120, grave 120-180, muy grave 180 ug/m3
+                // 1ppm - 2 ug/m3
+                if(valor>=0 && valor<35){
                     //leve
                     nivelPeligro = NivelPeligro.LEVE;
                 }
-                else if(valor>=80 && valor<110){
+                else if(valor>=35 && valor<60){
                     // moderado
                     nivelPeligro = NivelPeligro.MODERADO;
                 }
+                else if(valor>=60 && valor<90){
+                    // moderado
+                    nivelPeligro = NivelPeligro.ALTO;
+                }
                 else{
                     // alto
-                    nivelPeligro = NivelPeligro.ALTO;
+                    nivelPeligro = NivelPeligro.MUY_ALTO;
                 }
                 break;
             case NO2:
-                if(valor>=0 && valor<120){
+                // leve 0-100, moderado 100-140, grave 140-200, muy grave 200 ug/m3
+                // 1ppm - 1.88 ug/m3
+                if(valor>=0 && valor<53){
                     //leve
                     nivelPeligro = NivelPeligro.LEVE;
                 }
-                else if(valor>=120 && valor<230){
+                else if(valor>=53 && valor<74){
                     // moderado
                     nivelPeligro = NivelPeligro.MODERADO;
                 }
+                else if(valor>=74 && valor<106){
+                    // moderado
+                    nivelPeligro = NivelPeligro.ALTO;
+                }
                 else{
                     // alto
-                    nivelPeligro = NivelPeligro.ALTO;
+                    nivelPeligro = NivelPeligro.MUY_ALTO;
                 }
                 break;
             case SO2:
-                if(valor>=0 && valor<90){
+                // leve 0-150, moderado 150-250, grave 250-350, muy grave 350 ug/m3
+                // 1ppm - 2.62 ug/m3
+                if(valor>=0 && valor<57){
                     //leve
                     nivelPeligro = NivelPeligro.LEVE;
                 }
-                else if(valor>=90 && valor<150){
+                else if(valor>=57 && valor<95){
                     // moderado
                     nivelPeligro = NivelPeligro.MODERADO;
                 }
+                else if(valor>=95 && valor<134){
+                    // moderado
+                    nivelPeligro = NivelPeligro.ALTO;
+                }
                 else{
                     // alto
-                    nivelPeligro = NivelPeligro.ALTO;
+                    nivelPeligro = NivelPeligro.MUY_ALTO;
                 }
                 break;
 
@@ -342,7 +362,7 @@ public class Medicion {
      * 26/10/2021
      */
     public enum NivelPeligro{
-        LEVE,MODERADO,ALTO
+        LEVE,MODERADO,ALTO,MUY_ALTO
     } // class
     //---------------------------------------------------------------------------------------------
     //---------------------------------------------------------------------------------------------

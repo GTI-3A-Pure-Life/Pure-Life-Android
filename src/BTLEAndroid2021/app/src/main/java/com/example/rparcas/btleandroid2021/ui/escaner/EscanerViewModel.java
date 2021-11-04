@@ -16,7 +16,7 @@ import androidx.lifecycle.ViewModel;
  */
 public class EscanerViewModel extends ViewModel {
 
-    private static MutableLiveData<Medicion.NivelPeligro> nivelPeligro;
+    private static MutableLiveData<Medicion> medicionMasPeligrosa;
     private  static MutableLiveData<Boolean> estoyEscaneando;
     private String nombreDispositivo = "";
     //prefijo que usaremos en el nombre del sensor para identificar nuestros sensores
@@ -29,10 +29,10 @@ public class EscanerViewModel extends ViewModel {
          * inicialzar el nivel de peligro a este para que la vista
          * se pinte con el ultimo
          */
-        if(nivelPeligro !=null && estoyEscaneando.getValue()){
-            nivelPeligro = new MutableLiveData<>(nivelPeligro.getValue());
+        if(medicionMasPeligrosa !=null && estoyEscaneando.getValue()){
+            medicionMasPeligrosa = new MutableLiveData<>(medicionMasPeligrosa.getValue());
         }else{
-            nivelPeligro = new MutableLiveData<>();
+            medicionMasPeligrosa = new MutableLiveData<>();
         }
 
         if(estoyEscaneando !=null){
@@ -43,12 +43,12 @@ public class EscanerViewModel extends ViewModel {
 
     }
 
-    public LiveData<Medicion.NivelPeligro> getNivelPeligro() {
-        return nivelPeligro;
+    public LiveData<Medicion> getMedicionMasPeligrosaPeligro() {
+        return medicionMasPeligrosa;
     }
-    public void setNivelPeligro(Medicion.NivelPeligro nivel) {
+    public void setMedicionMasPeligrosaPeligro(Medicion nivel) {
         Log.d("PRUEBA", "setNivelPeligro: buenas tardes");
-        nivelPeligro.setValue(nivel);
+        medicionMasPeligrosa.setValue(nivel);
     }
 
     //--------------------------------------------------------------------------------------

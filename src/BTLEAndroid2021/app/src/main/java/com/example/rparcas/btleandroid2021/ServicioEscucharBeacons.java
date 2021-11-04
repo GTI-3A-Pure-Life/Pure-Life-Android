@@ -43,7 +43,9 @@ public class ServicioEscucharBeacons extends IntentService {
     // ---------------------------------------------------------------------------------------------
     private static final String ETIQUETA_LOG = ">>>>";
 
-    private long tiempoDeEspera = 50;
+    private long tiempoDeEspera = 50; // ms
+    private int tiempoDeEsperaINT = 50; // ms
+    private int tiempoDeEsperaAveria = 300000; // ms
 
     private final int topeMesurasParaEnviar = 5; // numero de mediciones que ira en una peticion
 
@@ -76,10 +78,14 @@ public class ServicioEscucharBeacons extends IntentService {
     ManejadorNotificaciones manejadorNotifNivelPeligro;
     ManejadorNotificaciones manejadorNotifEstadoNodo;
 
+    // notificar al usuario y al servidor sobre la averia una vez por conexion
+    private boolean seHaEnviadoNotificacionAveria = false;
+    private boolean seHaEnviadoNotificacionNoAveria = false;
+
     // ---------------------------------------------------------------------------------------------
     // ---------------------------------------------------------------------------------------------
     // variables para controlar el nivel de peligro mas altos
-    private Medicion[] medicionesPorTipoUltimasRegistradas = new Medicion[]{
+    private final Medicion[] medicionesPorTipoUltimasRegistradas = new Medicion[]{
             new Medicion(Medicion.TipoMedicion.CO),
             new Medicion(Medicion.TipoMedicion.NO2),
             new Medicion(Medicion.TipoMedicion.SO2),
@@ -126,7 +132,12 @@ public class ServicioEscucharBeacons extends IntentService {
                 break;
 
         }
-
+        Log.d("MEDICION", "calcularMedicionMasPeligrosa: mimsmo tipo");
+        for(Medicion m : medicionesPorTipoUltimasRegistradas){
+            Log.d("MEDICION", m.getTipoMedicion()+": "+
+                    m.getValor()+" - "+m.getNivelPeligro());
+        }
+        Log.d("MEDICION", "----------------------");
 
         // al principio no hay ninguna mas alta
         if(medicionMasAltaRegistrada == null){
@@ -135,7 +146,6 @@ public class ServicioEscucharBeacons extends IntentService {
 
             // si llega una medicion del mismo tipo
             if(mNueva.getTipoMedicion() == medicionMasAltaRegistrada.getTipoMedicion()){
-                Log.d("MEDICION", "calcularMedicionMasPeligrosa: mimsmo tipo");
                 // si es mas alta
                 if(mNueva.getValor() > medicionMasAltaRegistrada.getValor()){
                     medicionMasAltaRegistrada = mNueva;
@@ -161,7 +171,7 @@ public class ServicioEscucharBeacons extends IntentService {
                 }
             }
         }
-        Log.d("MEDICION", "calcularMedicionMasPeligrosa: MEDICION: "+mNueva.getSensorID());
+
         Log.d("MEDICION", "MAS ALTA: "+medicionMasAltaRegistrada.getTipoMedicion()+": "+
                 medicionMasAltaRegistrada.getValor()+" - "+medicionMasAltaRegistrada.getNivelPeligro());
 
@@ -218,7 +228,8 @@ public class ServicioEscucharBeacons extends IntentService {
         // esto lo ejecuta un WORKER THREAD !
 
         long contador = 1;
-        notificarAveriado("GTI-3A-1",true);
+        int tiempoRestanteParaAveria =  tiempoDeEsperaAveria; // reinciamos
+
         Log.d(ETIQUETA_LOG, " ServicioEscucharBeacons.onHandleIntent: empieza : thread=" + Thread.currentThread().getId() );
 
         try {
@@ -226,9 +237,14 @@ public class ServicioEscucharBeacons extends IntentService {
 
             while ( this.seguir ) {
                 Thread.sleep(tiempoDeEspera);
+                // comprobar averia del sensor
+                tiempoRestanteParaAveria -= tiempoDeEsperaINT;
+                comprobarAveriaSensor(tiempoRestanteParaAveria);
+
+
                 Log.d(ETIQUETA_LOG, "ServicioEscucharBeacons.onHandleIntent: hay "+medicionesAEnviar.size() + " mediciones");
 
-
+                // control para enviar mediciones por lotes
                 if(medicionesAEnviar.size() >= topeMesurasParaEnviar){
 
                     if(hayConexion){
@@ -265,6 +281,40 @@ public class ServicioEscucharBeacons extends IntentService {
         }
 
         Log.d(ETIQUETA_LOG, " ServicioEscucharBeacons.onHandleItent: termina");
+
+    }
+
+    // --------------------------------------------------------------
+    // --------------------------------------------------------------
+    /**
+     * N -> comrpobarAveriaSensor()
+     * si el tiempo restante es 0 envia notificacion y guarda el registro en la bd
+     * @param tiempoRestanteParaAveria tiempo restante
+     */
+    private void comprobarAveriaSensor(int tiempoRestanteParaAveria) {
+
+        // comprobar averia
+
+        // si hay medicioens y no se ha notificado, notificar que el sensor esta OK
+        if(!medicionesAEnviar.isEmpty() && !seHaEnviadoNotificacionNoAveria){
+
+            Log.d("AVERIA", " no hay averia ");
+            tiempoRestanteParaAveria = tiempoDeEsperaAveria;
+            seHaEnviadoNotificacionNoAveria = true;
+            notificarAveriado(dispositivoABuscar,false);
+
+        }else if(tiempoRestanteParaAveria <= 0 && !seHaEnviadoNotificacionAveria){
+            // si no hay medicioens, no se ha notificado y han pasado el tiempo para la averia
+            // notificar que el sensor esta averiado
+
+            Log.d("AVERIA", "hay averia ");
+            // hay una averia
+            seHaEnviadoNotificacionAveria = true;
+            notificarAveriado(dispositivoABuscar,true);
+
+            // esta averiado, paramos el servicio
+            enviarMensajeALaHostActivity(new RegistroAveriaSensor(dispositivoABuscar,true));
+        }
 
     }
 
@@ -366,6 +416,7 @@ public class ServicioEscucharBeacons extends IntentService {
 
 
     } // ()
+
     // ---------------------------------------------------------------------------------------------
     // ---------------------------------------------------------------------------------------------
     /**
@@ -404,10 +455,8 @@ public class ServicioEscucharBeacons extends IntentService {
             @Override
             public void onScanResult( int callbackType, ScanResult resultado ) {
                 super.onScanResult(callbackType, resultado);
-                Log.d(ETIQUETA_LOG, "  buscarEsteDispositivoBTLE(): onScanResult() ");
 
                 TramaIBeacon tib = scanResultToTramaIBeacon( resultado );
-
                 tratarTramaBeacon(tib,dispositivoBuscado);
             }
 
@@ -452,22 +501,24 @@ public class ServicioEscucharBeacons extends IntentService {
      * @param dispositivoBuscado el dispositivo que buscamos
      */
     private void tratarTramaBeacon(TramaIBeacon tib, String dispositivoBuscado) {
-        int major = Utilidades.bytesToInt( tib.getMajor()); //  tipo -1 = bateria, 1,2,3,4 gas
-        int minor = Utilidades.bytesToInt( tib.getMajor()); // valor
+        int major = Utilidades.bytesToInt( tib.getMajor()); //  tipo 1000 = bateria, 1,2,3,4 gas
+        int minor = Utilidades.bytesToInt( tib.getMinor()); // valor
         String dispositivo = Utilidades.bytesToString(tib.getUUID()).split("%")[0];
 
         if(dispositivo.equals(dispositivoBuscado)){
-            if(major == -1){
+            Log.d(ETIQUETA_LOG, "tratarTramaBeacon: nombre: " + dispositivo);
+            if(major == 1000){
+                Log.d(ETIQUETA_LOG, "tratarTramaBeacon: bateria: " + minor);
                 // tipo bateria
                 notificarBateria(dispositivo,minor);
             }else{
                 // medicion
                 Medicion m = new Medicion(minor,1,dispositivo,new Posicion(1,1),
-                        Medicion.TipoMedicion.getTipoById(minor));
+                        Medicion.TipoMedicion.getTipoById(major));
 
                 comprobarNivelPeligroGas(m); // lanzar notificacion
-                enviarMensajeALaHostActivity(calcularMedicionMasPeligrosa(m).getNivelPeligro()); // avisar a la activity host
-                comprobarNivelPeligroGas(m);
+                enviarMensajeALaHostActivity(calcularMedicionMasPeligrosa(m)); // avisar a la activity host
+
 
                 medicionesAEnviar.add(m);
 
@@ -490,6 +541,8 @@ public class ServicioEscucharBeacons extends IntentService {
         // siempre notificar al servidor
         Logica l = new Logica();
         l.guardarRegistroBateria(new RegistroBateriaSensor(dispositivo,valorBateria));
+
+        Log.d("BATERIA", "notificarBateria: BATERIA: "+valorBateria);
 
         // enviar notificacion si nivel por debajo de 20
         if(valorBateria<=RegistroBateriaSensor.NIVEL_BATERIA_BAJO){

@@ -2,12 +2,17 @@ package com.example.rparcas.btleandroid2021.ui.escaner;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.AlertDialog;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.util.Log;
@@ -29,9 +34,11 @@ import com.example.rparcas.btleandroid2021.MainActivityTEMP;
 import com.example.rparcas.btleandroid2021.R;
 import com.example.rparcas.btleandroid2021.ServicioEscucharBeacons;
 import com.example.rparcas.btleandroid2021.databinding.FragmentEscanerBinding;
+import com.example.rparcas.btleandroid2021.logica.SharedPreferencesHelper;
 import com.example.rparcas.btleandroid2021.modelo.Medicion;
 
 import com.blikoon.qrcodescanner.QrCodeActivity;
+import com.example.rparcas.btleandroid2021.modelo.RegistroAveriaSensor;
 
 import java.util.ArrayList;
 
@@ -52,17 +59,26 @@ public class EscanerFragment extends Fragment {
     private final int REQUEST_CODE_CAMERA = 123;
 
     private final String PREFIJO = "GTI-3A-";
-    private Intent elIntentDelServicio = null;
+    private static Intent elIntentDelServicio = null;
+
+    private boolean deboNotificarEnModerado = false;
 
     public Handler messageHandler = new MessageHandler();
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
+        Log.d("REFERENCIA", "onCreate: ");
         escanerViewModel =
                 new ViewModelProvider(this).get(EscanerViewModel.class);
 
+
+        Log.d("REFERENCUA", "onCreateView: "+ this.elIntentDelServicio);
         binding = FragmentEscanerBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
+
+       // SharedPreferencesHelper sharedPreferencesHelper = SharedPreferencesHelper.getInstance();
+        //deboNotificarEnModerado = sharedPreferencesHelper.isNivelAlertaSensible();
+
 
         initCallbacks();
         initObserversViewModel();
@@ -74,19 +90,35 @@ public class EscanerFragment extends Fragment {
     //----------------------------------------------------------------------------------------------
     private void initObserversViewModel() {
 
-        escanerViewModel.getNivelPeligro().observe(getViewLifecycleOwner(), new Observer<Medicion.NivelPeligro>() {
+        escanerViewModel.getMedicionMasPeligrosaPeligro().observe(getViewLifecycleOwner(), new Observer<Medicion>() {
             @Override
-            public void onChanged(@Nullable Medicion.NivelPeligro nivelPeligro) {
-                if(nivelPeligro!=null){
-                    switch (nivelPeligro){
+            public void onChanged(@Nullable Medicion medicionMasPeligrosa) {
+                if(medicionMasPeligrosa!=null && escanerViewModel.getEstoyEscaneando()!=null && escanerViewModel.getEstoyEscaneando().getValue()){
+                    binding.imageViewEscaner.setVisibility(View.VISIBLE);
+                    switch (medicionMasPeligrosa.getNivelPeligro()){
+
                         case LEVE:
-                            binding.fondoEscaner.setBackgroundColor(ResourcesCompat.getColor(getResources(),R.color.verde_008a62,null));
+                            binding.textViewInforMedicion.setText("");
+                            binding.contenedorImagenNivelPeligro.setCardBackgroundColor(ResourcesCompat.getColor(getResources(),R.color.verde_008a62,null));
+                            binding.imageViewEscaner.setImageResource(R.drawable.ic_nviel1);
                             break;
                         case MODERADO:
-                            binding.fondoEscaner.setBackgroundColor(ResourcesCompat.getColor(getResources(),R.color.amarillo_ffc300,null));
+                            String textoInfo = getString(R.string.estar_expuesto_a_nivel_moderado_de) + medicionMasPeligrosa.getTipoMedicion().getNombreGas();
+                            binding.textViewInforMedicion.setText(textoInfo);
+                            binding.contenedorImagenNivelPeligro.setCardBackgroundColor(ResourcesCompat.getColor(getResources(),R.color.amarillo_ffc300,null));
+                            binding.imageViewEscaner.setImageResource(R.drawable.ic_nivel2);
                             break;
                         case ALTO:
-                            binding.fondoEscaner.setBackgroundColor(ResourcesCompat.getColor(getResources(),R.color.rojo_e43939,null));
+                            String textoInfo2 = getString(R.string.estar_expuesto_a_nivel_alto_de) + medicionMasPeligrosa.getTipoMedicion().getNombreGas();
+                            binding.textViewInforMedicion.setText(textoInfo2);
+                            binding.contenedorImagenNivelPeligro.setCardBackgroundColor(ResourcesCompat.getColor(getResources(),R.color.rojo_e43939,null));
+                            binding.imageViewEscaner.setImageResource(R.drawable.ic_nivel3);
+                            break;
+                        case MUY_ALTO:
+                            String textoInfo3 = getString(R.string.estar_expuesto_a_nivel_muy_alto_de) + medicionMasPeligrosa.getTipoMedicion().getNombreGas();
+                            binding.textViewInforMedicion.setText(textoInfo3);
+                            binding.contenedorImagenNivelPeligro.setCardBackgroundColor(ResourcesCompat.getColor(getResources(),R.color.rojo_900C3F,null));
+                            binding.imageViewEscaner.setImageResource(R.drawable.ic_nivel4);
                             break;
                         default:
 
@@ -102,14 +134,20 @@ public class EscanerFragment extends Fragment {
             public void onChanged(Boolean estoyEscanenado) {
 
                 if(estoyEscanenado){
+                    binding.imageViewEscaner.setVisibility(View.INVISIBLE);
+                    binding.textViewInforMedicion.setVisibility(View.VISIBLE);
                     binding.botonEscanear.setText(getString(R.string.desconectar));
                     binding.tituloDeActividadEscaner.setText(getString(R.string.calidad_del_aire));
                     binding.botonEscanear.setTag("desconectar");
                 }else{
+                    detenerServicio();
+                    binding.imageViewEscaner.setVisibility(View.VISIBLE);
+                    binding.imageViewEscaner.setImageResource(R.drawable.icono_escaner3);
+                    binding.textViewInforMedicion.setVisibility(View.INVISIBLE);
                     binding.botonEscanear.setText(getString(R.string.escanear));
                     binding.tituloDeActividadEscaner.setText(getString(R.string.escanear));
                     binding.botonEscanear.setTag("escanear");
-                    binding.fondoEscaner.setBackgroundColor(ResourcesCompat.getColor(getResources(),R.color.white,null));
+                    binding.contenedorImagenNivelPeligro.setCardBackgroundColor(ResourcesCompat.getColor(getResources(),R.color.white,null));
                 }
             }
         });
@@ -122,8 +160,8 @@ public class EscanerFragment extends Fragment {
     public void onResume() {
         super.onResume();
         // necesitamos refrescar el valor cuando volvemos a la activity
-        if(escanerViewModel.getNivelPeligro().getValue()!=null){
-            escanerViewModel.setNivelPeligro(escanerViewModel.getNivelPeligro().getValue());
+        if(escanerViewModel.getMedicionMasPeligrosaPeligro().getValue()!=null){
+            escanerViewModel.setMedicionMasPeligrosaPeligro(escanerViewModel.getMedicionMasPeligrosaPeligro().getValue());
         }
 
     }
@@ -142,6 +180,7 @@ public class EscanerFragment extends Fragment {
 
                 }else if(v.getTag().equals("desconectar")){
 
+                    Log.d("PRUEBA", "onClick: DETENER");
                     detenerServicio();
                     escanerViewModel.setEstoyEscaneando(false);
 
@@ -207,15 +246,19 @@ public class EscanerFragment extends Fragment {
     // ---------------------------------------------------------------------------------------------
     // ---------------------------------------------------------------------------------------------
     private void detenerServicio(){
+
         if ( this.elIntentDelServicio == null ) {
             // no estaba arrancado
             return;
         }
 
+
         getActivity().stopService( this.elIntentDelServicio );
 
         this.elIntentDelServicio = null;
     }
+
+
 
     // ---------------------------------------------------------------------------------------------
     // ---------------------------------------------------------------------------------------------
@@ -229,7 +272,11 @@ public class EscanerFragment extends Fragment {
 
         @Override
         public void handleMessage(Message message) {
-            escanerViewModel.setNivelPeligro((Medicion.NivelPeligro) message.obj);
+            if(message.obj instanceof Medicion){
+                escanerViewModel.setMedicionMasPeligrosaPeligro((Medicion) message.obj);
+            }else if(message.obj instanceof RegistroAveriaSensor){
+                escanerViewModel.setEstoyEscaneando(false);
+            }
         }
     }
 
@@ -332,6 +379,7 @@ public class EscanerFragment extends Fragment {
     // ---------------------------------------------------------------------------------------------
     @Override
     public void onDestroyView() {
+        Log.d("REFERENCIA", "onDestroyView: ");
         super.onDestroyView();
         binding = null;
     }

@@ -48,10 +48,15 @@
     <string name="crear_cuenta_pure_life">Crea tu cuenta Pure Life</string>
     <string name="no_tienes_cuenta">¿No tienes cuenta? Créate una ahora.</string>
     <string name="escanear">Escanear</string>
+    <string name="escaner">Escáner</string>
     <string name="desconectar">Desconectar</string>
     <string name="calidad_del_aire">Calidad del aire</string>
     <string name="notificacion_titulo_alerta_bateria_baja">El dispositivo tiene bateria baja.</string>
     <string name="notificacion_contenido_bateria_baja">No se notificara de la calidad del aire sin bateria</string>
     <string name="notificacion_titulo_alerta_averiado">Dispostivo fuera de servicio</string>
     <string name="notificacion_contenido_averiado">Este dispositivo no envia informacion</string>
+    <string name="info_escaner_mediciones">Esperando mediciones...</string>
+    <string name="estar_expuesto_a_nivel_muy_alto_de">Estas expuesto a un nivel muy alto de</string>
+    <string name="estar_expuesto_a_nivel_alto_de">"Estas expuesto a un nivel alto de "</string>
+    <string name="estar_expuesto_a_nivel_moderado_de">"Estas expuesto a un nivel moderado de "</string>
 </resources>

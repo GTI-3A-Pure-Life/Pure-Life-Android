@@ -107,7 +107,7 @@
         app:layout_constraintTop_toTopOf="@+id/textViewUbiTrabajo" />
 
     <ImageButton
-        android:id="@+id/botonPerfil"
+        android:id="@+id/botonAjustes"
         style="@style/BotonEnImagen"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

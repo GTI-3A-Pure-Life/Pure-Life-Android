@@ -1,6 +1,7 @@
 package com.example.rparcas.btleandroid2021.ui.perfil;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +14,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.rparcas.btleandroid2021.AjustesActivity;
 import com.example.rparcas.btleandroid2021.databinding.FragmentPerfilBinding;
 
 /**
@@ -34,16 +36,14 @@ public class PerfilFragment extends Fragment {
         binding = FragmentPerfilBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        /*
-        final TextView textView = binding.textPerfil;
-        perfilViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
+        binding.botonAjustes.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onChanged(@Nullable String s) {
-                textView.setText(s);
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), AjustesActivity.class);
+                startActivity(intent);
             }
-
         });
-        */
+
         return root;
 
     }
