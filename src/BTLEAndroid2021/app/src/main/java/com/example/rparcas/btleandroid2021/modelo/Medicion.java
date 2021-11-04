@@ -18,7 +18,7 @@ import java.util.List;
  */
 public class Medicion {
 
-    private static final String FECHA_FROMATO = "yyyy-MM-dd hh:mm:ss";
+    private final String FECHA_FROMATO = "yyyy-MM-dd hh:mm:ss";
 
 
     private final double medicion_valor;
@@ -40,6 +40,21 @@ public class Medicion {
 
         this.tipoMedicion = tipoMedicion;
         this.nivelPeligro = calcularNivelPeligroGas(tipoMedicion,valor);
+        // obtener la fecha actual en formato Timestamp
+        this.medicion_fecha = new Timestamp(System.currentTimeMillis());
+
+    }
+
+    //----------------------------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------
+    public Medicion(TipoMedicion tipoMedicion) {
+        this.medicion_valor = 0;
+        this.usuario_id = -1;
+        this.sensor_id = "";
+        this.posicion = new Posicion(0,0);
+
+        this.tipoMedicion = tipoMedicion;
+        this.nivelPeligro = calcularNivelPeligroGas(tipoMedicion,0);
         // obtener la fecha actual en formato Timestamp
         this.medicion_fecha = new Timestamp(System.currentTimeMillis());
 
@@ -91,7 +106,8 @@ public class Medicion {
         // obtener la fecha actual en formato Timestamp
         this.medicion_fecha = new Timestamp(System.currentTimeMillis());
 
-
+        int major = Utilidades.bytesToInt( tramaIBeacon.getMajor());
+        this.tipoMedicion = TipoMedicion.getTipoById(major);
     }
 
 
@@ -182,13 +198,12 @@ public class Medicion {
         String fechaConFormato = new SimpleDateFormat(FECHA_FROMATO).format(this.medicion_fecha);
 
         String res = "{" +
-                "\"medicion_valor\":\""+this.medicion_valor+ "\", " +
-                "\"medicion_fecha\":\""+fechaConFormato+"\", " +
-                "\"medicion_latitud\":\""+this.posicion.getLatitud()+"\", " +
-                "\"medicion_longitud\":\""+this.posicion.getLongitud()+"\", " +
-                "\"tipo_medicion\":\""+this.tipoMedicion.getIdGas()+"\", " +
-                "\"usuario_id\":\""+this.usuario_id+"\", " +
-                "\"sensor_id\":\""+this.sensor_id+"\"" +
+                "\"valor\":\""+this.medicion_valor+ "\", " +
+                "\"fechaHora\":\""+fechaConFormato+"\", " +
+                "\"posMedicion\":{\"latitud\":\""+this.posicion.getLatitud()+"\",\"longitud\":\""+this.posicion.getLatitud()+"\"}, " +
+                "\"tipoGas\":\""+this.tipoMedicion.getIdGas()+"\", " +
+                "\"idUsuario\":\""+this.usuario_id+"\", " +
+                "\"uuidSensor\":\""+this.sensor_id+"\"" +
 
                 "}";
 
@@ -227,6 +242,10 @@ public class Medicion {
     public NivelPeligro getNivelPeligro() {
         return this.nivelPeligro;
     }
+    public double getValor() {
+        return this.medicion_valor;
+    }
+
 
     //----------------------------------------------------------------------------------------------
     //----------------------------------------------------------------------------------------------
@@ -260,6 +279,7 @@ public class Medicion {
     }
 
 
+
     //----------------------------------------------------------------------------------------------
     //----------------------------------------------------------------------------------------------
     /**
@@ -270,8 +290,8 @@ public class Medicion {
      */
     public enum TipoMedicion {
 
-        CO("Monoxido Carbono",0), NO2("Dioxido de nitrogeno",1),
-        SO2("Dioxido de azufre",2), O3("Ozono",3);
+        CO("Monoxido Carbono",1), NO2("Dioxido de nitrogeno",2),
+        SO2("Dioxido de azufre",3), O3("Ozono",4);
 
         private final String nombreGas;
         private final int idGas;

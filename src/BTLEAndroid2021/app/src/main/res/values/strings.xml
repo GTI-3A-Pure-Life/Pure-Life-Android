@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">BTLEAndroid2021</string>
+    <string name="app_name">Pure Life</string>
     <string name="menu_item_escanear">Escanear</string>
     <string name="menu_item_parar_escanear">Parar</string>
     <string name="title_activity_ajustes">AjustesActivity</string>
@@ -50,4 +50,6 @@
     <string name="escanear">Escanear</string>
     <string name="desconectar">Desconectar</string>
     <string name="calidad_del_aire">Calidad del aire</string>
+    <string name="notificacion_titulo_alerta_bateria_baja">El dispositivo tiene bateria baja.</string>
+    <string name="notificacion_contenido_bateria_baja">No se notificara de la calidad del aire sin bateria</string>
 </resources>

@@ -6,6 +6,7 @@ import android.util.Log;
 import com.example.rparcas.btleandroid2021.Constantes.RESTConstantes;
 import com.example.rparcas.btleandroid2021.SQLITE.MedicionDBHelper;
 import com.example.rparcas.btleandroid2021.modelo.Medicion;
+import com.example.rparcas.btleandroid2021.modelo.RegistroBateriaSensor;
 
 import java.util.List;
 
@@ -47,9 +48,8 @@ public class Logica {
 
         String restEndpoint = RESTConstantes.URL + RESTConstantes.RESCURSO_MEDICIONES;
 
-        Log.d("PRUEBA", "publicarMediciones endpoint: "+restEndpoint);
 
-        elPeticionarioREST.hacerPeticionREST("PUT", restEndpoint,
+        elPeticionarioREST.hacerPeticionREST("POST", restEndpoint,
                 "{\"res\": "+ Medicion.listaMedicionesToJSON(mediciones)+"}" ,
                 new PeticionarioREST.RespuestaREST () {
                     @Override
@@ -60,7 +60,6 @@ public class Logica {
                     }
                 });
     }
-
 
     /**
      * Lista<MedicionCO2> -> guardarMedicionEnLocal()
@@ -103,6 +102,30 @@ public class Logica {
 
     }
 
+
+    /**
+     * RegistroBateriaSensor -> guardarRegistroBateria() <-
+     * @author Ruben Pardo Casanova
+     * @param registroBateriaSensor registro a enviar al servidor
+     */
+    public void guardarRegistroBateria(RegistroBateriaSensor registroBateriaSensor) {
+        PeticionarioREST elPeticionarioREST = new PeticionarioREST();
+
+        String restEndpoint = RESTConstantes.URL + RESTConstantes.RESCURSO_REGISTRO_ESTADO_BATERIA;
+
+        Log.d("PRUEBA", "guardarRegistroBateria endpoint: "+restEndpoint);
+
+        elPeticionarioREST.hacerPeticionREST("POST", restEndpoint,
+                "{\"res\": "+ registroBateriaSensor.toJSON()+"}" ,
+                new PeticionarioREST.RespuestaREST () {
+                    @Override
+                    public void callback(int codigo, String cuerpo) {
+
+                        Log.d ("PRUEBA","codigo respuesta: " + codigo + " <-> \n" + cuerpo);
+
+                    }
+                });
+    }
 
 
 }

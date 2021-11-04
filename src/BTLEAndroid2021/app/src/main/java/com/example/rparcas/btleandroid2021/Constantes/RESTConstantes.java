@@ -5,4 +5,5 @@ public class RESTConstantes {
     public static final String URL = "http://192.168.1.141:8080/"; //CAMBIAR DEPENDE DE LA RED
     public static final String RESCURSO_MEDICIONES = "mediciones";
 
+    public static final String RESCURSO_REGISTRO_ESTADO_BATERIA = "registro_estado_sensor/bateria";
 }

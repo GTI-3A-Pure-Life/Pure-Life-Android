@@ -77,19 +77,40 @@ public class EscanerFragment extends Fragment {
         escanerViewModel.getNivelPeligro().observe(getViewLifecycleOwner(), new Observer<Medicion.NivelPeligro>() {
             @Override
             public void onChanged(@Nullable Medicion.NivelPeligro nivelPeligro) {
-                Log.d("PRUEBA", "onChanged: observ: "+nivelPeligro);
-                switch (nivelPeligro){
-                    case LEVE:
-                        binding.fondoEscaner.setBackgroundColor(ResourcesCompat.getColor(getResources(),R.color.verde_008a62,null));
-                        break;
-                    case MODERADO:
-                        binding.fondoEscaner.setBackgroundColor(ResourcesCompat.getColor(getResources(),R.color.amarillo_ffc300,null));
-                        break;
-                    case ALTO:
-                        binding.fondoEscaner.setBackgroundColor(ResourcesCompat.getColor(getResources(),R.color.rojo_e43939,null));
-                        break;
+                if(nivelPeligro!=null){
+                    switch (nivelPeligro){
+                        case LEVE:
+                            binding.fondoEscaner.setBackgroundColor(ResourcesCompat.getColor(getResources(),R.color.verde_008a62,null));
+                            break;
+                        case MODERADO:
+                            binding.fondoEscaner.setBackgroundColor(ResourcesCompat.getColor(getResources(),R.color.amarillo_ffc300,null));
+                            break;
+                        case ALTO:
+                            binding.fondoEscaner.setBackgroundColor(ResourcesCompat.getColor(getResources(),R.color.rojo_e43939,null));
+                            break;
+                        default:
+
+                    }
                 }
 
+
+            }
+        });
+
+        escanerViewModel.getEstoyEscaneando().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean estoyEscanenado) {
+
+                if(estoyEscanenado){
+                    binding.botonEscanear.setText(getString(R.string.desconectar));
+                    binding.tituloDeActividadEscaner.setText(getString(R.string.calidad_del_aire));
+                    binding.botonEscanear.setTag("desconectar");
+                }else{
+                    binding.botonEscanear.setText(getString(R.string.escanear));
+                    binding.tituloDeActividadEscaner.setText(getString(R.string.escanear));
+                    binding.botonEscanear.setTag("escanear");
+                    binding.fondoEscaner.setBackgroundColor(ResourcesCompat.getColor(getResources(),R.color.white,null));
+                }
             }
         });
 
@@ -121,10 +142,9 @@ public class EscanerFragment extends Fragment {
 
                 }else if(v.getTag().equals("desconectar")){
 
-                    // TODO parar servicio
-                    v.setTag("escanear");
-                    binding.botonEscanear.setText(getString(R.string.escanear));
-                    binding.tituloDeActividadEscaner.setText(getString(R.string.escanear));
+                    detenerServicio();
+                    escanerViewModel.setEstoyEscaneando(false);
+
                 }
 
             }
@@ -162,9 +182,7 @@ public class EscanerFragment extends Fragment {
      * @version 03/11/2021
      */
     private void finalizarEscanerQR() {
-        binding.botonEscanear.setTag("desconectar");
-        binding.botonEscanear.setText(getString(R.string.desconectar));
-        binding.tituloDeActividadEscaner.setText(getString(R.string.calidad_del_aire));
+        escanerViewModel.setEstoyEscaneando(true);
         arrancarServicio();
     }
 
@@ -186,8 +204,37 @@ public class EscanerFragment extends Fragment {
         getActivity().startService( this.elIntentDelServicio );
 
     } // ()
+    // ---------------------------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------
+    private void detenerServicio(){
+        if ( this.elIntentDelServicio == null ) {
+            // no estaba arrancado
+            return;
+        }
 
+        getActivity().stopService( this.elIntentDelServicio );
 
+        this.elIntentDelServicio = null;
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------
+    /**
+     * MessageHanlder.java
+     * Clase para comunicar el servicio con la activity
+     * @author Ruben Pardo Casanova
+     * 03/11/2021
+     */
+    public static class MessageHandler extends Handler {
+
+        @Override
+        public void handleMessage(Message message) {
+            escanerViewModel.setNivelPeligro((Medicion.NivelPeligro) message.obj);
+        }
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------
     /**
      * Metodo para pedir el permiso de cámara
      * @author Lorena Florescu
@@ -221,6 +268,8 @@ public class EscanerFragment extends Fragment {
         }
     }
 
+    // ---------------------------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------
     /**
      * Si se identifica con el codigo del permiso de la camara, identificamos si se ha dado ya o no el permiso
      * si se ha dado, abrimos el escaner
@@ -242,6 +291,8 @@ public class EscanerFragment extends Fragment {
         }
     }
 
+    // ---------------------------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------
     /**
      * Si al leer el QR no nos devuelve que ha ido bien avisamos al usuario
      * Si el codigo corresponde con el codigo de peticion qr, debemos asegurarnos que recibimos datos
@@ -277,26 +328,13 @@ public class EscanerFragment extends Fragment {
     }
 
 
-
+    // ---------------------------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
     }
 
-
-    /**
-     * MessageHanlder.java
-     * Clase para comunicar el servicio con la activity
-     * @author Ruben Pardo Casanova
-     * 03/11/2021
-     */
-    public static class MessageHandler extends Handler {
-
-        @Override
-        public void handleMessage(Message message) {
-            escanerViewModel.setNivelPeligro((Medicion.NivelPeligro) message.obj);
-        }
-    }
 
 }

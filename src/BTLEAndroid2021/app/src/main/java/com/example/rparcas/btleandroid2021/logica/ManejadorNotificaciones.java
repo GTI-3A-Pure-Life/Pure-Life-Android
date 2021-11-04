@@ -44,9 +44,6 @@ public class ManejadorNotificaciones extends ContextWrapper {
                                    int importancia, int icono_notificacion,Context context) {
 
         super(context);
-        Log.d("PRUEBA", "ManejadorNotificaciones: context "+context);
-        Log.d("PRUEBA", "ManejadorNotificaciones: this "+this);
-        Log.d("PRUEBA", "ManejadorNotificaciones: base context "+getBaseContext());
         manejadorNotificaciones = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
         this.icono_notificacion = icono_notificacion;
         this.id_canal = canal_id;

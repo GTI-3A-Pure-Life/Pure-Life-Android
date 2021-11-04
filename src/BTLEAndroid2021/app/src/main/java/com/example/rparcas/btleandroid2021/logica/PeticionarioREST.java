@@ -88,7 +88,7 @@ public class PeticionarioREST extends AsyncTask<Void, Void, Boolean> {
             URL url = new URL(urlDestino);
 
             connection = (HttpURLConnection) url.openConnection();
-           // connection.setRequestProperty( "Content-Type", "application/json; charset-utf-8" );
+            //connection.setRequestProperty( "Content-Type", "application/json; charset-utf-8" );
             connection.setRequestProperty( "Content-Type", "application/json" );
             connection.setRequestMethod(this.elMetodo);
             // connection.setRequestProperty("Accept", "*/*);

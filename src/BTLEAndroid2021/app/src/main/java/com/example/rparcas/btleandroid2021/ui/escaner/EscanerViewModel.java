@@ -17,6 +17,7 @@ import androidx.lifecycle.ViewModel;
 public class EscanerViewModel extends ViewModel {
 
     private static MutableLiveData<Medicion.NivelPeligro> nivelPeligro;
+    private  static MutableLiveData<Boolean> estoyEscaneando;
     private String nombreDispositivo = "";
     //prefijo que usaremos en el nombre del sensor para identificar nuestros sensores
     private final String PREFIJO = "GTI-3A-";
@@ -28,10 +29,16 @@ public class EscanerViewModel extends ViewModel {
          * inicialzar el nivel de peligro a este para que la vista
          * se pinte con el ultimo
          */
-        if(nivelPeligro !=null){
+        if(nivelPeligro !=null && estoyEscaneando.getValue()){
             nivelPeligro = new MutableLiveData<>(nivelPeligro.getValue());
         }else{
             nivelPeligro = new MutableLiveData<>();
+        }
+
+        if(estoyEscaneando !=null){
+            estoyEscaneando = new MutableLiveData<>(estoyEscaneando.getValue());
+        }else{
+            estoyEscaneando = new MutableLiveData<>(false);
         }
 
     }
@@ -54,5 +61,13 @@ public class EscanerViewModel extends ViewModel {
     //--------------------------------------------------------------------------------------
     public void setNombreDispositivo(String nombre){
         this.nombreDispositivo=nombre;
+    }
+
+    public MutableLiveData<Boolean> getEstoyEscaneando() {
+        return estoyEscaneando;
+    }
+
+    public void setEstoyEscaneando(Boolean estoyEscaneando) {
+        this.estoyEscaneando.setValue(estoyEscaneando);
     }
 }
