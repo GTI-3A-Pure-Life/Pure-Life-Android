@@ -43,11 +43,11 @@ public class ServicioEscucharBeacons extends IntentService {
     // ---------------------------------------------------------------------------------------------
     private static final String ETIQUETA_LOG = ">>>>";
 
-    private long tiempoDeEspera = 50; // ms
-    private int tiempoDeEsperaINT = 50; // ms
-    private int tiempoDeEsperaAveria = 300000; // ms
+    private long tiempoDeEspera = 50; // decimas de segundo
+    private final int tiempoDeEsperaINT = 50; // decimas de segundo
+    private final int tiempoDeEsperaAveria = 3000; // 3000 decimas de segundo = 5 mins
 
-    private final int topeMesurasParaEnviar = 5; // numero de mediciones que ira en una peticion
+    private final int topeMesurasParaEnviar = 20; // numero de mediciones que ira en una peticion
 
     private boolean seguir = true;
 
@@ -294,7 +294,7 @@ public class ServicioEscucharBeacons extends IntentService {
     private void comprobarAveriaSensor(int tiempoRestanteParaAveria) {
 
         // comprobar averia
-
+        Log.d("AVERIA", " comprobar averia, falta: "+ tiempoRestanteParaAveria);
         // si hay medicioens y no se ha notificado, notificar que el sensor esta OK
         if(!medicionesAEnviar.isEmpty() && !seHaEnviadoNotificacionNoAveria){
 
@@ -542,7 +542,6 @@ public class ServicioEscucharBeacons extends IntentService {
         Logica l = new Logica();
         l.guardarRegistroBateria(new RegistroBateriaSensor(dispositivo,valorBateria));
 
-        Log.d("BATERIA", "notificarBateria: BATERIA: "+valorBateria);
 
         // enviar notificacion si nivel por debajo de 20
         if(valorBateria<=RegistroBateriaSensor.NIVEL_BATERIA_BAJO){
