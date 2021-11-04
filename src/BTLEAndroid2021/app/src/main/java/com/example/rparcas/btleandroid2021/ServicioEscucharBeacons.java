@@ -45,7 +45,7 @@ public class ServicioEscucharBeacons extends IntentService {
 
     private long tiempoDeEspera = 50; // decimas de segundo
     private final int tiempoDeEsperaINT = 50; // decimas de segundo
-    private final int tiempoDeEsperaAveria = 3000; // 3000 decimas de segundo = 5 mins
+    private final int tiempoDeEsperaAveria = 300; // 3000 decimas de segundo = 5 mins
 
     private final int topeMesurasParaEnviar = 20; // numero de mediciones que ira en una peticion
 
@@ -350,7 +350,7 @@ public class ServicioEscucharBeacons extends IntentService {
         SharedPreferencesHelper.initializeInstance(this);
 
         this.tiempoDeEspera = intent.getLongExtra("tiempoDeEspera", /* default */ 50000);
-        this.dispositivoABuscar = intent.getStringExtra(MainActivityTEMP.NOMBRE_DISPOSITIVO_A_ESCUCHAR_INTENT);
+        this.dispositivoABuscar = intent.getStringExtra(MainActivity.NOMBRE_DISPOSITIVO_A_ESCUCHAR_INTENT);
         inicializarBlueTooth();
         buscarEsteDispositivoBTLE(this.dispositivoABuscar);
 
@@ -552,7 +552,7 @@ public class ServicioEscucharBeacons extends IntentService {
             String contenido = getString(R.string.notificacion_contenido_bateria_baja);
 
             PendingIntent intencionPendiente = PendingIntent.getActivity(
-                    this, 0, new Intent(this, MainActivityTEMP.class), 0);
+                    this, 0, new Intent(this, MainActivity.class), 0);
 
             NotificationCompat.Builder notiCustom = manejadorNotifNivelPeligro.crearNotificacionPersonalizada(
                     titulo,contenido,
@@ -587,7 +587,7 @@ public class ServicioEscucharBeacons extends IntentService {
             String contenido = getString(R.string.notificacion_contenido_averiado);
 
             PendingIntent intencionPendiente = PendingIntent.getActivity(
-                    this, 0, new Intent(this, MainActivityTEMP.class), 0);
+                    this, 0, new Intent(this, MainActivity.class), 0);
 
             NotificationCompat.Builder notiCustom = manejadorNotifNivelPeligro.crearNotificacionPersonalizada(
                     titulo,contenido,
@@ -667,7 +667,7 @@ public class ServicioEscucharBeacons extends IntentService {
             String contenido = getString(R.string.notificacion_contenido_alerta_calidad);
 
             PendingIntent intencionPendiente = PendingIntent.getActivity(
-                    this, 0, new Intent(this, MainActivityTEMP.class), 0);
+                    this, 0, new Intent(this, MainActivity.class), 0);
 
             NotificationCompat.Builder notiCustom = manejadorNotifNivelPeligro.crearNotificacionPersonalizada(
                     titulo,contenido,

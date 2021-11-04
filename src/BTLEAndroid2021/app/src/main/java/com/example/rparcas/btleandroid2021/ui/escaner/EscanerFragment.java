@@ -2,17 +2,12 @@ package com.example.rparcas.btleandroid2021.ui.escaner;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.ActivityManager;
 import android.app.AlertDialog;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.util.Log;
@@ -30,17 +25,15 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 
-import com.example.rparcas.btleandroid2021.MainActivityTEMP;
+import com.example.rparcas.btleandroid2021.MainActivity;
 import com.example.rparcas.btleandroid2021.R;
 import com.example.rparcas.btleandroid2021.ServicioEscucharBeacons;
 import com.example.rparcas.btleandroid2021.databinding.FragmentEscanerBinding;
-import com.example.rparcas.btleandroid2021.logica.SharedPreferencesHelper;
 import com.example.rparcas.btleandroid2021.modelo.Medicion;
 
 import com.blikoon.qrcodescanner.QrCodeActivity;
 import com.example.rparcas.btleandroid2021.modelo.RegistroAveriaSensor;
 
-import java.util.ArrayList;
 
 
 /**
@@ -58,10 +51,9 @@ public class EscanerFragment extends Fragment {
     private static final int REQUEST_CODE_QR_SCAN = 101;
     private final int REQUEST_CODE_CAMERA = 123;
 
-    private final String PREFIJO = "GTI-3A-";
+    private final String prefijoDeDispositivosAbuscar = "GTI-3A-";
     private static Intent elIntentDelServicio = null;
 
-    private boolean deboNotificarEnModerado = false;
 
     public Handler messageHandler = new MessageHandler();
 
@@ -177,7 +169,7 @@ public class EscanerFragment extends Fragment {
             public void onClick(View v) {
 
                 if(v.getTag().equals("escanear")){
-                    empezarAEscanear();
+                    empezarAEscanearQR();
 
                 }else if(v.getTag().equals("desconectar")){
 
@@ -196,7 +188,7 @@ public class EscanerFragment extends Fragment {
      * @author Lorena Florescu
      * @version 02/11/2021
      */
-    private void empezarAEscanear() {
+    private void empezarAEscanearQR() {
 
 
         // permisos de camara y bluetooth
@@ -238,7 +230,7 @@ public class EscanerFragment extends Fragment {
         }
 
         this.elIntentDelServicio = new Intent(getActivity(), ServicioEscucharBeacons.class);
-        this.elIntentDelServicio.putExtra(MainActivityTEMP.NOMBRE_DISPOSITIVO_A_ESCUCHAR_INTENT,escanerViewModel.getNombreDispositivo());
+        this.elIntentDelServicio.putExtra(MainActivity.NOMBRE_DISPOSITIVO_A_ESCUCHAR_INTENT,escanerViewModel.getNombreDispositivo());
         this.elIntentDelServicio.putExtra("tiempoDeEspera", (long) 5000);
         this.elIntentDelServicio.putExtra("MESSENGER", new Messenger(messageHandler)); // le pasamos el messenger para que se pueda comunicar con la activity
         getActivity().startService( this.elIntentDelServicio );
@@ -332,7 +324,7 @@ public class EscanerFragment extends Fragment {
         super.onRequestPermissionsResult(requestCode, permissions, grantResult);
         if (requestCode == REQUEST_CODE_CAMERA) {
             if (grantResult.length == 1 && grantResult[0] == PackageManager.PERMISSION_GRANTED) {
-                empezarAEscanear();
+                empezarAEscanearQR();
             } else {
                 Toast.makeText(this.getActivity(), "Sin el permiso de cámara no se puede acceder a la lectura de código QR", Toast.LENGTH_SHORT).show();
             }
@@ -363,7 +355,7 @@ public class EscanerFragment extends Fragment {
             if (data != null) {
                 String lectura = data.getStringExtra("com.blikoon.qrcodescanner.got_qr_scan_relult");
                 //escanerViewModel.arrancarServicio(lectura);
-                if(!lectura.equals(null) &&lectura.indexOf(PREFIJO)!= -1) {
+                if(!lectura.equals(null) &&lectura.indexOf(prefijoDeDispositivosAbuscar)!= -1) {
                     escanerViewModel.setNombreDispositivo(lectura);
                     finalizarEscanerQR();
                 }
