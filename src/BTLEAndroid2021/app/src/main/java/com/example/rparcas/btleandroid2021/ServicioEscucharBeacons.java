@@ -21,6 +21,7 @@ import com.example.rparcas.btleandroid2021.logica.ManejadorNotificaciones;
 import com.example.rparcas.btleandroid2021.logica.SharedPreferencesHelper;
 import com.example.rparcas.btleandroid2021.modelo.Medicion;
 import com.example.rparcas.btleandroid2021.modelo.Posicion;
+import com.example.rparcas.btleandroid2021.modelo.RegistroAveriaSensor;
 import com.example.rparcas.btleandroid2021.modelo.RegistroBateriaSensor;
 import com.example.rparcas.btleandroid2021.modelo.TramaIBeacon;
 
@@ -217,7 +218,7 @@ public class ServicioEscucharBeacons extends IntentService {
         // esto lo ejecuta un WORKER THREAD !
 
         long contador = 1;
-
+        notificarAveriado("GTI-3A-1",true);
         Log.d(ETIQUETA_LOG, " ServicioEscucharBeacons.onHandleIntent: empieza : thread=" + Thread.currentThread().getId() );
 
         try {
@@ -226,11 +227,6 @@ public class ServicioEscucharBeacons extends IntentService {
             while ( this.seguir ) {
                 Thread.sleep(tiempoDeEspera);
                 Log.d(ETIQUETA_LOG, "ServicioEscucharBeacons.onHandleIntent: hay "+medicionesAEnviar.size() + " mediciones");
-
-
-                if(contador<=3){
-                    notificarBateria("GTI-3A-1",contador==1 ? 40 : 10);
-                }
 
 
                 if(medicionesAEnviar.size() >= topeMesurasParaEnviar){
@@ -529,15 +525,14 @@ public class ServicioEscucharBeacons extends IntentService {
 
         // siempre notificar al servidor
         Logica l = new Logica();
-        l.guardarRegistroBateria(new RegistroBateriaSensor(dispositivo,valorBateria));
+        l.guardarRegistroAveria(new RegistroAveriaSensor(dispositivo,isAveriado));
 
         // enviar notificacion si nivel por debajo de 20
-        if(valorBateria<=RegistroBateriaSensor.NIVEL_BATERIA_BAJO){
+        if(isAveriado){
             // creamos la notificacion
-            String titulo = getString(R.string.notificacion_titulo_alerta_bateria_baja)
-                    + " "+ valorBateria + "%";
+            String titulo = getString(R.string.notificacion_titulo_alerta_averiado);
 
-            String contenido = getString(R.string.notificacion_contenido_bateria_baja);
+            String contenido = getString(R.string.notificacion_contenido_averiado);
 
             PendingIntent intencionPendiente = PendingIntent.getActivity(
                     this, 0, new Intent(this, MainActivityTEMP.class), 0);

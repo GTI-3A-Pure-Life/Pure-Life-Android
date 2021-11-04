@@ -6,6 +6,7 @@ import android.util.Log;
 import com.example.rparcas.btleandroid2021.Constantes.RESTConstantes;
 import com.example.rparcas.btleandroid2021.SQLITE.MedicionDBHelper;
 import com.example.rparcas.btleandroid2021.modelo.Medicion;
+import com.example.rparcas.btleandroid2021.modelo.RegistroAveriaSensor;
 import com.example.rparcas.btleandroid2021.modelo.RegistroBateriaSensor;
 
 import java.util.List;
@@ -127,5 +128,27 @@ public class Logica {
                 });
     }
 
+    /**
+     * RegistroBateriaSensor -> guardarRegistroBateria() <-
+     * @author Ruben Pardo Casanova
+     * @param registroAveriaSensor registro a enviar al servidor
+     */
+    public void guardarRegistroAveria(RegistroAveriaSensor registroAveriaSensor) {
+        PeticionarioREST elPeticionarioREST = new PeticionarioREST();
 
+        String restEndpoint = RESTConstantes.URL + RESTConstantes.RESCURSO_REGISTRO_ESTADO_AVERIA;
+
+        Log.d("PRUEBA", "guardarRegistroBateria endpoint: "+restEndpoint);
+
+        elPeticionarioREST.hacerPeticionREST("POST", restEndpoint,
+                "{\"res\": "+ registroAveriaSensor.toJSON()+"}" ,
+                new PeticionarioREST.RespuestaREST () {
+                    @Override
+                    public void callback(int codigo, String cuerpo) {
+
+                        Log.d ("PRUEBA","codigo respuesta: " + codigo + " <-> \n" + cuerpo);
+
+                    }
+                });
+    }
 }

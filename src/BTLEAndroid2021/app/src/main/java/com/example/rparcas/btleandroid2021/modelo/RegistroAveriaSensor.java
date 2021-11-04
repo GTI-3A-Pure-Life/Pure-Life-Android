@@ -4,23 +4,22 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 
 /**
- * RegistroBateriaSensor.java
+ * RegistroAveriaSensor.java
  * @author Ruben Pardo Casanova
  * 04/11/2021
- * Representa un registro de bateria de un sensor
+ * Representa un registro de averia de un sensor
  */
-public class RegistroBateriaSensor {
+public class RegistroAveriaSensor {
 
-    private String uuidSensor;
-    private int valor;
-    private Timestamp fechaHora;
-    public static int NIVEL_BATERIA_BAJO = 20;
+    private final String uuidSensor;
+    private final boolean estaAveriado;
+    private final Timestamp fechaHora;
 
     private final String FECHA_FROMATO = "yyyy-MM-dd hh:mm:ss";
 
-    public RegistroBateriaSensor(String uuidSensor, int valorBateria) {
+    public RegistroAveriaSensor(String uuidSensor, boolean estaAveriado) {
         this.uuidSensor = uuidSensor;
-        this.valor = valorBateria;
+        this.estaAveriado = estaAveriado;
         this.fechaHora = new Timestamp(System.currentTimeMillis());;
     }
 
@@ -33,11 +32,11 @@ public class RegistroBateriaSensor {
     public String toJSON(){
         String fechaConFormato = new SimpleDateFormat(FECHA_FROMATO).format(this.fechaHora);
 
-        int tieneBateriaBaja = (valor<=NIVEL_BATERIA_BAJO) ? 1 : 0;
+        int averia = (this.estaAveriado) ? 1 : 0;
 
         String res = "{" +
                 "\"uuidSensor\":\""+this.uuidSensor+ "\", " +
-                "\"tieneBateriaBaja\":\""+tieneBateriaBaja+"\", " +
+                "\"estaAveriado\":\""+averia+"\", " +
                 "\"fechaHora\":\""+fechaConFormato+"\" " +
                 "}";
 
@@ -45,4 +44,5 @@ public class RegistroBateriaSensor {
 
 
     }
+
 }

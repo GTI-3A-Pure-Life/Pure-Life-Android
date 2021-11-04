@@ -6,4 +6,5 @@ public class RESTConstantes {
     public static final String RESCURSO_MEDICIONES = "mediciones";
 
     public static final String RESCURSO_REGISTRO_ESTADO_BATERIA = "registro_estado_sensor/bateria";
+    public static final String RESCURSO_REGISTRO_ESTADO_AVERIA = "registro_estado_sensor/averiado";
 }
