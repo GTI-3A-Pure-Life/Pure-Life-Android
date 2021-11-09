@@ -6,7 +6,6 @@ import android.content.Intent;
 
 import com.example.rparcas.btleandroid2021.ActivityEscucharBeacons;
 import com.example.rparcas.btleandroid2021.MainActivity;
-import com.example.rparcas.btleandroid2021.ServicioEscucharBeacons;
 
 /**
  *  Clase que detecta un cambio en la conexion del dispositivo
@@ -18,7 +17,7 @@ public class ConexionChangeReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        ActivityEscucharBeacons.onConexionChange(context);
+        MainActivity.onConexionChange(context);
 
     }
 }

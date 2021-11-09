@@ -5,7 +5,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.example.rparcas.btleandroid2021.modelo.MedicionCO2;
+import com.example.rparcas.btleandroid2021.modelo.Medicion;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,12 +32,12 @@ public class MedicionDBHelper extends SQLiteOpenHelper {
      * Guardar mediciones co2 en la base de datos interna
      * @param mediciones mediciones a guardar
      */
-    public void guardarMedicionesSQLITE(List<MedicionCO2> mediciones) {
+    public void guardarMedicionesSQLITE(List<Medicion> mediciones) {
         SQLiteDatabase sqLiteDatabase = getWritableDatabase();
 
-        for (MedicionCO2 m: mediciones) {
+        for (Medicion m: mediciones) {
             sqLiteDatabase.insert(
-                    MedicionCO2Contract.MedicionCO2Entry.NOMBRE_TABLA,
+                    MedicionContract.MedicionEntry.NOMBRE_TABLA,
                     null,
                     m.toContentValues());
         }
@@ -51,15 +51,15 @@ public class MedicionDBHelper extends SQLiteOpenHelper {
      *  Obtiene las ultima 50 mediciones de la base de datos sqlite
      * @return Lista de mediciones de la base de datos local
      */
-    public List<MedicionCO2> obtener50Mediciones(){
-        List<MedicionCO2> mediciones = new ArrayList<>(50);
+    public List<Medicion> obtener50Mediciones(){
+        List<Medicion> mediciones = new ArrayList<>(50);
 
         SQLiteDatabase sqLiteDatabase = getReadableDatabase();
 
         // hacemos el select
         try (Cursor cursor = sqLiteDatabase.query(
                 false,  // Distinct
-                MedicionCO2Contract.MedicionCO2Entry.NOMBRE_TABLA,  // Nombre de la tabla
+                MedicionContract.MedicionEntry.NOMBRE_TABLA,  // Nombre de la tabla
                 null,  //Lista de Columnas a consultar
                 null,  // Columnas para la cláusula WHERE
                 null,  // Valores a comparar con las columnas del WHERE
@@ -71,7 +71,7 @@ public class MedicionDBHelper extends SQLiteOpenHelper {
 
             // llenamos el array con los resultados
             while (cursor.moveToNext()) {
-                mediciones.add(new MedicionCO2(cursor));
+                mediciones.add(new Medicion(cursor));
             }
         }
 
@@ -89,15 +89,15 @@ public class MedicionDBHelper extends SQLiteOpenHelper {
         // seleccionar los ultimos 50
         SQLiteDatabase sqLiteDatabase = getWritableDatabase();
 
-        try(Cursor c = sqLiteDatabase.rawQuery("SELECT " + MedicionCO2Contract.MedicionCO2Entry._ID
-                        +" from " + MedicionCO2Contract.MedicionCO2Entry.NOMBRE_TABLA
+        try(Cursor c = sqLiteDatabase.rawQuery("SELECT " + MedicionContract.MedicionEntry._ID
+                        +" from " + MedicionContract.MedicionEntry.NOMBRE_TABLA
                         +" LIMIT 50 ",null))
         {
             while (c.moveToNext()) {
                 String id = c.getString(0);
                 sqLiteDatabase.execSQL("Delete from "
-                        + MedicionCO2Contract.MedicionCO2Entry.NOMBRE_TABLA
-                        + " where "+  MedicionCO2Contract.MedicionCO2Entry._ID + "= "+id);
+                        + MedicionContract.MedicionEntry.NOMBRE_TABLA
+                        + " where "+  MedicionContract.MedicionEntry._ID + "= "+id);
             }
 
         }
@@ -108,14 +108,14 @@ public class MedicionDBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        sqLiteDatabase.execSQL("CREATE TABLE " + MedicionCO2Contract.MedicionCO2Entry.NOMBRE_TABLA + " ("
-                + MedicionCO2Contract.MedicionCO2Entry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
-                + MedicionCO2Contract.MedicionCO2Entry.VALOR + " TEXT NOT NULL,"
-                + MedicionCO2Contract.MedicionCO2Entry.LATITUD + " REAL NOT NULL,"
-                + MedicionCO2Contract.MedicionCO2Entry.LONGITUD + " REAL NOT NULL,"
-                + MedicionCO2Contract.MedicionCO2Entry.SENSOR+ " TEXT NOT NULL,"
-                + MedicionCO2Contract.MedicionCO2Entry.USUARIO + " INTEGER,"
-                + MedicionCO2Contract.MedicionCO2Entry.FECHA + " TEXT"
+        sqLiteDatabase.execSQL("CREATE TABLE " + MedicionContract.MedicionEntry.NOMBRE_TABLA + " ("
+                + MedicionContract.MedicionEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + MedicionContract.MedicionEntry.VALOR + " TEXT NOT NULL,"
+                + MedicionContract.MedicionEntry.LATITUD + " REAL NOT NULL,"
+                + MedicionContract.MedicionEntry.LONGITUD + " REAL NOT NULL,"
+                + MedicionContract.MedicionEntry.SENSOR+ " TEXT NOT NULL,"
+                + MedicionContract.MedicionEntry.USUARIO + " INTEGER,"
+                + MedicionContract.MedicionEntry.FECHA + " TEXT"
                 + ")");
     }
 

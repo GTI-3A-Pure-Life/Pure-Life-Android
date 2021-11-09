@@ -3,6 +3,25 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Cosas/CARPETA UNI/3 curso/1 cuatri/Proyecto de Biometria/AAArepositoriosProyecto/Pure-Life-Android/src/BTLEAndroid2021/app/src/main/res/drawable/bottom_border.xml" value="0.2703125" />
+        <entry key="..\:/Cosas/CARPETA UNI/3 curso/1 cuatri/Proyecto de Biometria/AAArepositoriosProyecto/Pure-Life-Android/src/BTLEAndroid2021/app/src/main/res/drawable/ic_nivel2.xml" value="0.1" />
+        <entry key="..\:/Cosas/CARPETA UNI/3 curso/1 cuatri/Proyecto de Biometria/AAArepositoriosProyecto/Pure-Life-Android/src/BTLEAndroid2021/app/src/main/res/drawable/ic_nivel3.xml" value="0.1" />
+        <entry key="..\:/Cosas/CARPETA UNI/3 curso/1 cuatri/Proyecto de Biometria/AAArepositoriosProyecto/Pure-Life-Android/src/BTLEAndroid2021/app/src/main/res/drawable/ic_nivel4.xml" value="0.1" />
+        <entry key="..\:/Cosas/CARPETA UNI/3 curso/1 cuatri/Proyecto de Biometria/AAArepositoriosProyecto/Pure-Life-Android/src/BTLEAndroid2021/app/src/main/res/drawable/ic_nviel1.xml" value="0.1" />
+        <entry key="..\:/Cosas/CARPETA UNI/3 curso/1 cuatri/Proyecto de Biometria/AAArepositoriosProyecto/Pure-Life-Android/src/BTLEAndroid2021/app/src/main/res/layout/activity_autentificacion.xml" value="0.21422101449275363" />
+        <entry key="..\:/Cosas/CARPETA UNI/3 curso/1 cuatri/Proyecto de Biometria/AAArepositoriosProyecto/Pure-Life-Android/src/BTLEAndroid2021/app/src/main/res/layout/activity_login.xml" value="0.25416666666666665" />
+        <entry key="..\:/Cosas/CARPETA UNI/3 curso/1 cuatri/Proyecto de Biometria/AAArepositoriosProyecto/Pure-Life-Android/src/BTLEAndroid2021/app/src/main/res/layout/activity_main.xml" value="0.22780797101449277" />
+        <entry key="..\:/Cosas/CARPETA UNI/3 curso/1 cuatri/Proyecto de Biometria/AAArepositoriosProyecto/Pure-Life-Android/src/BTLEAndroid2021/app/src/main/res/layout/dispositivo_item.xml" value="0.18840579710144928" />
+        <entry key="..\:/Cosas/CARPETA UNI/3 curso/1 cuatri/Proyecto de Biometria/AAArepositoriosProyecto/Pure-Life-Android/src/BTLEAndroid2021/app/src/main/res/layout/fragment_escaner.xml" value="0.264" />
+        <entry key="..\:/Cosas/CARPETA UNI/3 curso/1 cuatri/Proyecto de Biometria/AAArepositoriosProyecto/Pure-Life-Android/src/BTLEAndroid2021/app/src/main/res/layout/fragment_home.xml" value="0.25416666666666665" />
+        <entry key="..\:/Cosas/CARPETA UNI/3 curso/1 cuatri/Proyecto de Biometria/AAArepositoriosProyecto/Pure-Life-Android/src/BTLEAndroid2021/app/src/main/res/layout/fragment_login.xml" value="0.25416666666666665" />
+        <entry key="..\:/Cosas/CARPETA UNI/3 curso/1 cuatri/Proyecto de Biometria/AAArepositoriosProyecto/Pure-Life-Android/src/BTLEAndroid2021/app/src/main/res/layout/fragment_mapa.xml" value="0.25416666666666665" />
+        <entry key="..\:/Cosas/CARPETA UNI/3 curso/1 cuatri/Proyecto de Biometria/AAArepositoriosProyecto/Pure-Life-Android/src/BTLEAndroid2021/app/src/main/res/layout/fragment_perfil.xml" value="0.25416666666666665" />
+        <entry key="..\:/Cosas/CARPETA UNI/3 curso/1 cuatri/Proyecto de Biometria/AAArepositoriosProyecto/Pure-Life-Android/src/BTLEAndroid2021/app/src/main/res/layout/fragment_registro.xml" value="0.24010416666666667" />
+        <entry key="..\:/Cosas/CARPETA UNI/3 curso/1 cuatri/Proyecto de Biometria/AAArepositoriosProyecto/Pure-Life-Android/src/BTLEAndroid2021/app/src/main/res/layout/notificacion_pequenya.xml" value="0.6" />
+        <entry key="..\:/Cosas/CARPETA UNI/3 curso/1 cuatri/Proyecto de Biometria/AAArepositoriosProyecto/Pure-Life-Android/src/BTLEAndroid2021/app/src/main/res/layout/settings_activity.xml" value="0.21965579710144928" />
+        <entry key="..\:/Cosas/CARPETA UNI/3 curso/1 cuatri/Proyecto de Biometria/AAArepositoriosProyecto/Pure-Life-Android/src/BTLEAndroid2021/app/src/main/res/menu/bottom_nav_menu.xml" value="0.25416666666666665" />
+        <entry key="..\:/Cosas/CARPETA UNI/3 curso/1 cuatri/Proyecto de Biometria/AAArepositoriosProyecto/Pure-Life-Android/src/BTLEAndroid2021/app/src/main/res/xml/root_preferences.xml" value="0.25416666666666665" />
         <entry key="..\:/Cosas/CARPETA UNI/3 curso/1 cuatri/Proyecto de Biometria/repositorios/BTLEAndroid2021/app/src/main/res/layout/activity_main.xml" value="0.14855072463768115" />
         <entry key="..\:/Cosas/CARPETA UNI/3 curso/1 cuatri/Proyecto de Biometria/repositorios/GTI3AAndroid/src/BTLEAndroid2021/app/src/main/res/layout/activity_escuchar_beacons.xml" value="0.264" />
         <entry key="..\:/Cosas/CARPETA UNI/3 curso/1 cuatri/Proyecto de Biometria/repositorios/GTI3AAndroid/src/BTLEAndroid2021/app/src/main/res/layout/activity_main.xml" value="0.264" />
