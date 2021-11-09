@@ -87,6 +87,7 @@ public class EscanerFragment extends Fragment {
             public void onChanged(@Nullable Medicion medicionMasPeligrosa) {
                 if(medicionMasPeligrosa!=null && escanerViewModel.getEstoyEscaneando()!=null && escanerViewModel.getEstoyEscaneando().getValue()){
                     binding.imageViewEscaner.setVisibility(View.VISIBLE);
+                    binding.contenedorImagenNivelPeligro.setVisibility(View.VISIBLE);
                     switch (medicionMasPeligrosa.getNivelPeligro()){
 
                         case LEVE:

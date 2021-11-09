@@ -47,7 +47,7 @@ public class ServicioEscucharBeacons extends IntentService {
     private final int tiempoDeEsperaINT = 50; // decimas de segundo
     private final int tiempoDeEsperaAveria = 300; // 3000 decimas de segundo = 5 mins
 
-    private final int topeMesurasParaEnviar = 20; // numero de mediciones que ira en una peticion
+    private final int topeMesurasParaEnviar =  1;// numero de mediciones que ira en una peticion
 
     private boolean seguir = true;
 
