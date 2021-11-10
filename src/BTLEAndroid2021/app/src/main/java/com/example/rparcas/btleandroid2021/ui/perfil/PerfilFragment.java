@@ -15,7 +15,10 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.rparcas.btleandroid2021.AjustesActivity;
+import com.example.rparcas.btleandroid2021.PureLifeApplication;
 import com.example.rparcas.btleandroid2021.databinding.FragmentPerfilBinding;
+import com.example.rparcas.btleandroid2021.modelo.Usuario;
+import com.example.rparcas.btleandroid2021.ui.autentificacion.AutentificacionActivity;
 
 /**
  * PerfilFragment.java
@@ -36,6 +39,13 @@ public class PerfilFragment extends Fragment {
         binding = FragmentPerfilBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
+        initCallbacks();
+
+        return root;
+
+    }
+
+    private void initCallbacks() {
         binding.botonAjustes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -44,8 +54,17 @@ public class PerfilFragment extends Fragment {
             }
         });
 
-        return root;
-
+        binding.botonCerrarSesion.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // borrar el usuario y volver al login
+                PureLifeApplication appState = ((PureLifeApplication)getActivity().getApplication());
+                appState.setUsuario(null);
+                Intent intent = new Intent(getActivity(), AutentificacionActivity.class);
+                startActivity(intent);
+                getActivity().finish();
+            }
+        });
     }
 
     @Override

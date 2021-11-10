@@ -68,7 +68,10 @@ public class SharedPreferencesHelper {
     public Usuario getUsuario() {
         Usuario u = null;
         try {
-            u = new Usuario(mPref.getString(KEY_USUARIO,""));
+            String json = mPref.getString(KEY_USUARIO,"");
+            if(!json.equals("")){
+                u = new Usuario(json);
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -84,8 +87,11 @@ public class SharedPreferencesHelper {
     public void setUsuario(Usuario u) {
 
         SharedPreferences.Editor editor = mPref.edit();
-        Log.d("LOGIN--", "setUsuario: en shared preferences: "+u.toJSON());
-        editor.putString(KEY_USUARIO, u.toJSON());
+        String json = "";
+        if(u!=null){
+            json = u.toJSON();
+        }
+        editor.putString(KEY_USUARIO, json);
         editor.commit();
         editor.apply();
 

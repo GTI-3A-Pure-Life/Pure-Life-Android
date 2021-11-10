@@ -11,13 +11,13 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.BTLEAndroid2021"
+        android:theme="@style/BTLEAndroid2021"
         android:usesCleartextTraffic="true">
         <activity
             android:name=".ui.autentificacion.AutentificacionActivity"
             android:exported="true"
             android:label="@string/title_activity_autentificacion"
-            android:theme="@style/Theme.BTLEAndroid2021.NoActionBar">
+            android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -28,7 +28,7 @@
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/title_activity_main"
-            android:theme="@style/Theme.BTLEAndroid2021.NoActionBar">
+            android:theme="@style/BTLEAndroid2021NoActionBar">
 
         </activity>
         <activity
@@ -37,9 +37,6 @@
             android:label="@string/title_activity_ajustes" />
         <activity
             android:name=".ActivityEscucharBeacons"
-            android:exported="true" />
-        <activity
-            android:name=".MainActivityTEMP"
             android:exported="true" />
 
         <receiver
