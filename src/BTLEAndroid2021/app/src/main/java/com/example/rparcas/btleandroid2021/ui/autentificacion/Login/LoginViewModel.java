@@ -86,7 +86,6 @@ public class LoginViewModel extends ViewModel {
 
                             } catch (JSONException e) {
                                 e.printStackTrace();
-                                Log.d("LOGIN--", "callback: "+e.getMessage());
                                 errorDeLaPeticion = "Error inesperado";
                                 estadoIniciarSesion.setValue(EstadoPeticion.ERROR);
                             }
@@ -132,7 +131,7 @@ public class LoginViewModel extends ViewModel {
     private boolean comprobarFormulario(String correo, String contrasenya){
         boolean valido = true;
         // comprobar que no haya nada vacio
-        if(correo.trim().length()==0 && contrasenya.trim().length()==0){
+        if(correo.trim().length()==0 || contrasenya.trim().length()==0){
             valido = false;
         }
 

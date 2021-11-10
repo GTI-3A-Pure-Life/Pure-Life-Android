@@ -23,6 +23,8 @@ public class Usuario implements Serializable {
     private String contrasenya;
     private Posicion posCasa;
     private Posicion posTrabajo;
+    private String telefono;
+    private int rol;
 
     /**
      * Texto -> constructor()->
@@ -56,6 +58,29 @@ public class Usuario implements Serializable {
 
     }
 
+
+    //-----------------------------------------------------------------------------------------
+    //-----------------------------------------------------------------------------------------
+
+    /**
+     * Texto, Texto, Texto, Texto, Texto -> constructor()->
+     * @author Ruben Pardo Casanova
+     * 10/11/2021
+     * @param nombre el nombre del usuario
+     * @param apellidos los apellidos se concatenan al nombre
+     * @param correo el correo
+     * @param contrasenya la contrasenya
+     * @param telefono el telefono
+     */
+    public Usuario(String nombre,String apellidos, String correo, String contrasenya,String telefono) {
+
+        this.nombre = nombre+" "+apellidos;
+        this.correo = correo;
+        this.contrasenya = contrasenya;
+        this.telefono = telefono;
+        this.rol = 1;
+    }
+
     //-----------------------------------------------------------------------------------------
     //-----------------------------------------------------------------------------------------
     /**
@@ -86,27 +111,31 @@ public class Usuario implements Serializable {
     public int getId() {
         return id;
     }
-
+    public int getRol() {
+        return rol;
+    }
     public String getNombre() {
         return nombre;
     }
-
     public String getCorreo() {
         return correo;
     }
-
+    public String getTelefono() {
+        return telefono;
+    }
     public String getContrasenya() {
         return contrasenya;
     }
-
     public Posicion getPosCasa() {
         return posCasa;
     }
-
     public Posicion getPosTrabajo() {
         return posTrabajo;
     }
 
-
-
+    //-----------------------------------------------------------------------------------------
+    //-----------------------------------------------------------------------------------------
+    public void setId(int id) {
+        this.id = id;
+    }
 }

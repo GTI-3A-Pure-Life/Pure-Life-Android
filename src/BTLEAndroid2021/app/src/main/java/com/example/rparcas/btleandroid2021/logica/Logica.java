@@ -8,6 +8,7 @@ import com.example.rparcas.btleandroid2021.SQLITE.MedicionDBHelper;
 import com.example.rparcas.btleandroid2021.modelo.Medicion;
 import com.example.rparcas.btleandroid2021.modelo.RegistroAveriaSensor;
 import com.example.rparcas.btleandroid2021.modelo.RegistroBateriaSensor;
+import com.example.rparcas.btleandroid2021.modelo.Usuario;
 
 import java.util.List;
 
@@ -168,10 +169,31 @@ public class Logica {
 
         String restEndpoint = RESTConstantes.URL + RESTConstantes.RESCURSO_INICIAR_SESION;
 
-        Log.d("PRUEBA", "guardarRegistroBateria endpoint: "+restEndpoint);
+        Log.d("PRUEBA", "iniciar_sesion endpoint: "+restEndpoint);
 
         elPeticionarioREST.hacerPeticionREST("POST", restEndpoint,
                 "{\"res\": {\"correo\":\""+ correo+"\",\"contrasenya\":\""+ contrasenya+"\"}}" ,
                 callbackRespuestaRest);
+    }
+
+    /**
+     * Usuario -> iniciar_sesion() <-
+     * id:N <-
+     * @author Ruben Pardo Casanova
+     * 10/11/2021
+     * @param usuarioARegistrar el usuario que se envia por la peticion
+     * @return el return se realiza mediante el callback que se pasa por parametro
+     */
+    public void registrar_usuario(Usuario usuarioARegistrar, PeticionarioREST.RespuestaREST respuestaREST) {
+        PeticionarioREST elPeticionarioREST = new PeticionarioREST();
+
+        String restEndpoint = RESTConstantes.URL + RESTConstantes.RESCURSO_REGISTRARSE;
+
+        Log.d("PRUEBA", "registrar_usuario endpoint: "+restEndpoint);
+        String cuerpo = "{\"res\":"+usuarioARegistrar.toJSON()+"}";
+        Log.d("PRUEBA", "registrar_usuario cuerpo: "+cuerpo);
+        elPeticionarioREST.hacerPeticionREST("POST", restEndpoint,
+                 cuerpo,
+                respuestaREST);
     }
 }

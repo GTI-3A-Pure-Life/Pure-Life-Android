@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.rparcas.btleandroid2021.MainActivity;
+import com.example.rparcas.btleandroid2021.PureLifeApplication;
 import com.example.rparcas.btleandroid2021.R;
 import com.example.rparcas.btleandroid2021.databinding.FragmentLoginBinding;
 import com.example.rparcas.btleandroid2021.databinding.FragmentRegistroBinding;
@@ -72,8 +73,10 @@ public class RegistroFragment extends Fragment {
                         // esconder el progress bar e ir a main con el usuario resultado de la peticion
                         binding.progressBarRegistro.setVisibility(View.INVISIBLE);
                         Intent intentMainActivity = new Intent(getActivity(), MainActivity.class);
-                        // Usuario u = viewModel.getUser(); TODO hacer uusuario serializable
-                        // intentMainActivity.putExtra("usuario_registro",u)
+
+                        // guardamos el usuario de forma global
+                        PureLifeApplication appState = ((PureLifeApplication)getActivity().getApplication());
+                        appState.setUsuario(registroViewModel.getUsuario());
 
                         startActivity(intentMainActivity);
                         getActivity().finish();
@@ -82,7 +85,6 @@ public class RegistroFragment extends Fragment {
                         // esconder el progress bar y mostrar error
                         binding.progressBarRegistro.setVisibility(View.INVISIBLE);
                         binding.textViewError.setText(registroViewModel.getError());
-                        // TODO Obtener error
                         break;
                 }
             }
