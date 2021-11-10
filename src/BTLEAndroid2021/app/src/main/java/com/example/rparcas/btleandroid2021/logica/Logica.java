@@ -151,4 +151,27 @@ public class Logica {
                     }
                 });
     }
+
+    /**
+     * correo:Texto,contrasenya:Texto-> iniciar_sesion() <-
+     * Usuario <-
+     * @author Ruben Pardo Casanova
+     * 09/11/2021
+     * @param correo el correo del usuario
+     * @param contrasenya la contrasenya del usuario
+     * @param  callbackRespuestaRest equivalente al return
+     * @return el return se realiza mediante el callback que se pasa por parametro
+     */
+    public void iniciar_sesion(String correo, String contrasenya,
+                               PeticionarioREST.RespuestaREST callbackRespuestaRest) {
+        PeticionarioREST elPeticionarioREST = new PeticionarioREST();
+
+        String restEndpoint = RESTConstantes.URL + RESTConstantes.RESCURSO_INICIAR_SESION;
+
+        Log.d("PRUEBA", "guardarRegistroBateria endpoint: "+restEndpoint);
+
+        elPeticionarioREST.hacerPeticionREST("POST", restEndpoint,
+                "{\"res\": {\"correo\":\""+ correo+"\",\"contrasenya\":\""+ contrasenya+"\"}}" ,
+                callbackRespuestaRest);
+    }
 }

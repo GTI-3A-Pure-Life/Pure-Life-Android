@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.rparcas.btleandroid2021.MainActivity;
+import com.example.rparcas.btleandroid2021.PureLifeApplication;
 import com.example.rparcas.btleandroid2021.databinding.FragmentLoginBinding;
 import com.example.rparcas.btleandroid2021.logica.EstadoPeticion;
 import com.example.rparcas.btleandroid2021.ui.autentificacion.NavegacionAutentificacionListener;
@@ -63,14 +64,18 @@ public class LoginFragment extends Fragment {
                     case EN_PROCESO:
                         // mostrar el progress bar y bloquear el formulario
                         binding.progressBarLogin.setVisibility(View.VISIBLE);
+                        binding.textViewError.setText("");
+                        //binding.setCanceledOnTouchOutside(false)
                         // TODO bloquear los edit del login
                         break;
                     case EXITO:
                         // esconder el progress bar e ir a main con el usuario resultado de la peticion
                         binding.progressBarLogin.setVisibility(View.INVISIBLE);
                         Intent intentMainActivity = new Intent(getActivity(), MainActivity.class);
-                        // Usuario u = viewModel.getUser(); TODO hacer uusuario serializable
-                        // intentMainActivity.putExtra("usuario_login",u)
+
+                        // guardamos el usuario de forma global
+                        PureLifeApplication appState = ((PureLifeApplication)getActivity().getApplication());
+                        appState.setUsuario(loginViewModel.getUsuario());
 
                         startActivity(intentMainActivity);
                         getActivity().finish();
@@ -79,7 +84,7 @@ public class LoginFragment extends Fragment {
                         // esconder el progress bar y mostrar error
                         binding.progressBarLogin.setVisibility(View.INVISIBLE);
                         binding.textViewError.setText(loginViewModel.getError());
-                        // TODO Obtener error
+
                         break;
                 }
             }

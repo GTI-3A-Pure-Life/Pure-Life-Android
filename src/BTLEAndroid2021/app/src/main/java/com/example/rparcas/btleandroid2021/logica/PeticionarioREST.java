@@ -10,6 +10,8 @@ import java.net.URL;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import org.json.JSONException;
+
 // ------------------------------------------------------------------------
 // ------------------------------------------------------------------------
 
@@ -157,7 +159,7 @@ public class PeticionarioREST extends AsyncTask<Void, Void, Boolean> {
 
     // --------------------------------------------------------------------
     // --------------------------------------------------------------------
-    protected void onPostExecute(Boolean comoFue) {
+    protected void onPostExecute(Boolean comoFue){
         // llamado tras doInBackground()
         Log.d("clienterestandroid", "onPostExecute() comoFue = " + comoFue);
         this.laRespuesta.callback(this.codigoRespuesta, this.cuerpoRespuesta);
