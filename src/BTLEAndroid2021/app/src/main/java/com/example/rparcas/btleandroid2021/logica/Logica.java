@@ -9,7 +9,14 @@ import com.example.rparcas.btleandroid2021.modelo.Medicion;
 import com.example.rparcas.btleandroid2021.modelo.RegistroAveriaSensor;
 import com.example.rparcas.btleandroid2021.modelo.RegistroBateriaSensor;
 import com.example.rparcas.btleandroid2021.modelo.Usuario;
+import com.google.gson.JsonParser;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -196,4 +203,64 @@ public class Logica {
                  cuerpo,
                 respuestaREST);
     }
+
+
+    /**
+     * Texto,Texto -> obtenerMedicionesDeHasta() <-
+     * Lista<Medicion> <-
+     * @author Ruben Pardo Casanova
+     * 12/11/2021
+     *
+     * Obtener mediciones dentro de un rango temporal
+     *
+     * @param fechaInicio el usuario que se envia por la peticion
+     * @param fechaFin el usuario que se envia por la peticion
+     * @return lista de mediciones
+     */
+    public ArrayList<Medicion> obtenerMedicionesDeHasta(String fechaInicio, String fechaFin) {
+
+        ArrayList<Medicion> mediciones = new ArrayList<>();
+
+        PeticionarioREST elPeticionarioREST = new PeticionarioREST();
+
+        String restEndpoint = RESTConstantes.URL + RESTConstantes.RESCURSO_MEDICIONES
+                +"/"+fechaInicio+"/"+fechaFin;
+
+        elPeticionarioREST.hacerPeticionREST("GET", restEndpoint,
+                null,
+                new PeticionarioREST.RespuestaREST() {
+                    @Override
+                    public void callback(int codigo, String cuerpo) {
+
+
+                        if(codigo == 200){
+                            // hay datos
+                            try {
+                                JSONArray medicionesJSON = new JSONArray(cuerpo);
+                                // obtenemos todas las referencias a los objetos
+                                // recorremos los objetos
+                                for(int i=0;i<medicionesJSON.length();i++){
+                                    Medicion m = new Medicion((JSONObject) medicionesJSON.get(i));
+                                    mediciones.add(m);
+                                }
+
+                            } catch (JSONException e) {
+                                Log.e("REST","obtenerMedicionesDeHasta(): error al intentar pasar a json el objeto de mediciones");
+                                Log.e("REST","obtenerMedicionesDeHasta(): "+e.getMessage());
+                            }
+
+                        }else if(codigo == 500){
+                            // vacio
+                            Log.e("REST","obtenerMedicionesDeHasta() codigo respuesta 500: "+cuerpo);
+                        }
+
+
+
+                    }
+                });
+
+        return mediciones;
+    }
+
+
 }

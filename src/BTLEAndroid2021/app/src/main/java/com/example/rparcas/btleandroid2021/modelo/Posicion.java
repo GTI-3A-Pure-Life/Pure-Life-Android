@@ -1,5 +1,8 @@
 package com.example.rparcas.btleandroid2021.modelo;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.Serializable;
 
 /**
@@ -15,6 +18,11 @@ public class Posicion implements Serializable {
     public Posicion(double latitud, double longitud) {
         this.latitud = latitud;
         this.longitud = longitud;
+    }
+
+    public Posicion(JSONObject posMedicion) throws JSONException {
+        this.latitud = posMedicion.getDouble("latitud");
+        this.longitud = posMedicion.getDouble("longitud");
     }
 
     public double getLatitud() {

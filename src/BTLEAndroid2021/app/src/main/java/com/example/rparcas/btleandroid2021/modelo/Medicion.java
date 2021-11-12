@@ -6,6 +6,9 @@ import android.database.Cursor;
 import com.example.rparcas.btleandroid2021.SQLITE.MedicionContract;
 import com.example.rparcas.btleandroid2021.Utilidades;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -80,6 +83,9 @@ public class Medicion {
         this.sensor_id = cursor.getString(4);
         this.usuario_id = cursor.getInt(5);
 
+
+        this.tipoMedicion = TipoMedicion.getTipoById(cursor.getInt(7));
+
        // pasar de texto a timestamp
         this.medicion_fecha = new Timestamp(0);
         try {
@@ -91,7 +97,6 @@ public class Medicion {
             e.printStackTrace();
         }
 
-        this.tipoMedicion = TipoMedicion.getTipoById(cursor.getInt(7));
 
     }
 
@@ -102,12 +107,30 @@ public class Medicion {
         this.posicion = new Posicion(0,0);
         this.sensor_id = Utilidades.bytesToString(tramaIBeacon.getUUID()).split("%")[0];
         this.usuario_id = 4;//TODO CAMBIAR A POR USUARIO
+        int major = Utilidades.bytesToInt( tramaIBeacon.getMajor());
+        this.tipoMedicion = TipoMedicion.getTipoById(major);
+
         this.nivelPeligro = calcularNivelPeligroGas(tipoMedicion,medicion_valor);
         // obtener la fecha actual en formato Timestamp
         this.medicion_fecha = new Timestamp(System.currentTimeMillis());
 
-        int major = Utilidades.bytesToInt( tramaIBeacon.getMajor());
-        this.tipoMedicion = TipoMedicion.getTipoById(major);
+
+    }
+
+
+    //----------------------------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------
+    public Medicion(JSONObject json) throws JSONException {
+        this.medicion_valor = json.getDouble("valor");
+        this.posicion = new Posicion(json.getJSONObject("posMedicion"));
+        this.sensor_id = json.getString("idSensor");
+        this.usuario_id = json.getInt("idUsuario");
+
+        this.tipoMedicion = TipoMedicion.getTipoById(json.getInt("tipoGas"));
+        this.nivelPeligro = calcularNivelPeligroGas(tipoMedicion,medicion_valor);
+
+        this.medicion_fecha = Timestamp.valueOf(json.getString("fechaHora"));
+
     }
 
 
@@ -298,6 +321,18 @@ public class Medicion {
              
     }
 
+    @Override
+    public String toString() {
+        return "Medicion{" +
+                "medicion_valor=" + medicion_valor +
+                ", usuario_id=" + usuario_id +
+                ", sensor_id='" + sensor_id + '\'' +
+                ", posicion=" + posicion +
+                ", medicion_fecha=" + medicion_fecha +
+                ", tipoMedicion=" + tipoMedicion +
+                ", nivelPeligro=" + nivelPeligro +
+                '}';
+    }
 
 
     //----------------------------------------------------------------------------------------------
