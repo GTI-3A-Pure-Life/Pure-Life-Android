@@ -382,7 +382,7 @@ public class Medicion {
                 return TipoMedicion.NO2;
             }else{
                 // default
-                return TipoMedicion.CO;
+                return null;
             }
         }
     }// class

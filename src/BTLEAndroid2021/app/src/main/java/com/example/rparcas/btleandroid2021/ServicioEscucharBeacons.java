@@ -45,7 +45,7 @@ public class ServicioEscucharBeacons extends IntentService {
 
     private long tiempoDeEspera = 50; // decimas de segundo
     private final int tiempoDeEsperaINT = 50; // decimas de segundo
-    private final int tiempoDeEsperaAveria = 300; // 3000 decimas de segundo = 5 mins
+    private final int tiempoDeEsperaAveria = 3000; // 3000 decimas de segundo = 5 mins
 
     private final int topeMesurasParaEnviar =  1;// numero de mediciones que ira en una peticion
 
@@ -457,8 +457,9 @@ public class ServicioEscucharBeacons extends IntentService {
                 super.onScanResult(callbackType, resultado);
 
                 TramaIBeacon tib = scanResultToTramaIBeacon( resultado );
-                tratarTramaBeacon(tib,dispositivoBuscado);
-                comprobarDesconexion(Utilidades.calcularDistanciaDispositivoBluetooth(resultado.getRssi(),tib.getTxPower()));
+                tratarTramaBeacon(tib,dispositivoBuscado,resultado.getRssi());
+
+
             }
 
             @Override
@@ -500,13 +501,17 @@ public class ServicioEscucharBeacons extends IntentService {
      * @author Ruben Pardo Casanova
      * @param tib trama beacon a tratar
      * @param dispositivoBuscado el dispositivo que buscamos
+     * @param rssi
      */
-    private void tratarTramaBeacon(TramaIBeacon tib, String dispositivoBuscado) {
+    private void tratarTramaBeacon(TramaIBeacon tib, String dispositivoBuscado, int rssi) {
         int major = Utilidades.bytesToInt( tib.getMajor()); //  tipo 1000 = bateria, 1,2,3,4 gas
         int minor = Utilidades.bytesToInt( tib.getMinor()); // valor
         String dispositivo = Utilidades.bytesToString(tib.getUUID()).split("%")[0];
 
+        Log.d(ETIQUETA_LOG, "tratarTramaBeacon: nombre: " + dispositivo);
+
         if(dispositivo.equals(dispositivoBuscado)){
+            comprobarDesconexion(Utilidades.calcularDistanciaDispositivoBluetooth(rssi,tib.getTxPower()));
             Log.d(ETIQUETA_LOG, "tratarTramaBeacon: nombre: " + dispositivo);
             if(major == 1000){
                 Log.d(ETIQUETA_LOG, "tratarTramaBeacon: bateria: " + minor);
@@ -536,10 +541,10 @@ public class ServicioEscucharBeacons extends IntentService {
      * @param distancia en m que tenemos entre el sensor y el movil
      */
     private void comprobarDesconexion(double distancia){
+        Log.d(ETIQUETA_LOG, "comprobarDesconexion: "+distancia);
         if (distancia > 3) {
             //desconectar cuando está a mas de 3 metros
             enviarMensajeALaHostActivity("DistanciaMaxima");
-            parar();
         }
     }
 

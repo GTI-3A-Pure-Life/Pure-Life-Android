@@ -262,7 +262,7 @@ public class EscanerFragment extends Fragment {
      * @author Ruben Pardo Casanova
      * 03/11/2021
      */
-    public class MessageHandler extends Handler {
+    public static class MessageHandler extends Handler {
 
         @Override
         public void handleMessage(Message message) {
@@ -271,7 +271,9 @@ public class EscanerFragment extends Fragment {
             }else if(message.obj instanceof RegistroAveriaSensor){
                 escanerViewModel.setEstoyEscaneando(false);
             }else if (message.obj.equals("DistanciaMaxima")){
-                Toast.makeText(getContext(), getString(R.string.desconexionPorDistancia), Toast.LENGTH_SHORT).show();
+                Log.d("DISTANCIA", "handleMessage: distancia MAXIMA");
+                escanerViewModel.setEstoyEscaneando(false);
+               // Toast.makeText(getContext(), getString(R.string.desconexionPorDistancia), Toast.LENGTH_SHORT).show();
             }
         }
     }

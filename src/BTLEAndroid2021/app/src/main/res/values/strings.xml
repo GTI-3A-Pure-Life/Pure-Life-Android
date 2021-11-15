@@ -55,10 +55,10 @@
     <string name="notificacion_contenido_bateria_baja">No se notificara de la calidad del aire sin bateria</string>
     <string name="notificacion_titulo_alerta_averiado">Dispostivo fuera de servicio</string>
     <string name="notificacion_contenido_averiado">Este dispositivo no envia informacion</string>
-    <string name="info_escaner_mediciones">Esperando mediciones...</string>
+    <string name="info_escaner_mediciones">Esperando mediciones…</string>
     <string name="estar_expuesto_a_nivel_muy_alto_de">Estas expuesto a un nivel muy alto de</string>
     <string name="estar_expuesto_a_nivel_alto_de">"Estas expuesto a un nivel alto de "</string>
     <string name="estar_expuesto_a_nivel_moderado_de">"Estas expuesto a un nivel moderado de "</string>
-    <string name="iniciando_sesion">Iniciando sesión...</string>
+    <string name="iniciando_sesion">Iniciando sesión…</string>
     <string name="desconexionPorDistancia">Te has alejado demasiado del sensor. Se ha desconectado</string>
 </resources>
