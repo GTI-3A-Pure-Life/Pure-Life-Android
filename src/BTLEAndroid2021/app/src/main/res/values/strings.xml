@@ -60,4 +60,5 @@
     <string name="estar_expuesto_a_nivel_alto_de">"Estas expuesto a un nivel alto de "</string>
     <string name="estar_expuesto_a_nivel_moderado_de">"Estas expuesto a un nivel moderado de "</string>
     <string name="iniciando_sesion">Iniciando sesión...</string>
+    <string name="desconexionPorDistancia">Te has alejado demasiado del sensor. Se ha desconectado</string>
 </resources>

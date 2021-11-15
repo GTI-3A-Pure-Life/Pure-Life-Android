@@ -18,6 +18,36 @@ import java.util.UUID;
  */
 public class Utilidades {
 
+
+
+    /**
+     * Metodo para obtener la distancia entre el sensor y el movil.
+     * No es un valor muy fiable ya que el RSSI difiere mucho entre beacons en el mismo punto
+     * @author Lorena-Ioana Florescu
+     * 12/11/2021
+     * @param rssi
+     * @param txPower
+     * @return devuelve la distancia en metros
+     */
+    public static double calcularDistanciaDispositivoBluetooth (int rssi, int txPower){
+        double n = 4.3;
+        double distancia = Math.pow (10, ((txPower-rssi)/10*n));
+
+        return distancia;
+
+        //formula para iPhone porque tienen diferentes antenas
+        /*if (rssi == 0) {
+            return -1.0; // si no se puede determinar la distancia, devolvemos -1.
+        }
+        double ratio = rssi*1.0/txPower;
+        if (ratio < 1.0) {
+            return Math.pow(ratio,10);
+        }
+        else {
+            double distancia =  (0.89976)*Math.pow(ratio,7.7095) + 0.111;
+            return distancia;
+        }*/
+    }
     // -------------------------------------------------------------------------------
     // -------------------------------------------------------------------------------
     public static String stringToSHA1(String text) throws NoSuchAlgorithmException, UnsupportedEncodingException {

@@ -458,6 +458,7 @@ public class ServicioEscucharBeacons extends IntentService {
 
                 TramaIBeacon tib = scanResultToTramaIBeacon( resultado );
                 tratarTramaBeacon(tib,dispositivoBuscado);
+                comprobarDesconexion(Utilidades.calcularDistanciaDispositivoBluetooth(resultado.getRssi(),tib.getTxPower()));
             }
 
             @Override
@@ -519,18 +520,33 @@ public class ServicioEscucharBeacons extends IntentService {
                 comprobarNivelPeligroGas(m); // lanzar notificacion
                 enviarMensajeALaHostActivity(calcularMedicionMasPeligrosa(m)); // avisar a la activity host
 
-
                 medicionesAEnviar.add(m);
-
 
             }
         }
+    }
 
+    // ---------------------------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Metodo para comprobar si supera la distancia máxima, si la supera manda un mensaje a la actividad
+     * y desconecta el servicio
+     * 12/11/2021
+     * @param distancia en m que tenemos entre el sensor y el movil
+     */
+    private void comprobarDesconexion(double distancia){
+        if (distancia > 3) {
+            //desconectar cuando está a mas de 3 metros
+            enviarMensajeALaHostActivity("DistanciaMaxima");
+            parar();
+        }
     }
 
 
     // ---------------------------------------------------------------------------------------------
     // ---------------------------------------------------------------------------------------------
+
     /**
      * Envia notificacion de bateria
      * @param valorBateria valor de la bateria
