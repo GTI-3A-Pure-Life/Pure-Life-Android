@@ -1,5 +1,6 @@
 package com.example.rparcas.btleandroid2021.ui.estadisticas;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.rparcas.btleandroid2021.Utilidades;
 import com.example.rparcas.btleandroid2021.databinding.FragmentEstadisticasBinding;
 
 /**
@@ -43,6 +45,15 @@ public class EstadisticasFragment extends Fragment {
             }
         });
         */
+        Context c = this.getContext();
+
+        binding.btInformacion2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Utilidades.showCustomDialog(c);
+
+            }
+        });
         return root;
     }
 

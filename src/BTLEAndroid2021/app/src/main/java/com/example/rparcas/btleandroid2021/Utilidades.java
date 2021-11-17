@@ -1,8 +1,14 @@
 package com.example.rparcas.btleandroid2021;
 
+import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
+import android.net.Uri;
 import android.util.Log;
+import android.view.View;
+import android.view.Window;
+import android.widget.Button;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
@@ -48,6 +54,50 @@ public class Utilidades {
             return distancia;
         }*/
     }
+
+
+    /**
+     * Metodo para mostrar el dialog y darle funcionalidad a los botones
+     * @author Lorena-Ioana Florescu
+     * @version 17/11/2021
+     */
+    public static void showCustomDialog(Context c){
+        final Dialog dialog = new Dialog(c);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        //para que el usuario cancele el dialog cuando apriete en cualquier sitio fuera
+        dialog.setCancelable(true);
+        dialog.setContentView(R.layout.dialog_inf_gases);
+
+        Button leerMas = dialog.findViewById(R.id.btLeerMas);
+        Button volver = dialog.findViewById(R.id.btVolver);
+
+        leerMas.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_VIEW);
+                intent.addCategory(Intent.CATEGORY_BROWSABLE);
+                intent.setData(Uri.parse("https://www.who.int/phe/health_topics/AQG_spanish.pdf"));
+                c.startActivity(intent);
+                dialog.dismiss();
+            }
+        });
+
+        volver.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
+
+    }
+
+
+
+
+
     // -------------------------------------------------------------------------------
     // -------------------------------------------------------------------------------
     public static String stringToSHA1(String text) throws NoSuchAlgorithmException, UnsupportedEncodingException {

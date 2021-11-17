@@ -6,6 +6,21 @@
     android:layout_height="match_parent"
     tools:context=".ui.estadisticas.EstadisticasFragment">
 
+    <ImageView
+        android:id="@+id/btInformacion2"
+        android:layout_width="24dp"
+        android:layout_height="23dp"
+        android:layout_marginBottom="16dp"
+        android:contentDescription="Informacion sobre gases"
+        android:src="@drawable/info"
+        android:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@+id/textView4"
+        app:layout_constraintEnd_toEndOf="@+id/tituloDeActividadEstadisticas"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@+id/tituloDeActividadEstadisticas"
+        app:layout_constraintTop_toBottomOf="@+id/tituloDeActividadEstadisticas"
+        tools:ignore="ImageContrastCheck" />
+
     <TextView
         android:id="@+id/tituloDeActividadEstadisticas"
         style="@style/TituloDeActivity"
@@ -39,4 +54,5 @@
         app:layout_constraintEnd_toEndOf="@+id/textView4"
         app:layout_constraintStart_toStartOf="@+id/textView4"
         app:layout_constraintTop_toBottomOf="@+id/textView4" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

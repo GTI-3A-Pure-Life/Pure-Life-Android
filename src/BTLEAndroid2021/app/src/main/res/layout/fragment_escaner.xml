@@ -34,6 +34,22 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
+    <ImageView
+        android:id="@+id/btInformacion"
+        android:layout_width="24dp"
+        android:layout_height="23dp"
+        android:layout_marginBottom="16dp"
+        android:contentDescription="Informacion sobre gases"
+        android:src="@drawable/info"
+        android:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@+id/textViewInforMedicion"
+        app:layout_constraintEnd_toEndOf="@+id/tituloDeActividadEscaner"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@+id/tituloDeActividadEscaner"
+        app:layout_constraintTop_toBottomOf="@+id/tituloDeActividadEscaner"
+        app:layout_constraintVertical_bias="1.0"
+        tools:ignore="ImageContrastCheck" />
+
     <androidx.cardview.widget.CardView
         android:id="@+id/contenedorImagenNivelPeligro"
         android:layout_width="match_parent"
@@ -47,8 +63,10 @@
         app:cardElevation="0dp"
         app:layout_constraintBottom_toTopOf="@+id/botonEscanear"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewInforMedicion">
+        app:layout_constraintTop_toBottomOf="@+id/textViewInforMedicion"
+        app:layout_constraintVertical_bias="0.733">
 
         <ImageView
             android:id="@+id/imageViewEscaner"
@@ -77,5 +95,6 @@
         app:layout_constraintEnd_toEndOf="@+id/tituloDeActividadEscaner"
         app:layout_constraintStart_toStartOf="@+id/tituloDeActividadEscaner"
         app:layout_constraintTop_toBottomOf="@+id/tituloDeActividadEscaner" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

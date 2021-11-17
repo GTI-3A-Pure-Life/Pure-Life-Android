@@ -3,9 +3,12 @@ package com.example.rparcas.btleandroid2021.ui.escaner;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -14,6 +17,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -28,12 +33,13 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.rparcas.btleandroid2021.MainActivity;
 import com.example.rparcas.btleandroid2021.R;
 import com.example.rparcas.btleandroid2021.ServicioEscucharBeacons;
+import com.example.rparcas.btleandroid2021.Utilidades;
 import com.example.rparcas.btleandroid2021.databinding.FragmentEscanerBinding;
 import com.example.rparcas.btleandroid2021.modelo.Medicion;
 
 import com.blikoon.qrcodescanner.QrCodeActivity;
 import com.example.rparcas.btleandroid2021.modelo.RegistroAveriaSensor;
-
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 
 /**
@@ -54,7 +60,6 @@ public class EscanerFragment extends Fragment {
     private final String prefijoDeDispositivosAbuscar = "GTI-3A-";
     private static Intent elIntentDelServicio = null;
 
-
     public Handler messageHandler = new MessageHandler();
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -70,6 +75,8 @@ public class EscanerFragment extends Fragment {
 
        // SharedPreferencesHelper sharedPreferencesHelper = SharedPreferencesHelper.getInstance();
         //deboNotificarEnModerado = sharedPreferencesHelper.isNivelAlertaSensible();
+
+
 
 
         initCallbacks();
@@ -182,7 +189,16 @@ public class EscanerFragment extends Fragment {
 
             }
         });
+        Context c = this.getContext();
+        binding.btInformacion.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Utilidades.showCustomDialog(c);
+
+            }
+        });
     }
+
 
     /**
      * En el momento que se pulse el botón, mira a ver si hay permisos de camara, sino hay los pide
