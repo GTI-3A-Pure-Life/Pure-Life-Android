@@ -15,6 +15,9 @@ import com.example.rparcas.btleandroid2021.DialgoCarga;
 import com.example.rparcas.btleandroid2021.R;
 import com.example.rparcas.btleandroid2021.databinding.FragmentMapaBinding;
 import com.example.rparcas.btleandroid2021.modelo.Medicion;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 
 import java.util.ArrayList;
 
@@ -24,11 +27,13 @@ import java.util.ArrayList;
  * 01/11/2021
  * Clase que controla la vista del fragmento Mapa
  */
-public class MapaFragment extends Fragment {
+public class MapaFragment extends Fragment implements OnMapReadyCallback{
 
     private MapaViewModel mapaViewModel;
     private FragmentMapaBinding binding;
     private DialgoCarga elDialogoDeCarga;
+
+    private GoogleMap mMap;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -38,9 +43,11 @@ public class MapaFragment extends Fragment {
         binding = FragmentMapaBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
+        SupportMapFragment supportMapFragment = (SupportMapFragment) getChildFragmentManager().
+                findFragmentById(R.id.google_map);
 
         elDialogoDeCarga = new DialgoCarga(getActivity());
-        mapaViewModel.obtenerMedicionesHoy();
+        //mapaViewModel.obtenerMedicionesHoy();
 
         initCallbacks();
         initObservablesViewModel();
@@ -124,5 +131,10 @@ public class MapaFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+
     }
 }

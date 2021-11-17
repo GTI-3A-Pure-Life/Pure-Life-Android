@@ -4,6 +4,8 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.VIBRATE" />
 
+
+
     <application
         android:allowBackup="true"
         android:name=".PureLifeApplication"
@@ -13,6 +15,11 @@
         android:supportsRtl="true"
         android:theme="@style/BTLEAndroid2021"
         android:usesCleartextTraffic="true">
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="${MAPS_API_KEY}" />
+
         <activity
             android:name=".ui.autentificacion.AutentificacionActivity"
             android:exported="true"
