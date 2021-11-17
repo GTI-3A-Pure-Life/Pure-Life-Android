@@ -4,9 +4,16 @@ import android.util.Log;
 
 import com.example.rparcas.btleandroid2021.logica.EstadoPeticion;
 import com.example.rparcas.btleandroid2021.logica.Logica;
+import com.example.rparcas.btleandroid2021.logica.PeticionarioREST;
 import com.example.rparcas.btleandroid2021.modelo.Medicion;
 import com.example.rparcas.btleandroid2021.modelo.Posicion;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import androidx.lifecycle.LiveData;
@@ -100,19 +107,69 @@ public class MapaViewModel extends ViewModel {
     public void obtenerMedicionesHoy()  {
         estadoPeticionObtenerMediciones.setValue(EstadoPeticion.EN_PROCESO);
 
+        medicionesObtenidas = new ArrayList<>();
+
         Logica l = new Logica();
-        //l.obtenerMedicionesDeHasta()
-        medicionesObtenidas.add(new Medicion(10,1,"",new Posicion(0,0), Medicion.TipoMedicion.CO));
-        medicionesObtenidas.add(new Medicion(10,1,"",new Posicion(0,0), Medicion.TipoMedicion.SO2));
-        medicionesObtenidas.add(new Medicion(10,1,"",new Posicion(1,0), Medicion.TipoMedicion.SO2));
-        medicionesObtenidas.add(new Medicion(10,1,"",new Posicion(0,1), Medicion.TipoMedicion.NO2));
-        medicionesObtenidas.add(new Medicion(10,1,"",new Posicion(1,1), Medicion.TipoMedicion.O3));
+        Timestamp hoy = new Timestamp(System.currentTimeMillis());
+        String fechaHoy = new SimpleDateFormat("yyyy-MM-dd").format(hoy);
+
+        String fechaIni = fechaHoy+" 00:00:00";
+        String fechaFin = fechaHoy+" 23:59:59";
+
+        l.obtenerMedicionesDeHasta(fechaIni,fechaFin,new PeticionarioREST.RespuestaREST() {
+            @Override
+            public void callback(int codigo, String cuerpo) {
+
+                if(codigo == 200){
+                    // hay datos
+                    try {
+                        JSONArray medicionesJSON = new JSONArray(cuerpo);
+                        // obtenemos todas las referencias a los objetos
+                        // recorremos los objetos
+                        for(int i=0;i<medicionesJSON.length();i++){
+                            Medicion m = new Medicion((JSONObject) medicionesJSON.get(i));
+                            medicionesObtenidas.add(m);
+                        }
+
+                        // se realizo correctamente la peticion
+                        estadoPeticionObtenerMediciones.setValue(EstadoPeticion.EXITO);
+                        medicionesAMostrar.setValue(medicionesObtenidas);
+                    } catch (JSONException e) {
+                        estadoPeticionObtenerMediciones.setValue(EstadoPeticion.ERROR);
+                        textoErrorPeticion = "Error inesperado";
+
+                        Log.e("REST","obtenerMedicionesDeHasta(): error al intentar pasar a json el objeto de mediciones");
+                        Log.e("REST","obtenerMedicionesDeHasta(): "+e.getMessage());
+                    }
+
+                }
+                else if(codigo == 500){
+                    // vacio
+                    estadoPeticionObtenerMediciones.setValue(EstadoPeticion.ERROR);
+                    textoErrorPeticion = "Error inesperado";
+                    Log.e("REST","obtenerMedicionesDeHasta() codigo respuesta 500: "+cuerpo);
+                }
+
+            }
 
 
-        estadoPeticionObtenerMediciones.setValue(EstadoPeticion.EXITO);
+        });
+
 
     }
 
-
+    /**
+     *
+     * Lista[Mediciones] -> interpolar() -> GeoJSON
+     * interpolar las mediciones a mostrar y transformarlas en GeoJSON
+     *
+     * @param medicones mediciones a interpolar
+     * @return GeoJSON que se pintara en leafleft
+     */
+    private void interpolar(ArrayList<Medicion> medicones){
+        // 1. obtener la medicion mas antigua por punto
+        // 2. interpolar
+        // 3. transformar a GeoJSON
+    }
 
 }

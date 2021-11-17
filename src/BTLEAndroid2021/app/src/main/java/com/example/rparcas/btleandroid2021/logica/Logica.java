@@ -215,11 +215,11 @@ public class Logica {
      *
      * @param fechaInicio el usuario que se envia por la peticion
      * @param fechaFin el usuario que se envia por la peticion
-     * @return lista de mediciones
+     * @return lista de mediciones mediante el callback
      */
-    public ArrayList<Medicion> obtenerMedicionesDeHasta(String fechaInicio, String fechaFin) {
+    public void obtenerMedicionesDeHasta(String fechaInicio, String fechaFin, PeticionarioREST.RespuestaREST laRespuesta) {
 
-        ArrayList<Medicion> mediciones = new ArrayList<>();
+
 
         PeticionarioREST elPeticionarioREST = new PeticionarioREST();
 
@@ -227,39 +227,8 @@ public class Logica {
                 +"/"+fechaInicio+"/"+fechaFin;
 
         elPeticionarioREST.hacerPeticionREST("GET", restEndpoint,
-                null,
-                new PeticionarioREST.RespuestaREST() {
-                    @Override
-                    public void callback(int codigo, String cuerpo) {
+                null, laRespuesta);
 
-
-                        if(codigo == 200){
-                            // hay datos
-                            try {
-                                JSONArray medicionesJSON = new JSONArray(cuerpo);
-                                // obtenemos todas las referencias a los objetos
-                                // recorremos los objetos
-                                for(int i=0;i<medicionesJSON.length();i++){
-                                    Medicion m = new Medicion((JSONObject) medicionesJSON.get(i));
-                                    mediciones.add(m);
-                                }
-
-                            } catch (JSONException e) {
-                                Log.e("REST","obtenerMedicionesDeHasta(): error al intentar pasar a json el objeto de mediciones");
-                                Log.e("REST","obtenerMedicionesDeHasta(): "+e.getMessage());
-                            }
-
-                        }else if(codigo == 500){
-                            // vacio
-                            Log.e("REST","obtenerMedicionesDeHasta() codigo respuesta 500: "+cuerpo);
-                        }
-
-
-
-                    }
-                });
-
-        return mediciones;
     }
 
 
