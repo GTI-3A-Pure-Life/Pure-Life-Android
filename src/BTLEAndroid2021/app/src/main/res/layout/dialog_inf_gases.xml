@@ -16,12 +16,14 @@
 
             <TextView
                 android:id="@+id/TituloEfectos"
+                style="@style/TituloDeActivity"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/tituloEfectos" />
 
             <TextView
                 android:id="@+id/tituloCO"
+                style="@style/SubTitulo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/CO" />
@@ -34,6 +36,7 @@
 
             <TextView
                 android:id="@+id/tituloSO2"
+                style="@style/SubTitulo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/SO2" />
@@ -46,6 +49,7 @@
 
             <TextView
                 android:id="@+id/tituloNO2"
+                style="@style/SubTitulo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/NO2" />
@@ -58,6 +62,7 @@
 
             <TextView
                 android:id="@+id/tituloO3"
+                style="@style/SubTitulo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/O3" />
@@ -77,12 +82,14 @@
         <TableRow>
             <Button
                 android:id="@+id/btVolver"
+                style="@style/BotonPrimario"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="4dp"
                 android:text="@string/volver" />
 
             <Button
                 android:id="@+id/btLeerMas"
+                style="@style/BotonPrimario"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="4dp"
                 android:text="@string/leer_m_s" />
