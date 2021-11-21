@@ -17,25 +17,38 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:context=".ui.mapa.MapaFragment" />
 
-    <Spinner
-        android:id="@+id/spinnerTipoGas"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:entries="@array/seleccionable_gases_nombres"
-        android:minHeight="32dp"
+    <WebView
+        android:id="@+id/webview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageButton
-        android:id="@+id/btnCambiarModoMapa"
-        android:layout_width="300px"
-        android:layout_height="300px"
+    <Spinner
+        android:id="@+id/spinnerTipoGas"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="#FFFFFF"
+        android:entries="@array/seleccionable_gases_nombres"
+        android:minHeight="32dp"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ToggleButton
+        android:id="@+id/toggleButtonCambiarTipoMapa"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
+        android:background="@drawable/cambiar_tipo_mapa_toggle_boton"
+        android:textOff=""
+        android:textOn=""
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        tools:ignore="SpeakableTextPresentCheck"
-        tools:src="@drawable/grafica" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
