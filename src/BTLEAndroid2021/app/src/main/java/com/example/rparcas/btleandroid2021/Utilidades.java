@@ -1,7 +1,9 @@
 package com.example.rparcas.btleandroid2021;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.Uri;
@@ -18,6 +20,9 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.UUID;
+
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 /**
  * Clase con metodo utiles para el proyecto
@@ -252,6 +257,16 @@ public class Utilidades {
                 context.getSystemService(Context.CONNECTIVITY_SERVICE);
         return connectivityManager.getActiveNetworkInfo() != null
                 && connectivityManager.getActiveNetworkInfo().isAvailable();
+    }
+
+
+    public static void permissionAsk(String permission, Activity activity, int requestCode) {
+        int grant = ContextCompat.checkSelfPermission(activity, permission);
+        if (grant != PackageManager.PERMISSION_GRANTED) {
+            String[] permission_list = new String[1];
+            permission_list[0] = permission;
+            ActivityCompat.requestPermissions(activity, permission_list, requestCode);
+        }
     }
 
     /**

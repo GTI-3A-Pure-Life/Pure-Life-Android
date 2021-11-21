@@ -6,7 +6,7 @@ import com.example.rparcas.btleandroid2021.logica.EstadoPeticion;
 import com.example.rparcas.btleandroid2021.logica.Logica;
 import com.example.rparcas.btleandroid2021.logica.PeticionarioREST;
 import com.example.rparcas.btleandroid2021.modelo.Medicion;
-import com.example.rparcas.btleandroid2021.modelo.Posicion;
+import com.google.maps.android.heatmaps.WeightedLatLng;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -15,8 +15,10 @@ import org.json.JSONObject;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
 
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -31,8 +33,8 @@ import androidx.lifecycle.ViewModel;
 public class MapaViewModel extends ViewModel {
 
     private String textoErrorPeticion;
-    private ArrayList<Medicion> medicionesObtenidas;
-    public MutableLiveData<ArrayList<Medicion>> medicionesAMostrar;
+    private HashMap<Medicion.TipoMedicion, List<WeightedLatLng>> weigthLatLngPorTipo;
+    public MutableLiveData<ArrayList<WeightedLatLng>> medicionesAMostrar;
     private MutableLiveData<EstadoPeticion> estadoPeticionObtenerMediciones;
 
     // --------------------------------------------------------------------------------------
@@ -40,9 +42,27 @@ public class MapaViewModel extends ViewModel {
 
     public MapaViewModel() {
 
-        medicionesAMostrar = new MutableLiveData<ArrayList<Medicion>>();
+        medicionesAMostrar = new MutableLiveData<ArrayList<WeightedLatLng>>();
         estadoPeticionObtenerMediciones = new MutableLiveData<EstadoPeticion>();
-        medicionesObtenidas =  new ArrayList<>();
+
+       limpiarWeigthLatLngPorTipo();
+    }
+
+    private void limpiarWeigthLatLngPorTipo() {
+        weigthLatLngPorTipo =  new HashMap<Medicion.TipoMedicion,List<WeightedLatLng>>();
+        weigthLatLngPorTipo.put(Medicion.TipoMedicion.CO, new ArrayList<WeightedLatLng>());
+        weigthLatLngPorTipo.put(Medicion.TipoMedicion.SO2, new ArrayList<WeightedLatLng>());
+        weigthLatLngPorTipo.put(Medicion.TipoMedicion.O3, new ArrayList<WeightedLatLng>());
+        weigthLatLngPorTipo.put(Medicion.TipoMedicion.NO2, new ArrayList<WeightedLatLng>());
+    }
+
+    private ArrayList<WeightedLatLng> obtenerTodasListaWeightLatLngEnUna() {
+        ArrayList<WeightedLatLng> weightedLatLngs = new ArrayList<>();
+
+        for(List<WeightedLatLng> lista : weigthLatLngPorTipo.values())
+            weightedLatLngs.addAll(lista);
+
+        return  weightedLatLngs;
     }
 
     // --------------------------------------------------------------------------------------
@@ -51,7 +71,7 @@ public class MapaViewModel extends ViewModel {
     public String getError() {
         return textoErrorPeticion;
     }
-    public MutableLiveData<ArrayList<Medicion>> getMedicionesAMostrar() {
+    public MutableLiveData<ArrayList<WeightedLatLng>> getMedicionesAMostrar() {
         return medicionesAMostrar;
     }
     public MutableLiveData<EstadoPeticion> getEstadoPeticionObtenerMediciones() {
@@ -74,17 +94,13 @@ public class MapaViewModel extends ViewModel {
      */
     public void filtrarMedicionPorTipo(Medicion.TipoMedicion tipoGas) {
 
-        ArrayList<Medicion> mediciones = new ArrayList<>();
+        ArrayList<WeightedLatLng> mediciones = new ArrayList<>();
 
         // todos
         if(tipoGas == null){
-            mediciones = medicionesObtenidas;
+            mediciones.addAll(obtenerTodasListaWeightLatLngEnUna());
         }else{
-            for(Medicion m : medicionesObtenidas){
-                if(m.getTipoMedicion().equals(tipoGas)){
-                    mediciones.add(m);
-                }
-            }
+            mediciones.addAll(weigthLatLngPorTipo.get(tipoGas));
         }
 
 
@@ -107,7 +123,7 @@ public class MapaViewModel extends ViewModel {
     public void obtenerMedicionesHoy()  {
         estadoPeticionObtenerMediciones.setValue(EstadoPeticion.EN_PROCESO);
 
-        medicionesObtenidas = new ArrayList<>();
+        limpiarWeigthLatLngPorTipo();
 
         Logica l = new Logica();
         Timestamp hoy = new Timestamp(System.currentTimeMillis());
@@ -128,12 +144,13 @@ public class MapaViewModel extends ViewModel {
                         // recorremos los objetos
                         for(int i=0;i<medicionesJSON.length();i++){
                             Medicion m = new Medicion((JSONObject) medicionesJSON.get(i));
-                            medicionesObtenidas.add(m);
+                            weigthLatLngPorTipo.get(m.getTipoMedicion()).add(m.toWeightedLatLng());
                         }
 
                         // se realizo correctamente la peticion
                         estadoPeticionObtenerMediciones.setValue(EstadoPeticion.EXITO);
-                        medicionesAMostrar.setValue(medicionesObtenidas);
+                        medicionesAMostrar.setValue(obtenerTodasListaWeightLatLngEnUna());
+
                     } catch (JSONException e) {
                         estadoPeticionObtenerMediciones.setValue(EstadoPeticion.ERROR);
                         textoErrorPeticion = "Error inesperado";
@@ -142,9 +159,14 @@ public class MapaViewModel extends ViewModel {
                         Log.e("REST","obtenerMedicionesDeHasta(): "+e.getMessage());
                     }
 
+                }else if(codigo == 204){
+                    // vacio
+                    // se realizo correctamente la peticion
+                    estadoPeticionObtenerMediciones.setValue(EstadoPeticion.EXITO);
+                    medicionesAMostrar.setValue(obtenerTodasListaWeightLatLngEnUna());
                 }
                 else if(codigo == 500){
-                    // vacio
+                    // error
                     estadoPeticionObtenerMediciones.setValue(EstadoPeticion.ERROR);
                     textoErrorPeticion = "Error inesperado";
                     Log.e("REST","obtenerMedicionesDeHasta() codigo respuesta 500: "+cuerpo);
@@ -156,20 +178,6 @@ public class MapaViewModel extends ViewModel {
         });
 
 
-    }
-
-    /**
-     *
-     * Lista[Mediciones] -> interpolar() -> GeoJSON
-     * interpolar las mediciones a mostrar y transformarlas en GeoJSON
-     *
-     * @param medicones mediciones a interpolar
-     * @return GeoJSON que se pintara en leafleft
-     */
-    private void interpolar(ArrayList<Medicion> medicones){
-        // 1. obtener la medicion mas antigua por punto
-        // 2. interpolar
-        // 3. transformar a GeoJSON
     }
 
 }

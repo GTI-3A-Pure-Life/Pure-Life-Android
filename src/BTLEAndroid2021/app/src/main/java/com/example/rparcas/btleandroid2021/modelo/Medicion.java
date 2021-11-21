@@ -5,6 +5,8 @@ import android.database.Cursor;
 
 import com.example.rparcas.btleandroid2021.SQLITE.MedicionContract;
 import com.example.rparcas.btleandroid2021.Utilidades;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.maps.android.heatmaps.WeightedLatLng;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -148,33 +150,34 @@ public class Medicion {
         NivelPeligro nivelPeligro;
         switch (tipoMedicion){
             case CO:
-                if(valor>=0 && valor<5){
+                if(valor>=0 && valor<RangoNivelesPeligro.TOPE_LEVE_CO){
                     //leve
                     nivelPeligro = NivelPeligro.LEVE;
                 }
-                else if(valor>=5 && valor<13){
+                else if(valor>=RangoNivelesPeligro.TOPE_LEVE_CO && valor<RangoNivelesPeligro.TOPE_MODERADO_CO){
                     // moderado
                     nivelPeligro = NivelPeligro.MODERADO;
                 }
-                else if(valor>=13 && valor<16){
+                else if(valor>=RangoNivelesPeligro.TOPE_MODERADO_CO && valor<RangoNivelesPeligro.TOPE_ALTO_CO){
                     // alto
                     nivelPeligro = NivelPeligro.ALTO;
-                }else{
+                }
+                else{
                     nivelPeligro = NivelPeligro.MUY_ALTO;
                 }
                 break;
             case O3:
                 // leve 0-70, moderado 70-120, grave 120-180, muy grave 180 ug/m3
                 // 1ppm - 2 ug/m3
-                if(valor>=0 && valor<35){
+                if(valor>=0 && valor<RangoNivelesPeligro.TOPE_LEVE_O3){
                     //leve
                     nivelPeligro = NivelPeligro.LEVE;
                 }
-                else if(valor>=35 && valor<60){
+                else if(valor>=RangoNivelesPeligro.TOPE_LEVE_O3 && valor<RangoNivelesPeligro.TOPE_MODERADO_O3){
                     // moderado
                     nivelPeligro = NivelPeligro.MODERADO;
                 }
-                else if(valor>=60 && valor<90){
+                else if(valor>=RangoNivelesPeligro.TOPE_MODERADO_O3 && valor<RangoNivelesPeligro.TOPE_ALTO_O3){
                     // moderado
                     nivelPeligro = NivelPeligro.ALTO;
                 }
@@ -186,15 +189,15 @@ public class Medicion {
             case NO2:
                 // leve 0-100, moderado 100-140, grave 140-200, muy grave 200 ug/m3
                 // 1ppm - 1.88 ug/m3
-                if(valor>=0 && valor<53){
+                if(valor>=0 && valor<RangoNivelesPeligro.TOPE_LEVE_NO2){
                     //leve
                     nivelPeligro = NivelPeligro.LEVE;
                 }
-                else if(valor>=53 && valor<74){
+                else if(valor>=RangoNivelesPeligro.TOPE_LEVE_NO2 && valor<RangoNivelesPeligro.TOPE_MODERADO_NO2){
                     // moderado
                     nivelPeligro = NivelPeligro.MODERADO;
                 }
-                else if(valor>=74 && valor<106){
+                else if(valor>=RangoNivelesPeligro.TOPE_MODERADO_NO2 && valor<RangoNivelesPeligro.TOPE_ALTO_NO2){
                     // moderado
                     nivelPeligro = NivelPeligro.ALTO;
                 }
@@ -206,15 +209,15 @@ public class Medicion {
             case SO2:
                 // leve 0-150, moderado 150-250, grave 250-350, muy grave 350 ug/m3
                 // 1ppm - 2.62 ug/m3
-                if(valor>=0 && valor<57){
+                if(valor>=0 && valor<RangoNivelesPeligro.TOPE_LEVE_SO2){
                     //leve
                     nivelPeligro = NivelPeligro.LEVE;
                 }
-                else if(valor>=57 && valor<95){
+                else if(valor>=RangoNivelesPeligro.TOPE_LEVE_SO2 && valor<RangoNivelesPeligro.TOPE_MODERADO_SO2){
                     // moderado
                     nivelPeligro = NivelPeligro.MODERADO;
                 }
-                else if(valor>=95 && valor<134){
+                else if(valor>=RangoNivelesPeligro.TOPE_MODERADO_SO2 && valor<RangoNivelesPeligro.TOPE_ALTO_SO2){
                     // moderado
                     nivelPeligro = NivelPeligro.ALTO;
                 }
@@ -335,6 +338,14 @@ public class Medicion {
                 '}';
     }
 
+    //----------------------------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------
+    public WeightedLatLng toWeightedLatLng() {
+        return new WeightedLatLng(
+                new LatLng(posicion.getLatitud(),posicion.getLongitud()),
+                medicion_valor);
+    }
+
 
     //----------------------------------------------------------------------------------------------
     //----------------------------------------------------------------------------------------------
@@ -399,6 +410,26 @@ public class Medicion {
      */
     public enum NivelPeligro{
         LEVE,MODERADO,ALTO,MUY_ALTO
+    } // class
+
+
+    public static class RangoNivelesPeligro{
+        public static float TOPE_LEVE_CO = 5.0f;
+        public static float TOPE_MODERADO_CO = 13.0f;
+        static public float TOPE_ALTO_CO = 16.0f;
+        static public float TOPE_MUY_ALTO_CO = 20.0f;
+
+        public static float TOPE_LEVE_NO2 = 53.0f;
+        public static float TOPE_MODERADO_NO2 = 74.0f;
+        static public float TOPE_ALTO_NO2 = 106.0f;
+
+        public static float TOPE_LEVE_SO2 = 57.0f;
+        public static float TOPE_MODERADO_SO2 = 95.0f;
+        static public float TOPE_ALTO_SO2 = 134.0f;
+
+        public static float TOPE_LEVE_O3 = 35.0f;
+        public static float TOPE_MODERADO_O3 = 60.0f;
+        static public float TOPE_ALTO_O3 = 90.0f;
     } // class
     //---------------------------------------------------------------------------------------------
     //---------------------------------------------------------------------------------------------
