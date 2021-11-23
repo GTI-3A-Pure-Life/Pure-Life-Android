@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="CalidadAireZona">
+
+        <attr name="icono" format="reference"/>
+
+        <attr name="nombreSitio" format="string"/>
+
+    </declare-styleable>
+
+</resources>

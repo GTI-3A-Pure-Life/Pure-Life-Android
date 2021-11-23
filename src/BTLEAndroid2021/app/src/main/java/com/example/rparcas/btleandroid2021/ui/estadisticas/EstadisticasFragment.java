@@ -14,7 +14,10 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.rparcas.btleandroid2021.Utilidades;
+import com.example.rparcas.btleandroid2021.customViews.CalidadAireZona;
 import com.example.rparcas.btleandroid2021.databinding.FragmentEstadisticasBinding;
+import com.example.rparcas.btleandroid2021.modelo.InformeCalidad;
+import com.example.rparcas.btleandroid2021.modelo.Medicion;
 
 /**
  * EstadisticasFragment.java
@@ -34,6 +37,31 @@ public class EstadisticasFragment extends Fragment {
 
         binding = FragmentEstadisticasBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
+
+
+        binding.calidadZonaCasa.setInformesCalidad(new InformeCalidad[]{
+                new InformeCalidad(10, Medicion.TipoMedicion.CO),
+                new InformeCalidad(50,Medicion.TipoMedicion.SO2),
+                new InformeCalidad(30,Medicion.TipoMedicion.NO2),
+                new InformeCalidad(10,Medicion.TipoMedicion.O3),
+        });
+
+        binding.calidadZonaTrabajo.setInformesCalidad(new InformeCalidad[]{
+                new InformeCalidad(100, Medicion.TipoMedicion.CO),
+                new InformeCalidad(50,Medicion.TipoMedicion.SO2),
+                new InformeCalidad(30,Medicion.TipoMedicion.NO2),
+                new InformeCalidad(100,Medicion.TipoMedicion.O3),
+        });
+
+        binding.calidadAireExterior.setInformesCalidad(new InformeCalidad[]{
+                new InformeCalidad(30, Medicion.TipoMedicion.CO),
+                new InformeCalidad(50,Medicion.TipoMedicion.SO2),
+                new InformeCalidad(30,Medicion.TipoMedicion.NO2),
+                new InformeCalidad(300,Medicion.TipoMedicion.O3),
+        });
+
+        binding.calidadZonaTrabajo.setEstadoCalidadAire(CalidadAireZona.EstadoCalidadAire.CARGANDO);
+        binding.calidadZonaCasa.setEstadoCalidadAire(CalidadAireZona.EstadoCalidadAire.VACIO);
 
         /*
         final TextView textView = binding.textNotifications;
