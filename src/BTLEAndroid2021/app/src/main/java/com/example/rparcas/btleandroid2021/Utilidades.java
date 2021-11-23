@@ -16,6 +16,7 @@ import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Date;
 import java.util.UUID;
 
 /**
@@ -251,6 +252,28 @@ public class Utilidades {
                 context.getSystemService(Context.CONNECTIVITY_SERVICE);
         return connectivityManager.getActiveNetworkInfo() != null
                 && connectivityManager.getActiveNetworkInfo().isAvailable();
+    }
+
+    /**
+     *
+     * Devuelve la referencia de color respecto a valor aqi
+     * @param valorAQI valor a calcular
+     * @return referencia color
+     */
+    public static int obtenerColorPorValorAQI(int valorAQI,Context context) {
+        if(valorAQI<=50){
+            return context.getResources().getColor(R.color.verde_3abb90);
+        }else if(valorAQI<=150){
+            return context.getResources().getColor(R.color.amarillo_ffc300);
+        }else if(valorAQI<=200){
+            return context.getResources().getColor(R.color.rojo_e23636);
+        }else{
+            return context.getResources().getColor(R.color.rojo_900C3F);
+        }
+    }
+
+    public static int compare(Date a, Date b) {
+        return a.compareTo(b);
     }
 
 } // class

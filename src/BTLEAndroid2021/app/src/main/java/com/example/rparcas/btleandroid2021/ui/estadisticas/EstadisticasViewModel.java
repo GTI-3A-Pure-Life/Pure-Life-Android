@@ -2,6 +2,7 @@ package com.example.rparcas.btleandroid2021.ui.estadisticas;
 
 import android.util.Log;
 
+import com.example.rparcas.btleandroid2021.Utilidades;
 import com.example.rparcas.btleandroid2021.logica.EstadoPeticion;
 import com.example.rparcas.btleandroid2021.logica.Logica;
 import com.example.rparcas.btleandroid2021.logica.PeticionarioREST;
@@ -111,7 +112,7 @@ public class EstadisticasViewModel extends ViewModel {
 
     }
 
-    public void obtenerMedicionesHoy()  {
+    public void obtenerMedicionesDeUnUsuarioHoy(int id)  {
 
         medicionesCOObtenidas =  new ArrayList<>();
         medicionesSO2Obtenidas =  new ArrayList<>();
@@ -125,7 +126,10 @@ public class EstadisticasViewModel extends ViewModel {
         String fechaIni = fechaHoy+" 00:00:00";
         String fechaFin = fechaHoy+" 23:59:59";
 
-        l.obtenerMedicionesDeHasta(fechaIni,fechaFin,new PeticionarioREST.RespuestaREST() {
+        fechaIni = "2021-09-29 00:00:00";
+        fechaFin = "2021-09-29 23:59:59";
+
+        l.obtenerMedicionesDeUnUsuarioHoy(fechaIni,fechaFin,id,new PeticionarioREST.RespuestaREST() {
             @Override
             public void callback(int codigo, String cuerpo) {
 
@@ -148,6 +152,7 @@ public class EstadisticasViewModel extends ViewModel {
                         }
 
                         //ordenar por fecha
+
 
                     } catch (JSONException e) {
                         e.printStackTrace();

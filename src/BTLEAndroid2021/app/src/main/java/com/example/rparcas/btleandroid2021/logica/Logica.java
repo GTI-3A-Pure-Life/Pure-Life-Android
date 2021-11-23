@@ -293,4 +293,31 @@ public class Logica {
         elPeticionarioREST.hacerPeticionREST("GET", restEndpoint,
                 null, laRespuesta);
     }
+
+
+    /**
+     *   fecha-desde:Texto, fecha_hasta:Texto, idUsuario:N->
+     *   obtenerMedicionesDeUnUsuarioHoy() <-
+     *  <- Lista<Medicion>
+     * @author Ruben Pardo Casanova
+     * 23/11/2021
+     *
+     * Obtener las mediciones de un dia de un usuario
+     *
+     * @param fechaIni la fecha inicio
+     * @param fechaFin la fecha final
+     * @param idUsuario latitud del punto central de la zona
+     * @return lista de mediciones
+     */
+    public void obtenerMedicionesDeUnUsuarioHoy(String fechaIni, String fechaFin, int idUsuario, PeticionarioREST.RespuestaREST laRespuesta) {
+
+        PeticionarioREST elPeticionarioREST = new PeticionarioREST();
+        // GET/medicion/usuario?fecha_inicio:Texto&fecha_fin:Texto&idUsuario:N
+        String restEndpoint = RESTConstantes.URL + RESTConstantes.RESCURSO_MEDICIONES_USUARIO
+                +"?fecha_inicio="+fechaIni+"&fecha_fin="+fechaFin
+                +"&idUsuario="+idUsuario;
+
+        elPeticionarioREST.hacerPeticionREST("GET", restEndpoint,
+                null, laRespuesta);
+    }
 }
