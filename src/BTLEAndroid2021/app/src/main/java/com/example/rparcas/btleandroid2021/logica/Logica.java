@@ -213,8 +213,8 @@ public class Logica {
      *
      * Obtener mediciones dentro de un rango temporal
      *
-     * @param fechaInicio el usuario que se envia por la peticion
-     * @param fechaFin el usuario que se envia por la peticion
+     * @param fechaInicio
+     * @param fechaFin
      * @return lista de mediciones mediante el callback
      */
     public void obtenerMedicionesDeHasta(String fechaInicio, String fechaFin, PeticionarioREST.RespuestaREST laRespuesta) {
@@ -232,4 +232,65 @@ public class Logica {
     }
 
 
+    /**
+     *   fecha-desde:Texto, fecha_hasta:Texto, latitud:R, longitud:R, radio:R ->
+     *   obtenerCalidadAirePorTiempoYZona() <-
+     *  <- Lista<InformeCalidadAire>
+     * @author Ruben Pardo Casanova
+     * 23/11/2021
+     *
+     * Obtener la calidad de aire dentro de un rango temporal y una zona ciruclar
+     *
+     * @param fechaInicio
+     * @param fechaFin
+     * @param latitud latitud del punto central de la zona
+     * @param longitud longitud del punto central de la zona
+     * @param radio radio de la zona a obtener la calidad
+     * @return lista de informes de calidad
+     */
+    public void obtenerCalidadAirePorTiempoYZona(String fechaInicio, String fechaFin,
+                                                 double latitud, double longitud, double radio,
+                                                 PeticionarioREST.RespuestaREST laRespuesta) {
+
+
+
+        PeticionarioREST elPeticionarioREST = new PeticionarioREST();
+
+        // GET/calidad_aire/zona?fecha_inicio:Texto&fecha_fin:Texto&latitud:R&longitud:R&radio:N
+        String restEndpoint = RESTConstantes.URL + RESTConstantes.RESCURSO_CALIDAD_AIRE_ZONA
+                +"?fecha_inicio="+fechaInicio+"&fecha_fin="+fechaFin
+                +"&latitud="+latitud+"&longitud="+longitud+"&radio="+radio;
+
+        elPeticionarioREST.hacerPeticionREST("GET", restEndpoint,
+                null, laRespuesta);
+
+    }
+
+
+    /**
+     *   fecha-desde:Texto, fecha_hasta:Texto, idUsuario:N->
+     *   obtenerCalidadAirePorTiempoYUsuario() <-
+     *  <- Lista<InformeCalidadAire>
+     * @author Ruben Pardo Casanova
+     * 23/11/2021
+     *
+     * Obtener la calidad de aire dentro de un rango temporal de un usuario
+     *
+     * @param fechaIni la fecha inicio
+     * @param fechaFin la fecha final
+     * @param idUsuario latitud del punto central de la zona
+     * @return lista de informes de calidad
+     */
+    public void obtenerCalidadAirePorTiempoYUsuario(String fechaIni, String fechaFin, int idUsuario, PeticionarioREST.RespuestaREST laRespuesta) {
+
+        PeticionarioREST elPeticionarioREST = new PeticionarioREST();
+
+        // GET/calidad_aire/zona?fecha_inicio:Texto&fecha_fin:Texto&latitud:R&longitud:R&radio:N
+        String restEndpoint = RESTConstantes.URL + RESTConstantes.RESCURSO_CALIDAD_AIRE_USUARIO
+                +"?fecha_inicio="+fechaIni+"&fecha_fin="+fechaFin
+                +"&idUsuario="+idUsuario;
+
+        elPeticionarioREST.hacerPeticionREST("GET", restEndpoint,
+                null, laRespuesta);
+    }
 }
