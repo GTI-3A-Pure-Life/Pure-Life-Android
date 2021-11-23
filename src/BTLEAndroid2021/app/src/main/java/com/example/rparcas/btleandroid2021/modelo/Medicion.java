@@ -288,6 +288,7 @@ public class Medicion {
     public double getValor() {
         return this.medicion_valor;
     }
+    public Timestamp getMedicion_fecha() {return this.medicion_fecha;}
 
 
     //----------------------------------------------------------------------------------------------
