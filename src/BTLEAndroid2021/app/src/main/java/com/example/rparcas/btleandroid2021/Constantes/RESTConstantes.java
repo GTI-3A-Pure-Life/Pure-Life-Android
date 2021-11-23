@@ -10,4 +10,6 @@ public class RESTConstantes {
     public static final String RESCURSO_INICIAR_SESION = "usuario/iniciar_sesion";
     public static final String RESCURSO_REGISTRARSE = "usuario/registrarse";
 
+    public static final String RESCURSO_CALIDAD_AIRE_ZONA = "calidad_aire/zona";
+    public static final String RESCURSO_CALIDAD_AIRE_USUARIO = "calidad_aire/usuario";
 }

@@ -45,6 +45,7 @@ public class CalidadAireZona extends CardView {
     private EstadoCalidadAire estadoCalidadAire = EstadoCalidadAire.VACIO;
 
     private final String TAG = "calidad_aire_zona";
+    private String calidadAire;
 
     //-----------------------------------------------------------------------------------
     //-----------------------------------------------------------------------------------
@@ -98,6 +99,8 @@ public class CalidadAireZona extends CardView {
                 tvValorAQI.setText(getResources().getString(R.string.no_tienes_posicion_asignada_de)+" "+nombreSitio);
                 fondo.setBackgroundColor(getResources().getColor(R.color.design_default_color_background));
                 tvCalidadAire.setText("");
+                ivIcono.setImageResource(icono);
+                tvNombeLugar.setText(nombreSitio);
                 break;
             case CARGANDO:
                 layoutCarga.setVisibility(VISIBLE);
@@ -116,7 +119,7 @@ public class CalidadAireZona extends CardView {
                 }
 
                 valorAQI = informeCalidadAMostrar.getValorAQI();
-                String calidadAire="";
+                calidadAire="";
                 int colorFondo = 0;
                 if(valorAQI<=50){
                     // bueno
@@ -142,15 +145,11 @@ public class CalidadAireZona extends CardView {
                     colorFondo = (getResources().getColor(R.color.rojo_900C3F));
                 }
 
-                calidadAire += ". "+getResources().getString(R.string.estas_mas_expuesto_a) +" " +informeCalidadAMostrar.getTipoGas().getNombreGas();
-                tvCalidadAire.setText(calidadAire);
+                tvCalidadAire.setText(calidadAire+". "+getResources().getString(R.string.estas_mas_expuesto_a) +" " +informeCalidadAMostrar.getTipoGas().getNombreGas());
                 fondo.setBackgroundColor(colorFondo);
                 tvValorAQI.setText(valorAQI+" AQI");
-
                 ivIcono.setImageResource(icono);
                 tvNombeLugar.setText(nombreSitio);
-
-
                 break;
         }
 
@@ -174,6 +173,10 @@ public class CalidadAireZona extends CardView {
         personalizarVista();
         invalidate();
         requestLayout();
+    }
+
+    public String getResumenCalidadAire() {
+        return calidadAire;
     }
 
     public enum EstadoCalidadAire{

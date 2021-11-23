@@ -41,7 +41,7 @@
                 android:contentDescription="Informacion sobre gases"
                 android:src="@drawable/info"
                 android:visibility="visible"
-                app:layout_constraintBottom_toTopOf="@+id/textView4"
+                app:layout_constraintBottom_toTopOf="@+id/tvExposicionDeGasHoy"
                 app:layout_constraintEnd_toEndOf="@+id/tituloDeActividadEstadisticas"
                 app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toStartOf="@+id/tituloDeActividadEstadisticas"
@@ -50,11 +50,10 @@
         </LinearLayout>
 
         <TextView
-            android:id="@+id/textView4"
+            android:id="@+id/tvExposicionDeGasHoy"
+            style="@style/SubTitulo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            style="@style/SubTitulo"
-            android:text="Exposición a gases adecuada"
             app:layout_constraintEnd_toEndOf="@+id/tituloDeActividadEstadisticas"
             app:layout_constraintStart_toStartOf="@+id/tituloDeActividadEstadisticas"
             app:layout_constraintTop_toBottomOf="@+id/tituloDeActividadEstadisticas" />
@@ -65,9 +64,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="0dp"
             android:src="@drawable/grafica"
-            app:layout_constraintEnd_toEndOf="@+id/textView4"
-            app:layout_constraintStart_toStartOf="@+id/textView4"
-            app:layout_constraintTop_toBottomOf="@+id/textView4"
+            app:layout_constraintEnd_toEndOf="@+id/tvExposicionDeGasHoy"
+            app:layout_constraintStart_toStartOf="@+id/tvExposicionDeGasHoy"
+            app:layout_constraintTop_toBottomOf="@+id/tvExposicionDeGasHoy"
             tools:ignore="ImageContrastCheck" />
 
         <LinearLayout
@@ -88,7 +87,7 @@
                 app:nombreSitio="@string/casa" />
 
             <com.example.rparcas.btleandroid2021.customViews.CalidadAireZona
-                android:id="@+id/calidadAireExterior"
+                android:id="@+id/calidadZonaExterior"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"

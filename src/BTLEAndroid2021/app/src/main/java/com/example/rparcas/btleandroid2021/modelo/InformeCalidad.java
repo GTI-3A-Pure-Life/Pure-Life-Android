@@ -1,5 +1,8 @@
 package com.example.rparcas.btleandroid2021.modelo;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * Ruben Pardo Casanova
  * 21/11/2021
@@ -13,6 +16,11 @@ public class InformeCalidad {
     public InformeCalidad(float valorAQI, Medicion.TipoMedicion tipoGas) {
         this.valorAQI = valorAQI;
         this.tipoGas = tipoGas;
+    }
+
+    public InformeCalidad(JSONObject json) throws JSONException {
+        valorAQI = (float) json.getDouble("valor");
+        tipoGas = Medicion.TipoMedicion.getTipoById(json.getInt("tipoGas"));
     }
 
     public float getValorAQI() {
