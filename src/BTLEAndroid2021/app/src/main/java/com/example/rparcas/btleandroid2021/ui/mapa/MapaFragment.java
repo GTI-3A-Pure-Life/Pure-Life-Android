@@ -34,9 +34,11 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.TileOverlay;
 import com.google.android.gms.maps.model.TileOverlayOptions;
 import com.google.maps.android.heatmaps.Gradient;
@@ -53,7 +55,7 @@ import static android.content.Context.LOCATION_SERVICE;
  * 01/11/2021
  * Clase que controla la vista del fragmento Mapa
  */
-public class MapaFragment extends Fragment implements OnMapReadyCallback, LocationListener, GoogleMap.OnMarkerClickListener{
+public class MapaFragment extends Fragment implements OnMapReadyCallback, LocationListener,GoogleMap.OnMapClickListener {
 
     private MapaViewModel mapaViewModel;
     private FragmentMapaBinding binding;
@@ -131,8 +133,6 @@ public class MapaFragment extends Fragment implements OnMapReadyCallback, Locati
             }
         });
 
-        // obtener las mediciones cuando se carguen de bd y de filtrar
-        mapaViewModel.getMedicionesAMostrar().observe(getViewLifecycleOwner(), this::representarMedicionesEnMapa);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -150,88 +150,8 @@ public class MapaFragment extends Fragment implements OnMapReadyCallback, Locati
 
     // ---------------------------------------------------------------------------------------------
     // ---------------------------------------------------------------------------------------------
-    /**
-     * Lista[Mediciones] -> representarMedicionesEnMapa()
-     *
-     * @author Ruben Pardo Casanova
-     * 15/11/2021
-     *
-     * @param mediciones las mediciones
-     */
-    private void representarMedicionesEnMapa(ArrayList<WeightedLatLng> mediciones) {
-        Log.d("SPINNER","Se pintan en el mapa: -----"+ mediciones);
-
-        //int[] colors = {R.color.verde_3abb90, R.color.amarillo_ffc300, R.color.rojo_e23636,R.color.rojo_900C3F};
-        //float[] startPoints = {0.2f,.65f, .8f, 1.0f};
-        //Gradient gradient = new Gradient(colors, startPoints);
-
-        if(!mediciones.isEmpty()){
-            HeatmapTileProvider heatmapTileProvider = new HeatmapTileProvider.Builder()
-                    .weightedData(mediciones)
-                    .radius(40)
-                    .opacity(0.4)
-                    //.maxIntensity(20)
-                    //.gradient(gradient)
-                    .build();
-
-            if(overlayActual!=null){
-                overlayActual.remove();
-            }
-            overlayActual = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(heatmapTileProvider));
-        }else{
-            if(overlayActual!=null){
-                overlayActual.remove();
-            }
-        }
-
-    }
-
-    private void representarMedicionesEnMapaFALSO() {
-        ArrayList<WeightedLatLng> mediciones = new ArrayList<>();
-
-        for(int i = 1; i<50; i++){
-            for(int j = 1; j<10; j++){
-                mediciones.add(new WeightedLatLng(new LatLng(Double.parseDouble("38.99"+j),Double.parseDouble("-0.16"+(100-i))), j*5 ));
-            }
-        }
-
-
-
-
-        int[] colors = {Color.GREEN, Color.parseColor("#FF0000")};
-        float[] startPoints = {0.2f, 1f};
-        Gradient gradient = new Gradient(colors, startPoints);
-
-        HeatmapTileProvider heatmapTileProvider = new HeatmapTileProvider.Builder()
-                .weightedData(mediciones)
-                .radius(20)
-                .opacity(0.4)
-                //.gradient(gradient)
-                .build();
-
-        if(overlayActual!=null){
-            overlayActual.remove();
-        }
-        overlayActual = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(heatmapTileProvider));
-    }
-
-
-    // ---------------------------------------------------------------------------------------------
-    // ---------------------------------------------------------------------------------------------
     private void initCallbacks() {
-        binding.spinnerTipoGas.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
-                Log.d("SPINNER","item selected: "+parent.getItemAtPosition(position));
-                mapaViewModel.filtrarMedicionPorTipo(Medicion.TipoMedicion.getTipoById(position));
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
 
         binding.toggleButtonCambiarTipoMapa.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -249,7 +169,7 @@ public class MapaFragment extends Fragment implements OnMapReadyCallback, Locati
     // ---------------------------------------------------------------------------------------------
     private void cambiarModoMapaRutas() {
 
-        binding.spinnerTipoGas.setVisibility(View.INVISIBLE);
+
         binding.webview.setVisibility(View.INVISIBLE);
         mapFragment.getView().setVisibility(View.VISIBLE);
 
@@ -263,13 +183,13 @@ public class MapaFragment extends Fragment implements OnMapReadyCallback, Locati
     // ---------------------------------------------------------------------------------------------
     // ---------------------------------------------------------------------------------------------
     private void cambiarModoMapaCalor() {
-        binding.spinnerTipoGas.setVisibility(View.VISIBLE);
+
         mapFragment.getView().setVisibility(View.INVISIBLE);
         binding.webview.setVisibility(View.VISIBLE);
 
         binding.webview.clearCache(true);
         binding.webview.getSettings().setJavaScriptEnabled(true);
-        binding.webview.loadUrl("http://192.168.1.141/prueba.html");
+        binding.webview.loadUrl("https://rparcas.upv.edu.es/develop/src/iFrameMapa.html");
         //representarMedicionesEnMapaFALSO();
         //mapaViewModel.obtenerMedicionesHoy();
         //mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(getContext(),R.raw.estilo_google_map_sin_poi_json));
@@ -284,7 +204,8 @@ public class MapaFragment extends Fragment implements OnMapReadyCallback, Locati
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         mMap.getUiSettings().setZoomControlsEnabled(true);
 
-        mMap.setOnMarkerClickListener(this);
+        mMap.setOnMapClickListener(this);
+
         if(ultimaLocalizacion!=null){
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(ultimaLocalizacion.getLatitude(), ultimaLocalizacion.getLongitude()),15.0F));
 
@@ -379,14 +300,6 @@ public class MapaFragment extends Fragment implements OnMapReadyCallback, Locati
     // ---------------------------------------------------------------------------------------------
     // ---------------------------------------------------------------------------------------------
     @Override
-    public boolean onMarkerClick(Marker marker) {
-        return false;
-    }
-
-
-    // ---------------------------------------------------------------------------------------------
-    // ---------------------------------------------------------------------------------------------
-    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == PERMISION_CODE_LOCATION) {
             Log.d("MAPA","permissions result");
@@ -403,5 +316,13 @@ public class MapaFragment extends Fragment implements OnMapReadyCallback, Locati
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
+    // ---------------------------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------
+    @Override
+    public void onMapClick(LatLng latLng) {
+        mMap.clear();
+        Marker m = mMap.addMarker(new MarkerOptions()
+                .position(latLng));
+    }
 
 }
