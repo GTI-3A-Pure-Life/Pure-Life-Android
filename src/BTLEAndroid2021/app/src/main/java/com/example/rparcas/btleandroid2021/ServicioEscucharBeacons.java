@@ -4,7 +4,6 @@ import android.app.IntentService;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanResult;
@@ -511,7 +510,7 @@ public class ServicioEscucharBeacons extends IntentService {
         Log.d(ETIQUETA_LOG, "tratarTramaBeacon: nombre: " + dispositivo);
 
         if(dispositivo.equals(dispositivoBuscado)){
-            comprobarDesconexion(Utilidades.calcularDistanciaDispositivoBluetooth(rssi,tib.getTxPower()));
+            comprobarDesconexionPorDistancia(Utilidades.calcularDistanciaDispositivoBluetooth(rssi,tib.getTxPower()));
             Log.d(ETIQUETA_LOG, "tratarTramaBeacon: nombre: " + dispositivo);
             if(major == 1000){
                 Log.d(ETIQUETA_LOG, "tratarTramaBeacon: bateria: " + minor);
@@ -540,9 +539,9 @@ public class ServicioEscucharBeacons extends IntentService {
      * 12/11/2021
      * @param distancia en m que tenemos entre el sensor y el movil
      */
-    private void comprobarDesconexion(double distancia){
+    private void comprobarDesconexionPorDistancia(double distancia){
         Log.d(ETIQUETA_LOG, "comprobarDesconexion: "+distancia);
-        if (distancia > 3) {
+        if (distancia > 1500) {
             //desconectar cuando está a mas de 3 metros
             enviarMensajeALaHostActivity("DistanciaMaxima");
         }
