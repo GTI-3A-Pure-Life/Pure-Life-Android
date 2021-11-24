@@ -1,6 +1,5 @@
 package com.example.rparcas.btleandroid2021.ui.estadisticas;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
