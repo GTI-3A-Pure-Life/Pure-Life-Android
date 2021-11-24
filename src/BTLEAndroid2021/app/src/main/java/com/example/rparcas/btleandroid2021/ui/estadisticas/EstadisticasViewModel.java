@@ -34,6 +34,8 @@ import org.json.JSONObject;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 /**
  * EstadisticasViewModel.java
@@ -152,7 +154,10 @@ public class EstadisticasViewModel extends ViewModel {
                         }
 
                         //ordenar por fecha
-
+                        Utilidades.ordenarMedicionesPorFecha(medicionesCOObtenidas);
+                        Utilidades.ordenarMedicionesPorFecha(medicionesNO2Obtenidas);
+                        Utilidades.ordenarMedicionesPorFecha(medicionesSO2Obtenidas);
+                        Utilidades.ordenarMedicionesPorFecha(medicionesO3Obtenidas);
 
                     } catch (JSONException e) {
                         e.printStackTrace();

@@ -2,6 +2,7 @@ package com.example.rparcas.btleandroid2021.modelo;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.util.Log;
 
 import com.example.rparcas.btleandroid2021.SQLITE.MedicionContract;
 import com.example.rparcas.btleandroid2021.Utilidades;
@@ -21,12 +22,12 @@ import java.util.List;
  * 10/03/2021
  * @author Rubén Pardo Casanova
  */
-public class Medicion {
+public class Medicion{
 
     private final String FECHA_FROMATO = "yyyy-MM-dd hh:mm:ss";
 
 
-    private final double medicion_valor;
+    private double medicion_valor;
     private final int usuario_id;
     private final String sensor_id;
     private final Posicion posicion;
@@ -100,6 +101,23 @@ public class Medicion {
         }
 
 
+    }
+
+    public Medicion(String fecha, double valor) {
+        this.medicion_valor = valor;
+
+        try {
+            SimpleDateFormat dateFormat = new SimpleDateFormat(FECHA_FROMATO);
+            java.util.Date parsedDate = null;
+            parsedDate = dateFormat.parse(fecha);
+            this.medicion_fecha = new java.sql.Timestamp(parsedDate.getTime());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        usuario_id = 0;
+        posicion = null;
+        sensor_id = null;
     }
 
     //----------------------------------------------------------------------------------------------
@@ -338,12 +356,8 @@ public class Medicion {
                 '}';
     }
 
-    //----------------------------------------------------------------------------------------------
-    //----------------------------------------------------------------------------------------------
-    public WeightedLatLng toWeightedLatLng() {
-        return new WeightedLatLng(
-                new LatLng(posicion.getLatitud(),posicion.getLongitud()),
-                medicion_valor);
+    public void setValor(double valor) {
+        this.medicion_valor = valor;
     }
 
 

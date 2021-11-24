@@ -82,102 +82,10 @@ public class MapaViewModel extends ViewModel {
     // --------------------------------------------------------------------------------------
     // --------------------------------------------------------------------------------------
 
-    /**
-     *
-     * TipoMedicion -> filtrarMedicionPorTipo() -> Lista<Medicion>
-     *
-     * @author Ruben Pardo Casanova
-     * 15/11/2021
-     *
-     * @param tipoGas tipo de gas a filtrar
-     * @return devuelve la listas de mediciones filtradas en el observable de mediciones a mostrar
-     */
-    public void filtrarMedicionPorTipo(Medicion.TipoMedicion tipoGas) {
 
-        ArrayList<WeightedLatLng> mediciones = new ArrayList<>();
-
-        // todos
-        if(tipoGas == null){
-            mediciones.addAll(obtenerTodasListaWeightLatLngEnUna());
-        }else{
-            mediciones.addAll(weigthLatLngPorTipo.get(tipoGas));
-        }
-
-
-
-        medicionesAMostrar.setValue(mediciones);
-    }
 
     // --------------------------------------------------------------------------------------
     // --------------------------------------------------------------------------------------
 
-    /**
-     *
-     *  -> obtenerMedicionesHoy() -> Texto, Lista<Medicion>, EstadoPeticion
-     *
-     * @author Ruben Pardo Casanova
-     * 15/11/2021
-     *
-     * @return devuelve la listas de mediciones filtradas en el observable de mediciones a mostrar
-     */
-    public void obtenerMedicionesHoy()  {
-        estadoPeticionObtenerMediciones.setValue(EstadoPeticion.EN_PROCESO);
-
-        limpiarWeigthLatLngPorTipo();
-
-        Logica l = new Logica();
-        Timestamp hoy = new Timestamp(System.currentTimeMillis());
-        String fechaHoy = new SimpleDateFormat("yyyy-MM-dd").format(hoy);
-
-        String fechaIni = fechaHoy+" 00:00:00";
-        String fechaFin = fechaHoy+" 23:59:59";
-
-        l.obtenerMedicionesDeHasta(fechaIni,fechaFin,new PeticionarioREST.RespuestaREST() {
-            @Override
-            public void callback(int codigo, String cuerpo) {
-
-                if(codigo == 200){
-                    // hay datos
-                    try {
-                        JSONArray medicionesJSON = new JSONArray(cuerpo);
-                        // obtenemos todas las referencias a los objetos
-                        // recorremos los objetos
-                        for(int i=0;i<medicionesJSON.length();i++){
-                            Medicion m = new Medicion((JSONObject) medicionesJSON.get(i));
-                            weigthLatLngPorTipo.get(m.getTipoMedicion()).add(m.toWeightedLatLng());
-                        }
-
-                        // se realizo correctamente la peticion
-                        estadoPeticionObtenerMediciones.setValue(EstadoPeticion.EXITO);
-                        medicionesAMostrar.setValue(obtenerTodasListaWeightLatLngEnUna());
-
-                    } catch (JSONException e) {
-                        estadoPeticionObtenerMediciones.setValue(EstadoPeticion.ERROR);
-                        textoErrorPeticion = "Error inesperado";
-
-                        Log.e("REST","obtenerMedicionesDeHasta(): error al intentar pasar a json el objeto de mediciones");
-                        Log.e("REST","obtenerMedicionesDeHasta(): "+e.getMessage());
-                    }
-
-                }else if(codigo == 204){
-                    // vacio
-                    // se realizo correctamente la peticion
-                    estadoPeticionObtenerMediciones.setValue(EstadoPeticion.EXITO);
-                    medicionesAMostrar.setValue(obtenerTodasListaWeightLatLngEnUna());
-                }
-                else if(codigo == 500){
-                    // error
-                    estadoPeticionObtenerMediciones.setValue(EstadoPeticion.ERROR);
-                    textoErrorPeticion = "Error inesperado";
-                    Log.e("REST","obtenerMedicionesDeHasta() codigo respuesta 500: "+cuerpo);
-                }
-
-            }
-
-
-        });
-
-
-    }
 
 }

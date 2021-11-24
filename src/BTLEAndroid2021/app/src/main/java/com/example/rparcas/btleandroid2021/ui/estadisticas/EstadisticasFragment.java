@@ -1,6 +1,7 @@
 package com.example.rparcas.btleandroid2021.ui.estadisticas;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,10 +19,7 @@ import com.example.rparcas.btleandroid2021.customViews.CalidadAireZona;
 import com.example.rparcas.btleandroid2021.databinding.FragmentEstadisticasBinding;
 import com.example.rparcas.btleandroid2021.modelo.Medicion;
 import com.example.rparcas.btleandroid2021.modelo.Usuario;
-import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Description;
-import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
@@ -31,8 +29,6 @@ import com.github.mikephil.charting.utils.ColorTemplate;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * EstadisticasFragment.java
@@ -45,12 +41,8 @@ public class EstadisticasFragment extends Fragment {
     private EstadisticasViewModel estadisticasViewModel;
     private FragmentEstadisticasBinding binding;
 
-    // variable para nuestra gráfica
-    private LineChart lineChart;
-    private LineData lineData;
 
-
-    private ArrayList<Medicion> medicionesAMostrar;
+    private ArrayList<Entry> entryListGrafica;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -65,9 +57,9 @@ public class EstadisticasFragment extends Fragment {
         setMaximo(350); // set maximo progress bars
         initObservables();
         initCallbacks();
+        inicializarGrafica();
+
         // obtener el usuario
-
-
         PureLifeApplication appState = ((PureLifeApplication) getActivity().getApplication());
         Usuario u = appState.getUsuario();
 
@@ -81,9 +73,6 @@ public class EstadisticasFragment extends Fragment {
 
 
     private void initCallbacks(){
-
-        //conectamos grafica con su vista en el xml
-        lineChart = binding.grafico;
 
         Context c = this.getContext();
 
@@ -100,35 +89,42 @@ public class EstadisticasFragment extends Fragment {
                 binding.grafico.setVisibility(View.INVISIBLE);
                 binding.tablaGases.setVisibility(View.VISIBLE);
                 binding.cerrarGrafica.setVisibility(View.GONE);
-                binding.grafico.setData(null);
+
+                // limpiar grafico
+                if(entryListGrafica !=null){
+                    entryListGrafica.clear();
+                    binding.grafico.notifyDataSetChanged();
+                }
+
+
             }
         });
 
         binding.tbCO.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mostrarGrafica(estadisticasViewModel.medicionesCOObtenidas);
+                mostrarGrafica(estadisticasViewModel.medicionesCOObtenidas,Utilidades.obtenerColorPorValorAQI(binding.pBarCO.getProgress(),getContext()));
             }
         });
 
         binding.tbNO2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mostrarGrafica(estadisticasViewModel.medicionesNO2Obtenidas);
+                mostrarGrafica(estadisticasViewModel.medicionesNO2Obtenidas,Utilidades.obtenerColorPorValorAQI(binding.pBarNO2.getProgress(),getContext()));
             }
         });
 
         binding.tbO3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mostrarGrafica(estadisticasViewModel.medicionesO3Obtenidas);
+                mostrarGrafica(estadisticasViewModel.medicionesO3Obtenidas,Utilidades.obtenerColorPorValorAQI(binding.pBarO3.getProgress(),getContext()));
             }
         });
 
         binding.tbSO2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mostrarGrafica(estadisticasViewModel.medicionesSO2Obtenidas);
+                mostrarGrafica(estadisticasViewModel.medicionesSO2Obtenidas,Utilidades.obtenerColorPorValorAQI(binding.pBarSO2.getProgress(),getContext()));
             }
         });
     }
@@ -184,6 +180,11 @@ public class EstadisticasFragment extends Fragment {
                         String texto = getResources().getString(R.string.la_calidad_de_aire_respirada_hoy)
                                 +" "+binding.calidadZonaExterior.getResumenCalidadAire();
                         binding.tvExposicionDeGasHoy.setText(texto);
+
+                        binding.tvCOAQI.setText(String.valueOf(Math.round(informeCalidadExterior[0].getValorAQI()))+" AQI");
+                        binding.tvO3AQI.setText(String.valueOf(Math.round(informeCalidadExterior[3].getValorAQI()))+" AQI");
+                        binding.tvNO2AQI.setText(String.valueOf(Math.round(informeCalidadExterior[2].getValorAQI()))+" AQI");
+                        binding.tvSO2AQI.setText(String.valueOf(Math.round(informeCalidadExterior[1].getValorAQI()))+" AQI");
                         // modificar barras de progreso
                         setProgreso(Math.round(informeCalidadExterior[0].getValorAQI()),
                                 Math.round(informeCalidadExterior[1].getValorAQI()),
@@ -202,6 +203,20 @@ public class EstadisticasFragment extends Fragment {
 
     }
 
+    private void inicializarGrafica(){
+        //binding.grafico.getXAxis().setValueFormatter(new MyXAxisValueFormatter());
+        binding.grafico.getAxisRight().setEnabled(false);
+        binding.grafico.getXAxis().setDrawGridLines(false);
+        binding.grafico.getXAxis().setEnabled(false);
+        binding.grafico.getAxisLeft().setDrawGridLines(false);
+        binding.grafico.getLegend().setEnabled(false);
+        binding.grafico.setTouchEnabled(false);
+        binding.grafico.setDragEnabled(false);
+        binding.grafico.setScaleEnabled(false);
+        binding.grafico.setPinchZoom(false);
+        binding.grafico.setAutoScaleMinMaxEnabled(true);
+        binding.grafico.getXAxis().setLabelCount(5);
+    }
 
     /**
      * Metodo para mostrar y setear la gráfica
@@ -209,39 +224,48 @@ public class EstadisticasFragment extends Fragment {
      * @version 19/11/2021
      * @param mediciones
      */
-    private void mostrarGrafica(ArrayList<Medicion> mediciones) {
+    private void mostrarGrafica(ArrayList<Medicion> mediciones, int color) {
 
-        List<Entry> entryList = new ArrayList<>();
+        entryListGrafica = new ArrayList<>();
+        // variable para nuestra gráfica
 
         binding.grafico.setVisibility(View.VISIBLE);
         binding.tablaGases.setVisibility(View.INVISIBLE);
         binding.cerrarGrafica.setVisibility(View.VISIBLE);
+
+
         if(!mediciones.isEmpty()){
+           //ArrayList<Medicion> medicionesAMostrar = Utilidades.transformarMedicionesAArrayMedicionesPorMinuto24Horas(mediciones);
+           //Log.d("GRAFICA", "mostrarGrafica: "+medicionesAMostrar);
             for(int i = 0; i< mediciones.size(); i ++){
 
-                entryList.add(new Entry(mediciones.get(i).getMedicion_fecha().getTime(), (float)mediciones.get(i).getValor()));
+                Entry e = new Entry(i, (float)mediciones.get(i).getValor());
+                entryListGrafica.add(e);
             }
 
-
-            LineDataSet lineDataSet = new LineDataSet(entryList,null);
+            LineDataSet lineDataSet = new LineDataSet(entryListGrafica,null);
             Description desc = new Description();
-            desc.setText("Gráfica de exposición diaria a " + mediciones.get(0).getTipoMedicion() + " ug/m3");
-            lineChart.setDescription(desc);
+            desc.setText("Exposición (AQI) de "+mediciones.get(0).getTipoMedicion().getNombreGas());
+            binding.grafico.setDescription(desc);
 
 
-            XAxis xAxis = lineChart.getXAxis();
-            xAxis.setValueFormatter(new MyXAxisValueFormatter());
-            xAxis.setLabelCount(5);
-            YAxis yAxisLeft = lineChart.getAxisLeft();
-            YAxis yAxisRight = lineChart.getAxisRight();
+
 
             lineDataSet.setColors(ColorTemplate.PASTEL_COLORS);
-            lineDataSet.setFillAlpha(110);
-            //actualizamos grafica si se actualizan los datos
-            lineData = new LineData(lineDataSet);
-            lineChart.setData(lineData);
+            lineDataSet.setColor(color);
+            lineDataSet.setFillColor(color);
+            //lineDataSet.setFillAlpha(300);
+            lineDataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+            lineDataSet.setCubicIntensity(.09f);
+            lineDataSet.setDrawFilled(true);
+            lineDataSet.setLineWidth(2);
+            //lineDataSet.setM(10);
 
-            lineChart.invalidate();
+            //actualizamos grafica si se actualizan los datos
+            LineData lineData = new LineData(lineDataSet);
+
+            binding.grafico.setData(lineData);
+            binding.grafico.notifyDataSetChanged();
         }
 
 
@@ -296,16 +320,18 @@ public class EstadisticasFragment extends Fragment {
     }
 
     public class MyXAxisValueFormatter extends IndexAxisValueFormatter{
+
+
+
         @Override
         public String getFormattedValue(float value) {
-
-            Log.d("ENTRA", "getFormattedValue: "+value);
             // Convert float value to date string
             // Convert from days back to milliseconds to format time  to show to the user
-            long emissionsMilliSince1970Time = TimeUnit.DAYS.toMillis((long)value);
+
             // Show time in local version
-            Date timeMilliseconds = new Date(emissionsMilliSince1970Time);
-            SimpleDateFormat dateTimeFormat = new SimpleDateFormat( "hh:mm a");
+            Date timeMilliseconds = new Date((long)value);
+            SimpleDateFormat dateTimeFormat = new SimpleDateFormat( "HH:mm");
+
 
             return dateTimeFormat.format(timeMilliseconds);
         }

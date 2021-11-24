@@ -68,10 +68,10 @@
     <string name="infSO2">La contaminación del aire por SO2 causa los siguientes efectos: Dificultad para respirar, inflamación de las vías respiratorias, irritación ocular por formación del ácido sulfuroso sobre las mucosas húmedas.</string>
     <string name="infO3">La exposición a altos niveles afecta al flujo expiratorio, y provoca sintomas como opresión en el pecho, tos, irritación de ojos, nariz y garganta y provoca una respuesta inflamatoria.</string>
 
-    <string name="CO">CO</string>
-    <string name="SO2">SO2</string>
-    <string name="O3">O3</string>
-    <string name="NO2">NO2</string>
+    <string name="CO">CO:</string>
+    <string name="SO2">SO2:</string>
+    <string name="O3">O3:</string>
+    <string name="NO2">NO2:</string>
     <string name="leve">LEVE</string>
     <string name="moderado">MODERADO</string>
     <string name="alto">ALTO</string>

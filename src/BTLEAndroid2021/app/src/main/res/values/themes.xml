@@ -23,6 +23,11 @@
         <item name="android:fontFamily">@font/overpass</item>
     </style>
 
+    <style name="ProgressBarRounded" parent="@android:style/Widget.ProgressBar.Horizontal">
+        <item name="android:indeterminateDrawable">@android:drawable/progress_indeterminate_horizontal</item>
+        <item name="android:progressDrawable">@drawable/progress_bar_rounded</item>
+    </style>
+
     <!--=========================================================================================-->
     <!-- Splash activity theme. -->
     <!--=========================================================================================-->

@@ -12,12 +12,19 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 
+import com.example.rparcas.btleandroid2021.modelo.Medicion;
+
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.UUID;
 
@@ -287,10 +294,92 @@ public class Utilidades {
         }
     }
 
-    public static int compare(Date a, Date b) {
-        return a.compareTo(b);
+
+
+    /**
+     * List<Medicion> -> ordenarMedicionesPorFecha() -> Lista<Medicion>
+     * @param mediciones mediciones a ordenar porfecha
+     */
+    public static void ordenarMedicionesPorFecha(ArrayList<Medicion> mediciones) {
+        Collections.sort(mediciones, new Comparator<Medicion>() {
+            public int compare(Medicion o1, Medicion o2) {
+                return o1.getMedicion_fecha().compareTo(o2.getMedicion_fecha());
+            }
+        });
     }
 
+
+    /**
+     *
+     * Transoforma un array de n mediciones en un array de 1440 minutos(los minutos de un dia)
+     * todoas las mediciones que comparten el mismo minuto se hace una media
+     *
+     * List<Medicion> -> transformarMedicionesAArrayMedicionesPorMinuto24Horas() -> Lista<Medicion>
+     * @param mediciones mediciones a transformar
+     */
+    public static ArrayList<Medicion> transformarMedicionesAArrayMedicionesPorMinuto24Horas(ArrayList<Medicion> mediciones) {
+        int minutos24Horas = 1440;
+        ArrayList<Medicion> mediciones24Horas = new ArrayList<>(minutos24Horas);
+        Timestamp hoy = new Timestamp(System.currentTimeMillis());
+        String fechaHoy = new SimpleDateFormat("yyyy-MM-dd").format(hoy);
+        fechaHoy = "2021-09-29";//TODO quitar
+        // inicializar array
+        for(int i = 0; i<minutos24Horas; i++){
+            int hora = i/60;
+            int minuto = i%60;
+            String fecha = fechaHoy;
+            // multiplo de 60, solo hora
+            String horaStr = hora>=10 ? String.valueOf(hora) : "0"+hora;
+            String minutoStr = minuto>=10 ? String.valueOf(minuto) : "0"+minuto;
+            fecha += " "+horaStr+":"+minutoStr+":00";
+
+            mediciones24Horas.add(new Medicion(fecha,0));
+        }
+
+        // poner los valores en cada uno de los minutos correspondientes, si hay varios en el mismo
+        // media aritmetica
+
+        int anteriorMinuto = -1;
+        int contadorMedicionesMismoMintuo = 1;
+        double media = 1;
+        for(Medicion m : mediciones){
+            int hora = m.getMedicion_fecha().getHours();
+            int minutos = m.getMedicion_fecha().getMinutes();
+
+            int indice = hora*60+minutos;
+            Log.d("FECHA24", "----------------------------------------------");
+            Log.d("FECHA24", "transformarMedicionesAArrayMedicionesPorMinuto24Horas: indice: "+indice);
+            Log.d("FECHA24", "transformarMedicionesAArrayMedicionesPorMinuto24Horas: valor: "+m.getValor());
+
+            if(anteriorMinuto != indice){
+                anteriorMinuto = indice;
+                contadorMedicionesMismoMintuo = 1;
+                media = m.getValor();
+                mediciones24Horas.get(indice).setValor(m.getValor());
+
+            }
+            else{
+
+                double valorAnterior = mediciones24Horas.get(indice).getValor();
+                Log.d("FECHA24", "transformarMedicionesAArrayMedicionesPorMinuto24Horas: valor anterior: "+valorAnterior+"");
+
+                Log.d("FECHA24", "transformarMedicionesAArrayMedicionesPorMinuto24Horas: media anterior: "+media+"");
+                Log.d("FECHA24", "transformarMedicionesAArrayMedicionesPorMinuto24Horas: hay : "+contadorMedicionesMismoMintuo+" mediciones");
+                contadorMedicionesMismoMintuo++;
+                double nuevaMedia = (contadorMedicionesMismoMintuo*media - valorAnterior + m.getValor())/ contadorMedicionesMismoMintuo;
+                Log.d("FECHA24", "transformarMedicionesAArrayMedicionesPorMinuto24Horas: nueva media: "+nuevaMedia+"");
+
+                media = nuevaMedia;
+                mediciones24Horas.get(indice).setValor(nuevaMedia);
+
+            }
+
+
+
+        }
+
+        return mediciones24Horas;
+    }
 } // class
 // -----------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------
