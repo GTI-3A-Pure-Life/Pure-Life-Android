@@ -189,7 +189,7 @@ public class MapaFragment extends Fragment implements OnMapReadyCallback, Locati
 
         binding.webview.clearCache(true);
         binding.webview.getSettings().setJavaScriptEnabled(true);
-        binding.webview.loadUrl("https://rparcas.upv.edu.es/develop/src/iFrameMapa.html");
+        binding.webview.loadUrl("http://192.168.1.141/Pure-Life-UX/src/iFrameMapa2.html");
         //representarMedicionesEnMapaFALSO();
         //mapaViewModel.obtenerMedicionesHoy();
         //mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(getContext(),R.raw.estilo_google_map_sin_poi_json));
