@@ -82,7 +82,7 @@ public class Utilidades {
                 Intent intent = new Intent();
                 intent.setAction(Intent.ACTION_VIEW);
                 intent.addCategory(Intent.CATEGORY_BROWSABLE);
-                intent.setData(Uri.parse("https://www.who.int/phe/health_topics/AQG_spanish.pdf"));
+                intent.setData(Uri.parse("https://www.airnow.gov/aqi/aqi-basics-in-spanish/"));
                 c.startActivity(intent);
                 dialog.dismiss();
             }
