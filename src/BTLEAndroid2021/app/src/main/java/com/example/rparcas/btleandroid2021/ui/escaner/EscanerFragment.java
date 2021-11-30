@@ -31,6 +31,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 
 import com.example.rparcas.btleandroid2021.MainActivity;
+import com.example.rparcas.btleandroid2021.PureLifeApplication;
 import com.example.rparcas.btleandroid2021.R;
 import com.example.rparcas.btleandroid2021.ServicioEscucharBeacons;
 import com.example.rparcas.btleandroid2021.Utilidades;
@@ -95,8 +96,8 @@ public class EscanerFragment extends Fragment {
                 if(medicionMasPeligrosa!=null && escanerViewModel.getEstoyEscaneando()!=null && escanerViewModel.getEstoyEscaneando().getValue()){
                     binding.imageViewEscaner.setVisibility(View.VISIBLE);
                     binding.contenedorImagenNivelPeligro.setVisibility(View.VISIBLE);
-                    switch (medicionMasPeligrosa.getNivelPeligro()){
-
+                    binding.tvValorAQI.setText(medicionMasPeligrosa.getValorAQI()+" AQI");
+                    switch (Utilidades.obtenerNivelPeligroAQI(medicionMasPeligrosa.getValorAQI())){
                         case LEVE:
                             binding.textViewInforMedicion.setText("");
                             binding.contenedorImagenNivelPeligro.setCardBackgroundColor(ResourcesCompat.getColor(getResources(),R.color.verde_008a62,null));
@@ -142,9 +143,10 @@ public class EscanerFragment extends Fragment {
                 }else{
                     detenerServicio();
                     binding.imageViewEscaner.setVisibility(View.VISIBLE);
+                    binding.tvValorAQI.setText("");
                     binding.contenedorImagenNivelPeligro.setVisibility(View.VISIBLE);
                     binding.imageViewEscaner.setImageResource(R.drawable.icono_escaner3);
-                    binding.textViewInforMedicion.setVisibility(View.INVISIBLE);
+                    binding.textViewInforMedicion.setVisibility(View.GONE);
                     binding.botonEscanear.setText(getString(R.string.escanear));
                     binding.tituloDeActividadEscaner.setText(getString(R.string.escanear));
                     binding.botonEscanear.setTag("escanear");
@@ -246,8 +248,12 @@ public class EscanerFragment extends Fragment {
             return;
         }
 
+        PureLifeApplication application = (PureLifeApplication) getActivity().getApplication();
+        int idUsuario = application.getUsuario().getId();
+
         this.elIntentDelServicio = new Intent(getActivity(), ServicioEscucharBeacons.class);
         this.elIntentDelServicio.putExtra(MainActivity.NOMBRE_DISPOSITIVO_A_ESCUCHAR_INTENT,escanerViewModel.getNombreDispositivo());
+        this.elIntentDelServicio.putExtra(MainActivity.ID_USUARIO_INTENT,idUsuario);
         this.elIntentDelServicio.putExtra("tiempoDeEspera", (long) 5000);
         this.elIntentDelServicio.putExtra("MESSENGER", new Messenger(messageHandler)); // le pasamos el messenger para que se pueda comunicar con la activity
         getActivity().startService( this.elIntentDelServicio );

@@ -380,6 +380,124 @@ public class Utilidades {
 
         return mediciones24Horas;
     }
+
+    /**
+     * Calcular el valor de AQI
+     * Ruben Pardo Casnova 25/11/2021
+     * @param valor en ppm
+     * @param tipoMedicion tipo de gas
+     * @return valor en indice AQI
+     */
+    public static double calcularValorAQI(double valor, Medicion.TipoMedicion tipoMedicion) {
+        double valorAQI = 0;
+        switch (tipoMedicion){
+            case CO:
+                if(valor>=0 && valor< Medicion.RangoNivelesPeligro.TOPE_LEVE_CO){
+                    //leve
+                    valorAQI = valor* Medicion.VALOR_AQI.NIVEL_BUENO/ Medicion.RangoNivelesPeligro.TOPE_LEVE_CO;
+                }
+                else if(valor>= Medicion.RangoNivelesPeligro.TOPE_LEVE_CO && valor< Medicion.RangoNivelesPeligro.TOPE_MODERADO_CO){
+                    // moderado
+                    valorAQI = valor* Medicion.VALOR_AQI.NIVEL_MODERADO/ Medicion.RangoNivelesPeligro.TOPE_MODERADO_CO;
+                }
+                else if(valor>= Medicion.RangoNivelesPeligro.TOPE_MODERADO_CO && valor< Medicion.RangoNivelesPeligro.TOPE_ALTO_CO){
+                    // alto
+                    valorAQI = valor* Medicion.VALOR_AQI.NIVEL_ALTO/ Medicion.RangoNivelesPeligro.TOPE_ALTO_CO;
+                }
+                else{
+                    valorAQI = valor* Medicion.VALOR_AQI.NIVEL_MUY_ALTO/ Medicion.RangoNivelesPeligro.TOPE_MUY_ALTO_CO;
+                }
+                break;
+            case O3:
+                if(valor>=0 && valor< Medicion.RangoNivelesPeligro.TOPE_LEVE_O3){
+                    //leve
+                    valorAQI = valor* Medicion.VALOR_AQI.NIVEL_BUENO/ Medicion.RangoNivelesPeligro.TOPE_LEVE_O3;
+                }
+                else if(valor>= Medicion.RangoNivelesPeligro.TOPE_LEVE_O3 && valor< Medicion.RangoNivelesPeligro.TOPE_MODERADO_O3){
+                    // moderado
+                    valorAQI = valor* Medicion.VALOR_AQI.NIVEL_MODERADO/ Medicion.RangoNivelesPeligro.TOPE_MODERADO_O3;
+                }
+                else if(valor>= Medicion.RangoNivelesPeligro.TOPE_MODERADO_O3 && valor< Medicion.RangoNivelesPeligro.TOPE_ALTO_O3){
+                    // moderado
+                    valorAQI = valor* Medicion.VALOR_AQI.NIVEL_ALTO/ Medicion.RangoNivelesPeligro.TOPE_ALTO_O3;
+                }
+                else{
+                    // alto
+                    valorAQI = valor* Medicion.VALOR_AQI.NIVEL_MUY_ALTO/ Medicion.RangoNivelesPeligro.TOPE_MUY_ALTO_O3;
+                }
+                break;
+            case NO2:
+                // leve 0-100, moderado 100-140, grave 140-200, muy grave 200 ug/m3
+                // 1ppm - 1.88 ug/m3
+                if(valor>=0 && valor< Medicion.RangoNivelesPeligro.TOPE_LEVE_NO2){
+                    //leve
+                    valorAQI = valor* Medicion.VALOR_AQI.NIVEL_BUENO/ Medicion.RangoNivelesPeligro.TOPE_LEVE_NO2;
+                }
+                else if(valor>= Medicion.RangoNivelesPeligro.TOPE_LEVE_NO2 && valor< Medicion.RangoNivelesPeligro.TOPE_MODERADO_NO2){
+                    // moderado
+                    valorAQI = valor* Medicion.VALOR_AQI.NIVEL_MODERADO/ Medicion.RangoNivelesPeligro.TOPE_MODERADO_NO2;
+                }
+                else if(valor>= Medicion.RangoNivelesPeligro.TOPE_MODERADO_NO2 && valor< Medicion.RangoNivelesPeligro.TOPE_ALTO_NO2){
+                    // alto
+                    valorAQI = valor* Medicion.VALOR_AQI.NIVEL_ALTO/ Medicion.RangoNivelesPeligro.TOPE_ALTO_NO2;
+                }
+                else{
+                    // muy alto
+                    valorAQI = valor* Medicion.VALOR_AQI.NIVEL_MUY_ALTO/ Medicion.RangoNivelesPeligro.TOPE_MUY_ALTO_NO2;
+                }
+                break;
+            case SO2:
+                // leve 0-150, moderado 150-250, grave 250-350, muy grave 350 ug/m3
+                // 1ppm - 2.62 ug/m3
+                if(valor>=0 && valor< Medicion.RangoNivelesPeligro.TOPE_LEVE_SO2){
+                    //leve
+                    valorAQI = valor* Medicion.VALOR_AQI.NIVEL_BUENO/ Medicion.RangoNivelesPeligro.TOPE_LEVE_SO2;
+                }
+                else if(valor>= Medicion.RangoNivelesPeligro.TOPE_LEVE_SO2 && valor< Medicion.RangoNivelesPeligro.TOPE_MODERADO_SO2){
+                    // moderado
+                    valorAQI = valor* Medicion.VALOR_AQI.NIVEL_MODERADO/ Medicion.RangoNivelesPeligro.TOPE_MODERADO_SO2;
+                }
+                else if(valor>= Medicion.RangoNivelesPeligro.TOPE_MODERADO_SO2 && valor< Medicion.RangoNivelesPeligro.TOPE_ALTO_SO2){
+                    // alto
+                    valorAQI = valor* Medicion.VALOR_AQI.NIVEL_ALTO/ Medicion.RangoNivelesPeligro.TOPE_ALTO_SO2;
+                }
+                else{
+                    // muy alto
+                    valorAQI = valor* Medicion.VALOR_AQI.NIVEL_MUY_ALTO/ Medicion.RangoNivelesPeligro.TOPE_MUY_ALTO_SO2;
+                }
+                break;
+
+        }
+
+        return Math.round(valorAQI * 100.0) / 100.0;
+    }
+
+
+    /**
+     * Calcular el nivel de peligro respecto al valor aqi
+     * Ruben Pardo Casnova 25/11/2021
+     * @param valorAQI en ppm
+     * @return devuvelve un objeto NivelPeligro
+     */
+    public static Medicion.NivelPeligro obtenerNivelPeligroAQI(double valorAQI) {
+        Medicion.NivelPeligro nivelPeligro = null;
+
+        if(valorAQI<= Medicion.VALOR_AQI.NIVEL_BUENO){
+            // bueno
+            nivelPeligro = Medicion.NivelPeligro.LEVE;
+        }else if(valorAQI> Medicion.VALOR_AQI.NIVEL_BUENO && valorAQI<= Medicion.VALOR_AQI.NIVEL_MODERADO){
+            // moderado
+            nivelPeligro = Medicion.NivelPeligro.MODERADO;
+        }else if(valorAQI> Medicion.VALOR_AQI.NIVEL_MODERADO && valorAQI<= Medicion.VALOR_AQI.NIVEL_ALTO){
+            // malo
+            nivelPeligro = Medicion.NivelPeligro.ALTO;
+        }else{
+            // muy malo
+            nivelPeligro = Medicion.NivelPeligro.MUY_ALTO;
+        }
+
+        return nivelPeligro;
+    }
 } // class
 // -----------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------

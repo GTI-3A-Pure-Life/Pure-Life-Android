@@ -46,6 +46,16 @@
         app:layout_constraintTop_toTopOf="@+id/tituloDeActividadEscaner"
         tools:ignore="ImageContrastCheck" />
 
+    <TextView
+        android:id="@+id/tvValorAQI"
+        style="@style/TituloDeActivity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/contenedorImagenNivelPeligro"
+        app:layout_constraintEnd_toEndOf="@+id/contenedorImagenNivelPeligro"
+        app:layout_constraintStart_toStartOf="@+id/contenedorImagenNivelPeligro" />
+
     <androidx.cardview.widget.CardView
         android:id="@+id/contenedorImagenNivelPeligro"
         android:layout_width="match_parent"
@@ -61,22 +71,18 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewInforMedicion"
-        app:layout_constraintVertical_bias="0.733">
+        app:layout_constraintTop_toBottomOf="@+id/textViewInforMedicion">
 
         <ImageView
             android:id="@+id/imageViewEscaner"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="64dp"
-            android:layout_marginEnd="24dp"
-            android:layout_marginBottom="64dp"
             android:adjustViewBounds="false"
             android:background="@drawable/bottom_border"
             android:fitsSystemWindows="false"
             android:scaleType="centerInside"
             android:src="@drawable/ic_nivel2" />
+
     </androidx.cardview.widget.CardView>
 
     <TextView
@@ -87,7 +93,7 @@
         android:layout_marginTop="24dp"
         android:text="@string/info_escaner_mediciones"
         android:textAlignment="textStart"
-        android:visibility="invisible"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="@+id/tituloDeActividadEscaner"
         app:layout_constraintStart_toStartOf="@+id/tituloDeActividadEscaner"
         app:layout_constraintTop_toBottomOf="@+id/tituloDeActividadEscaner" />

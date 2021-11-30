@@ -183,8 +183,8 @@ public class EstadisticasFragment extends Fragment {
 
                         binding.tvCOAQI.setText(String.valueOf(Math.round(informeCalidadExterior[0].getValorAQI()))+" AQI");
                         binding.tvO3AQI.setText(String.valueOf(Math.round(informeCalidadExterior[3].getValorAQI()))+" AQI");
-                        binding.tvNO2AQI.setText(String.valueOf(Math.round(informeCalidadExterior[2].getValorAQI()))+" AQI");
-                        binding.tvSO2AQI.setText(String.valueOf(Math.round(informeCalidadExterior[1].getValorAQI()))+" AQI");
+                        binding.tvNO2AQI.setText(String.valueOf(Math.round(informeCalidadExterior[1].getValorAQI()))+" AQI");
+                        binding.tvSO2AQI.setText(String.valueOf(Math.round(informeCalidadExterior[2].getValorAQI()))+" AQI");
                         // modificar barras de progreso
                         setProgreso(Math.round(informeCalidadExterior[0].getValorAQI()),
                                 Math.round(informeCalidadExterior[1].getValorAQI()),
@@ -235,7 +235,7 @@ public class EstadisticasFragment extends Fragment {
 
 
         if(!mediciones.isEmpty()){
-           //ArrayList<Medicion> medicionesAMostrar = Utilidades.transformarMedicionesAArrayMedicionesPorMinuto24Horas(mediciones);
+          // ArrayList<Medicion> medicionesAMostrar = Utilidades.transformarMedicionesAArrayMedicionesPorMinuto24Horas(mediciones);
            //Log.d("GRAFICA", "mostrarGrafica: "+medicionesAMostrar);
             for(int i = 0; i< mediciones.size(); i ++){
 
@@ -259,6 +259,9 @@ public class EstadisticasFragment extends Fragment {
             lineDataSet.setCubicIntensity(.09f);
             lineDataSet.setDrawFilled(true);
             lineDataSet.setLineWidth(2);
+            lineDataSet.setDrawCircles(false);
+            lineDataSet.setValueTextSize(0f);
+
             //lineDataSet.setM(10);
 
             //actualizamos grafica si se actualizan los datos

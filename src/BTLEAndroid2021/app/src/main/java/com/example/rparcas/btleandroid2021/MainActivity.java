@@ -30,6 +30,7 @@ import com.example.rparcas.btleandroid2021.databinding.ActivityMainBinding;
 public class MainActivity extends AppCompatActivity {
 
     public static final String NOMBRE_DISPOSITIVO_A_ESCUCHAR_INTENT = "nombre_dispositivo_intent";
+    public static final String ID_USUARIO_INTENT = "id_usuario_intent";
     private ActivityMainBinding binding;
     private NavController navController;
 

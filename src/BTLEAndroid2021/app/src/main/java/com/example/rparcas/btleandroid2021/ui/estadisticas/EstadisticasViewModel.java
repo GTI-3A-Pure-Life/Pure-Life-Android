@@ -105,8 +105,8 @@ public class EstadisticasViewModel extends ViewModel {
         String fechaIni = fechaHoy+" 00:00:00";
         String fechaFin = fechaHoy+" 23:59:59";
 
-        fechaIni = "2021-09-29 00:00:00";
-        fechaFin = "2021-09-29 23:59:59";
+       /* fechaIni = "2021-09-29 00:00:00";
+        fechaFin = "2021-09-29 23:59:59";*/
 
         obtenerCalidadAireDeUnaZonaDeHasta(casa,informesCalidadCasa,fechaIni,fechaFin);
         obtenerCalidadAireDeUnaZonaDeHasta(trabajo,informesCalidadTrabajo,fechaIni,fechaFin);
@@ -128,8 +128,8 @@ public class EstadisticasViewModel extends ViewModel {
         String fechaIni = fechaHoy+" 00:00:00";
         String fechaFin = fechaHoy+" 23:59:59";
 
-        fechaIni = "2021-09-29 00:00:00";
-        fechaFin = "2021-09-29 23:59:59";
+        /*fechaIni = "2021-09-29 00:00:00";
+        fechaFin = "2021-09-29 23:59:59";*/
 
         l.obtenerMedicionesDeUnUsuarioHoy(fechaIni,fechaFin,id,new PeticionarioREST.RespuestaREST() {
             @Override

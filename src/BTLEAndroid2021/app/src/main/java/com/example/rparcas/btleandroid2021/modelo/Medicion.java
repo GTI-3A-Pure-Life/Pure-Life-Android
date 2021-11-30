@@ -33,19 +33,20 @@ public class Medicion{
     private final Posicion posicion;
     private  Timestamp medicion_fecha;
     private TipoMedicion tipoMedicion;
-
-    private NivelPeligro nivelPeligro;
+    private final double valorAQI;
 
     //----------------------------------------------------------------------------------------------
     //----------------------------------------------------------------------------------------------
     public Medicion(double valor, int usuarioID, String sensorID, Posicion posicion, TipoMedicion tipoMedicion) {
-        this.medicion_valor = valor;
+
+
+        this.medicion_valor = tipoMedicion == TipoMedicion.O3 ? valor/1000 : valor;
         this.usuario_id = usuarioID;
         this.sensor_id = sensorID;
         this.posicion = posicion;
 
         this.tipoMedicion = tipoMedicion;
-        this.nivelPeligro = calcularNivelPeligroGas(tipoMedicion,valor);
+        this.valorAQI = Utilidades.calcularValorAQI(medicion_valor,tipoMedicion);
         // obtener la fecha actual en formato Timestamp
         this.medicion_fecha = new Timestamp(System.currentTimeMillis());
 
@@ -60,7 +61,7 @@ public class Medicion{
         this.posicion = new Posicion(0,0);
 
         this.tipoMedicion = tipoMedicion;
-        this.nivelPeligro = calcularNivelPeligroGas(tipoMedicion,0);
+        this.valorAQI = Utilidades.calcularValorAQI(medicion_valor,tipoMedicion);
         // obtener la fecha actual en formato Timestamp
         this.medicion_fecha = new Timestamp(System.currentTimeMillis());
 
@@ -88,7 +89,7 @@ public class Medicion{
 
 
         this.tipoMedicion = TipoMedicion.getTipoById(cursor.getInt(7));
-
+        this.valorAQI = Utilidades.calcularValorAQI(medicion_valor,tipoMedicion);
        // pasar de texto a timestamp
         this.medicion_fecha = new Timestamp(0);
         try {
@@ -114,7 +115,8 @@ public class Medicion{
         } catch (ParseException e) {
             e.printStackTrace();
         }
-
+        this.tipoMedicion = TipoMedicion.CO;
+        this.valorAQI = Utilidades.calcularValorAQI(medicion_valor,tipoMedicion);
         usuario_id = 0;
         posicion = null;
         sensor_id = null;
@@ -122,15 +124,15 @@ public class Medicion{
 
     //----------------------------------------------------------------------------------------------
     //----------------------------------------------------------------------------------------------
-    public Medicion(TramaIBeacon tramaIBeacon) {
-        this.medicion_valor = Utilidades.bytesToInt(tramaIBeacon.getMinor());
+    public Medicion(TramaIBeacon tramaIBeacon,int usuario_id) {
+        int valor = Utilidades.bytesToInt(tramaIBeacon.getMinor());
+        this.medicion_valor = tipoMedicion == TipoMedicion.O3 ? valor/1000.0 : valor;
         this.posicion = new Posicion(0,0);
         this.sensor_id = Utilidades.bytesToString(tramaIBeacon.getUUID()).split("%")[0];
-        this.usuario_id = 4;//TODO CAMBIAR A POR USUARIO
+        this.usuario_id = usuario_id;
         int major = Utilidades.bytesToInt( tramaIBeacon.getMajor());
         this.tipoMedicion = TipoMedicion.getTipoById(major);
-
-        this.nivelPeligro = calcularNivelPeligroGas(tipoMedicion,medicion_valor);
+        this.valorAQI = Utilidades.calcularValorAQI(medicion_valor,tipoMedicion);
         // obtener la fecha actual en formato Timestamp
         this.medicion_fecha = new Timestamp(System.currentTimeMillis());
 
@@ -145,10 +147,8 @@ public class Medicion{
         this.posicion = new Posicion(json.getJSONObject("posMedicion"));
         this.sensor_id = json.getString("idSensor");
         this.usuario_id = json.getInt("idUsuario");
-
         this.tipoMedicion = TipoMedicion.getTipoById(json.getInt("tipoGas"));
-        this.nivelPeligro = calcularNivelPeligroGas(tipoMedicion,medicion_valor);
-
+        this.valorAQI = Utilidades.calcularValorAQI(medicion_valor,tipoMedicion);
         this.medicion_fecha = Timestamp.valueOf(json.getString("fechaHora"));
 
     }
@@ -157,100 +157,7 @@ public class Medicion{
     //----------------------------------------------------------------------------------------------
     //----------------------------------------------------------------------------------------------
 
-    /**
-     * TipoMedicion,R -> calcularNivelPeligroGas() -> NivelPeligro
-     * @param tipoMedicion tipo de la medicion
-     * @param valor el valor de la medicion
-     * @return valor de nivel de peligros del enum NivelPeligro (LEVE/MODERADO/ALTO/MUY_ALTO)
-     */
-    private NivelPeligro calcularNivelPeligroGas(TipoMedicion tipoMedicion, double valor) {
-        // valores en ppm
-        NivelPeligro nivelPeligro;
-        switch (tipoMedicion){
-            case CO:
-                if(valor>=0 && valor<RangoNivelesPeligro.TOPE_LEVE_CO){
-                    //leve
-                    nivelPeligro = NivelPeligro.LEVE;
-                }
-                else if(valor>=RangoNivelesPeligro.TOPE_LEVE_CO && valor<RangoNivelesPeligro.TOPE_MODERADO_CO){
-                    // moderado
-                    nivelPeligro = NivelPeligro.MODERADO;
-                }
-                else if(valor>=RangoNivelesPeligro.TOPE_MODERADO_CO && valor<RangoNivelesPeligro.TOPE_ALTO_CO){
-                    // alto
-                    nivelPeligro = NivelPeligro.ALTO;
-                }
-                else{
-                    nivelPeligro = NivelPeligro.MUY_ALTO;
-                }
-                break;
-            case O3:
-                // leve 0-70, moderado 70-120, grave 120-180, muy grave 180 ug/m3
-                // 1ppm - 2 ug/m3
-                if(valor>=0 && valor<RangoNivelesPeligro.TOPE_LEVE_O3){
-                    //leve
-                    nivelPeligro = NivelPeligro.LEVE;
-                }
-                else if(valor>=RangoNivelesPeligro.TOPE_LEVE_O3 && valor<RangoNivelesPeligro.TOPE_MODERADO_O3){
-                    // moderado
-                    nivelPeligro = NivelPeligro.MODERADO;
-                }
-                else if(valor>=RangoNivelesPeligro.TOPE_MODERADO_O3 && valor<RangoNivelesPeligro.TOPE_ALTO_O3){
-                    // moderado
-                    nivelPeligro = NivelPeligro.ALTO;
-                }
-                else{
-                    // alto
-                    nivelPeligro = NivelPeligro.MUY_ALTO;
-                }
-                break;
-            case NO2:
-                // leve 0-100, moderado 100-140, grave 140-200, muy grave 200 ug/m3
-                // 1ppm - 1.88 ug/m3
-                if(valor>=0 && valor<RangoNivelesPeligro.TOPE_LEVE_NO2){
-                    //leve
-                    nivelPeligro = NivelPeligro.LEVE;
-                }
-                else if(valor>=RangoNivelesPeligro.TOPE_LEVE_NO2 && valor<RangoNivelesPeligro.TOPE_MODERADO_NO2){
-                    // moderado
-                    nivelPeligro = NivelPeligro.MODERADO;
-                }
-                else if(valor>=RangoNivelesPeligro.TOPE_MODERADO_NO2 && valor<RangoNivelesPeligro.TOPE_ALTO_NO2){
-                    // moderado
-                    nivelPeligro = NivelPeligro.ALTO;
-                }
-                else{
-                    // alto
-                    nivelPeligro = NivelPeligro.MUY_ALTO;
-                }
-                break;
-            case SO2:
-                // leve 0-150, moderado 150-250, grave 250-350, muy grave 350 ug/m3
-                // 1ppm - 2.62 ug/m3
-                if(valor>=0 && valor<RangoNivelesPeligro.TOPE_LEVE_SO2){
-                    //leve
-                    nivelPeligro = NivelPeligro.LEVE;
-                }
-                else if(valor>=RangoNivelesPeligro.TOPE_LEVE_SO2 && valor<RangoNivelesPeligro.TOPE_MODERADO_SO2){
-                    // moderado
-                    nivelPeligro = NivelPeligro.MODERADO;
-                }
-                else if(valor>=RangoNivelesPeligro.TOPE_MODERADO_SO2 && valor<RangoNivelesPeligro.TOPE_ALTO_SO2){
-                    // moderado
-                    nivelPeligro = NivelPeligro.ALTO;
-                }
-                else{
-                    // alto
-                    nivelPeligro = NivelPeligro.MUY_ALTO;
-                }
-                break;
 
-            default:
-                nivelPeligro = null;
-        }
-
-        return nivelPeligro;
-    }
 
     //----------------------------------------------------------------------------------------------
     //----------------------------------------------------------------------------------------------
@@ -264,7 +171,7 @@ public class Medicion{
         String res = "{" +
                 "\"valor\":\""+this.medicion_valor+ "\", " +
                 "\"fechaHora\":\""+fechaConFormato+"\", " +
-                "\"posMedicion\":{\"latitud\":\""+this.posicion.getLatitud()+"\",\"longitud\":\""+this.posicion.getLatitud()+"\"}, " +
+                "\"posMedicion\":{\"latitud\":\""+this.posicion.getLatitud()+"\",\"longitud\":\""+this.posicion.getLongitud()+"\"}, " +
                 "\"tipoGas\":\""+this.tipoMedicion.getIdGas()+"\", " +
                 "\"idUsuario\":\""+this.usuario_id+"\", " +
                 "\"uuidSensor\":\""+this.sensor_id+"\"" +
@@ -302,9 +209,6 @@ public class Medicion{
     }
     public TipoMedicion getTipoMedicion() {
         return this.tipoMedicion;
-    }
-    public NivelPeligro getNivelPeligro() {
-        return this.nivelPeligro;
     }
     public double getValor() {
         return this.medicion_valor;
@@ -352,12 +256,15 @@ public class Medicion{
                 ", posicion=" + posicion +
                 ", medicion_fecha=" + medicion_fecha +
                 ", tipoMedicion=" + tipoMedicion +
-                ", nivelPeligro=" + nivelPeligro +
                 '}';
     }
 
     public void setValor(double valor) {
         this.medicion_valor = valor;
+    }
+
+    public double getValorAQI() {
+        return this.valorAQI;
     }
 
 
@@ -428,23 +335,34 @@ public class Medicion{
 
 
     public static class RangoNivelesPeligro{
-        public static float TOPE_LEVE_CO = 5.0f;
-        public static float TOPE_MODERADO_CO = 13.0f;
-        static public float TOPE_ALTO_CO = 16.0f;
+        public static float TOPE_LEVE_CO = 4.4f;
+        public static float TOPE_MODERADO_CO = 12.4f;
+        static public float TOPE_ALTO_CO = 15.4f;
         static public float TOPE_MUY_ALTO_CO = 20.0f;
 
         public static float TOPE_LEVE_NO2 = 53.0f;
-        public static float TOPE_MODERADO_NO2 = 74.0f;
-        static public float TOPE_ALTO_NO2 = 106.0f;
+        public static float TOPE_MODERADO_NO2 = 360.0f;
+        static public float TOPE_ALTO_NO2 = 649.0f;
+        static public float TOPE_MUY_ALTO_NO2 = 1249.0f;
 
-        public static float TOPE_LEVE_SO2 = 57.0f;
-        public static float TOPE_MODERADO_SO2 = 95.0f;
-        static public float TOPE_ALTO_SO2 = 134.0f;
+        public static float TOPE_LEVE_SO2 = 35.0f;
+        public static float TOPE_MODERADO_SO2 = 185.0f;
+        static public float TOPE_ALTO_SO2 = 304.0f;
+        static public float TOPE_MUY_ALTO_SO2 = 604.0f;
 
-        public static float TOPE_LEVE_O3 = 35.0f;
-        public static float TOPE_MODERADO_O3 = 60.0f;
-        static public float TOPE_ALTO_O3 = 90.0f;
+        public static float TOPE_LEVE_O3 = 0.054f;
+        public static float TOPE_MODERADO_O3 = 0.164f;
+        static public float TOPE_ALTO_O3 = 0.204f;
+        static public float TOPE_MUY_ALTO_O3 = 0.404f;
     } // class
+
+    public static class VALOR_AQI{
+        public static int NIVEL_BUENO = 50;
+        public static int NIVEL_MODERADO = 150;
+        static public int NIVEL_ALTO = 200;
+        static public int NIVEL_MUY_ALTO = 350;
+    } // class
+
     //---------------------------------------------------------------------------------------------
     //---------------------------------------------------------------------------------------------
 
