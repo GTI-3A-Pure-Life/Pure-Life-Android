@@ -55,8 +55,39 @@
     <string name="notificacion_contenido_bateria_baja">No se notificara de la calidad del aire sin bateria</string>
     <string name="notificacion_titulo_alerta_averiado">Dispostivo fuera de servicio</string>
     <string name="notificacion_contenido_averiado">Este dispositivo no envia informacion</string>
-    <string name="info_escaner_mediciones">Esperando mediciones...</string>
+    <string name="info_escaner_mediciones">Esperando mediciones…</string>
     <string name="estar_expuesto_a_nivel_muy_alto_de">Estas expuesto a un nivel muy alto de</string>
     <string name="estar_expuesto_a_nivel_alto_de">"Estas expuesto a un nivel alto de "</string>
     <string name="estar_expuesto_a_nivel_moderado_de">"Estas expuesto a un nivel moderado de "</string>
+    <string name="iniciando_sesion">Iniciando sesión…</string>
+    <string name="desconexionPorDistancia">Te has alejado demasiado del sensor. Se ha desconectado</string>
+
+
+    <string name="infCO">La exposición extremadamente alta al monóxido de carbono puede causar la formación de carboxihemoglobina, que reduce la capacidad de la sangre para transportar oxígeno y puede causar un color rojo brillante en la piel y las membranas mucosas, dificultad respiratoria, colapso, convulsiones, coma y la muerte. </string>
+    <string name="infNO2">Respirar altos niveles de NO2 puede producir quemaduras, espasmos y dilatación de los tejidos en la garganta y vías respiratorias superiores, reduciendo la oxigenación de los tejidos del cuerpo, produciendo acumulación de líquido en los pulmones y la muerte.</string>
+    <string name="infSO2">La contaminación del aire por SO2 causa los siguientes efectos: Dificultad para respirar, inflamación de las vías respiratorias, irritación ocular por formación del ácido sulfuroso sobre las mucosas húmedas.</string>
+    <string name="infO3">La exposición a altos niveles afecta al flujo expiratorio, y provoca sintomas como opresión en el pecho, tos, irritación de ojos, nariz y garganta y provoca una respuesta inflamatoria.</string>
+
+    <string name="CO">CO:</string>
+    <string name="SO2">SO2:</string>
+    <string name="O3">O3:</string>
+    <string name="NO2">NO2:</string>
+    <string name="leve">LEVE</string>
+    <string name="moderado">MODERADO</string>
+    <string name="alto">ALTO</string>
+    <string name="muyalto">MUY ALTO</string>
+    <string name="tituloEfectos">Efectos de los gases</string>
+    <string name="leer_m_s">Leer más</string>
+    <string name="volver">Volver</string>
+    <string name="buena">Buena</string>
+    <string name="moderada">Moderada</string>
+    <string name="mala">Mala</string>
+    <string name="muy_mala">Muy mala</string>
+    <string name="estas_mas_expuesto_a">Estas mas expuesto a:</string>
+    <string name="no_tienes_posicion_asignada_de">No tienes posicion asignada de</string>
+    <string name="casa">Casa</string>
+    <string name="Trabajo">Trabajo</string>
+    <string name="Exterior">Exterior</string>
+    <string name="error_calidad_aire">Error inesperado</string>
+    <string name="la_calidad_de_aire_respirada_hoy">La calidad de aire respirada hoy es</string>
 </resources>

@@ -4,7 +4,6 @@ import android.app.IntentService;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanResult;
@@ -45,7 +44,7 @@ public class ServicioEscucharBeacons extends IntentService {
 
     private long tiempoDeEspera = 50; // decimas de segundo
     private final int tiempoDeEsperaINT = 50; // decimas de segundo
-    private final int tiempoDeEsperaAveria = 300; // 3000 decimas de segundo = 5 mins
+    private final int tiempoDeEsperaAveria = 3000; // 3000 decimas de segundo = 5 mins
 
     private final int topeMesurasParaEnviar =  1;// numero de mediciones que ira en una peticion
 
@@ -93,6 +92,7 @@ public class ServicioEscucharBeacons extends IntentService {
     }; // posicion 0 = CO2, 1 = NO2, 2 = SO2, 3 = O3
 
     private Medicion medicionMasAltaRegistrada;
+    private int idUsuario;
 
 
     // ---------------------------------------------------------------------------------------------
@@ -132,12 +132,7 @@ public class ServicioEscucharBeacons extends IntentService {
                 break;
 
         }
-        Log.d("MEDICION", "calcularMedicionMasPeligrosa: mimsmo tipo");
-        for(Medicion m : medicionesPorTipoUltimasRegistradas){
-            Log.d("MEDICION", m.getTipoMedicion()+": "+
-                    m.getValor()+" - "+m.getNivelPeligro());
-        }
-        Log.d("MEDICION", "----------------------");
+
 
         // al principio no hay ninguna mas alta
         if(medicionMasAltaRegistrada == null){
@@ -155,8 +150,7 @@ public class ServicioEscucharBeacons extends IntentService {
                     medicionMasAltaRegistrada = mNueva;// seteamos porque sino nos da la misma siempre
                     for (int i = 0; i< medicionesPorTipoUltimasRegistradas.length; i++) {
                         // compare to devuelve -1 menor que, 0 igual, 1 mayor que
-                        if(medicionesPorTipoUltimasRegistradas[i].getNivelPeligro()
-                                .compareTo(medicionMasAltaRegistrada.getNivelPeligro()) > 0){
+                        if(medicionesPorTipoUltimasRegistradas[i].getValorAQI() > (medicionMasAltaRegistrada.getValorAQI())){
                             medicionMasAltaRegistrada = medicionesPorTipoUltimasRegistradas[i];
                         }
 
@@ -166,14 +160,14 @@ public class ServicioEscucharBeacons extends IntentService {
                 // si es otro tipo de medicion
                 // si el nivel de peligro es mas alto que el actual
                 // compare to devuelve -1 menor que, 0 igual, 1 mayor que
-                if(mNueva.getNivelPeligro().compareTo(medicionMasAltaRegistrada.getNivelPeligro()) > 0){
+                if(mNueva.getValorAQI() > medicionMasAltaRegistrada.getValorAQI()){
                     medicionMasAltaRegistrada = mNueva;
                 }
             }
         }
 
         Log.d("MEDICION", "MAS ALTA: "+medicionMasAltaRegistrada.getTipoMedicion()+": "+
-                medicionMasAltaRegistrada.getValor()+" - "+medicionMasAltaRegistrada.getNivelPeligro());
+                medicionMasAltaRegistrada.getValor()+" - "+medicionMasAltaRegistrada.getValorAQI());
 
         return  medicionMasAltaRegistrada;
     }
@@ -194,6 +188,12 @@ public class ServicioEscucharBeacons extends IntentService {
         if ( this.seguir == false ) {
             return;
         }
+
+        if(this.elEscanner !=null){
+            this.elEscanner.stopScan(this.callbackDelEscaneo);
+            this.callbackDelEscaneo = null;
+        }
+
 
         this.seguir = false;
         this.stopSelf();
@@ -351,6 +351,7 @@ public class ServicioEscucharBeacons extends IntentService {
 
         this.tiempoDeEspera = intent.getLongExtra("tiempoDeEspera", /* default */ 50000);
         this.dispositivoABuscar = intent.getStringExtra(MainActivity.NOMBRE_DISPOSITIVO_A_ESCUCHAR_INTENT);
+        this.idUsuario = intent.getIntExtra(MainActivity.ID_USUARIO_INTENT,-1);
         inicializarBlueTooth();
         buscarEsteDispositivoBTLE(this.dispositivoABuscar);
 
@@ -457,7 +458,9 @@ public class ServicioEscucharBeacons extends IntentService {
                 super.onScanResult(callbackType, resultado);
 
                 TramaIBeacon tib = scanResultToTramaIBeacon( resultado );
-                tratarTramaBeacon(tib,dispositivoBuscado);
+                tratarTramaBeacon(tib,dispositivoBuscado,resultado.getRssi());
+
+
             }
 
             @Override
@@ -499,13 +502,16 @@ public class ServicioEscucharBeacons extends IntentService {
      * @author Ruben Pardo Casanova
      * @param tib trama beacon a tratar
      * @param dispositivoBuscado el dispositivo que buscamos
+     * @param rssi
      */
-    private void tratarTramaBeacon(TramaIBeacon tib, String dispositivoBuscado) {
+    private void tratarTramaBeacon(TramaIBeacon tib, String dispositivoBuscado, int rssi) {
         int major = Utilidades.bytesToInt( tib.getMajor()); //  tipo 1000 = bateria, 1,2,3,4 gas
         int minor = Utilidades.bytesToInt( tib.getMinor()); // valor
         String dispositivo = Utilidades.bytesToString(tib.getUUID()).split("%")[0];
 
+
         if(dispositivo.equals(dispositivoBuscado)){
+            comprobarDesconexionPorDistancia(Utilidades.calcularDistanciaDispositivoBluetooth(rssi,tib.getTxPower()));
             Log.d(ETIQUETA_LOG, "tratarTramaBeacon: nombre: " + dispositivo);
             if(major == 1000){
                 Log.d(ETIQUETA_LOG, "tratarTramaBeacon: bateria: " + minor);
@@ -513,24 +519,39 @@ public class ServicioEscucharBeacons extends IntentService {
                 notificarBateria(dispositivo,minor);
             }else{
                 // medicion
-                Medicion m = new Medicion(minor,1,dispositivo,new Posicion(1,1),
+                Medicion m = new Medicion(minor,this.idUsuario,dispositivo,new Posicion(38.995524,-0.164662),
                         Medicion.TipoMedicion.getTipoById(major));
 
                 comprobarNivelPeligroGas(m); // lanzar notificacion
                 enviarMensajeALaHostActivity(calcularMedicionMasPeligrosa(m)); // avisar a la activity host
 
-
                 medicionesAEnviar.add(m);
-
 
             }
         }
+    }
 
+    // ---------------------------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Metodo para comprobar si supera la distancia máxima, si la supera manda un mensaje a la actividad
+     * y desconecta el servicio
+     * 12/11/2021
+     * @param distancia en m que tenemos entre el sensor y el movil
+     */
+    private void comprobarDesconexionPorDistancia(double distancia){
+        Log.d(ETIQUETA_LOG, "comprobarDesconexion: "+distancia);
+        if (distancia > 3000) {
+            //desconectar cuando está a mas de 3 metros
+            enviarMensajeALaHostActivity("DistanciaMaxima");
+        }
     }
 
 
     // ---------------------------------------------------------------------------------------------
     // ---------------------------------------------------------------------------------------------
+
     /**
      * Envia notificacion de bateria
      * @param valorBateria valor de la bateria
@@ -623,8 +644,8 @@ public class ServicioEscucharBeacons extends IntentService {
 
         Log.d(ETIQUETA_LOG, "comprobarNivelPeligroGas: deboAvisar moderado: "+deboAvisarEnModerado);
         Log.d(ETIQUETA_LOG, "comprobarNivelPeligroGas: estoyZonaPeligro: "+ estoyEnZonaPeligrosa);
-
-        switch (medicion.getNivelPeligro()){
+        Medicion.NivelPeligro nivelPeligro = Utilidades.obtenerNivelPeligroAQI(medicion.getValorAQI());
+        switch (nivelPeligro){
             case LEVE:
                 //estoy en zona segura
                 // no avisar de nada poner a false el bool
@@ -661,7 +682,7 @@ public class ServicioEscucharBeacons extends IntentService {
 
         // lanzar notificacion
         if(hayQueNotificar){
-            String titulo = medicion.getNivelPeligro() == Medicion.NivelPeligro.MODERADO
+            String titulo = nivelPeligro == Medicion.NivelPeligro.MODERADO
                     ? getString(R.string.notificacion_titulo_alerta_calidad_moderado)
                     : getString(R.string.notificacion_titulo_alerta_calidad_alto);
             String contenido = getString(R.string.notificacion_contenido_alerta_calidad);

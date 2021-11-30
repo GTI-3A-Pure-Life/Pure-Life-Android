@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/TituloEfectos"
+        style="@style/TituloDeActivity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:text="@string/tituloEfectos" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tituloCO"
+                style="@style/SubTitulo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/CO" />
+
+            <TextView
+                android:id="@+id/descCO"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:text="@string/infCO" />
+
+            <TextView
+                android:id="@+id/tituloSO2"
+                style="@style/SubTitulo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/SO2" />
+
+            <TextView
+                android:id="@+id/descSO2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:text="@string/infSO2" />
+
+            <TextView
+                android:id="@+id/tituloNO2"
+                style="@style/SubTitulo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/NO2" />
+
+            <TextView
+                android:id="@+id/descNO2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:text="@string/infNO2" />
+
+            <TextView
+                android:id="@+id/tituloO3"
+                style="@style/SubTitulo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/O3" />
+
+            <TextView
+                android:id="@+id/descO3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:text="@string/infO3" />
+
+            <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="5"
+                android:stretchColumns="0,1">
+
+                <TableRow
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <Button
+                        android:id="@+id/btVolver"
+                        style="@style/BotonSinBordes"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="4dp"
+                        android:gravity="center"
+                        android:text="@string/volver" />
+
+                    <Button
+                        android:id="@+id/btLeerMas"
+                        style="@style/BotonPrimario"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="4dp"
+                        android:text="@string/leer_m_s" />
+                </TableRow>
+            </TableLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+
+</LinearLayout>

@@ -20,7 +20,6 @@ public class EscanerViewModel extends ViewModel {
     private  static MutableLiveData<Boolean> estoyEscaneando;
     private String nombreDispositivo = "";
     //prefijo que usaremos en el nombre del sensor para identificar nuestros sensores
-    private final String PREFIJO = "GTI-3A-";
 
 
     public EscanerViewModel() {

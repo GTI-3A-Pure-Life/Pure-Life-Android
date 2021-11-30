@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <!-- Background gradient is a gradient, corners define rounded corners -->
+    <item android:id="@android:id/background">
+        <shape>
+            <corners android:radius="10dp" />
+            <solid android:color="#1111118C" />
+        </shape>
+    </item>
+
+    <!-- Progress bar -->
+    <item android:id="@android:id/progress">
+
+        <scale android:scaleWidth="100%">
+            <shape>
+                <corners android:radius="10dip" />
+                <gradient
+                    android:angle="0"
+                    android:type="linear"
+                    android:startColor="#FFF"
+                    android:endColor="#FFFFFF"/>
+                <!--  <solid android:color="#318FCE" />-->
+            </shape>
+        </scale>
+
+
+    </item>
+
+</layer-list>

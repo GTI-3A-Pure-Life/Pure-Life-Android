@@ -3,9 +3,12 @@ package com.example.rparcas.btleandroid2021.ui.escaner;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -14,6 +17,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -26,14 +31,16 @@ import androidx.lifecycle.ViewModelProvider;
 
 
 import com.example.rparcas.btleandroid2021.MainActivity;
+import com.example.rparcas.btleandroid2021.PureLifeApplication;
 import com.example.rparcas.btleandroid2021.R;
 import com.example.rparcas.btleandroid2021.ServicioEscucharBeacons;
+import com.example.rparcas.btleandroid2021.Utilidades;
 import com.example.rparcas.btleandroid2021.databinding.FragmentEscanerBinding;
 import com.example.rparcas.btleandroid2021.modelo.Medicion;
 
 import com.blikoon.qrcodescanner.QrCodeActivity;
 import com.example.rparcas.btleandroid2021.modelo.RegistroAveriaSensor;
-
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 
 /**
@@ -54,7 +61,6 @@ public class EscanerFragment extends Fragment {
     private final String prefijoDeDispositivosAbuscar = "GTI-3A-";
     private static Intent elIntentDelServicio = null;
 
-
     public Handler messageHandler = new MessageHandler();
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -70,6 +76,8 @@ public class EscanerFragment extends Fragment {
 
        // SharedPreferencesHelper sharedPreferencesHelper = SharedPreferencesHelper.getInstance();
         //deboNotificarEnModerado = sharedPreferencesHelper.isNivelAlertaSensible();
+
+
 
 
         initCallbacks();
@@ -88,8 +96,8 @@ public class EscanerFragment extends Fragment {
                 if(medicionMasPeligrosa!=null && escanerViewModel.getEstoyEscaneando()!=null && escanerViewModel.getEstoyEscaneando().getValue()){
                     binding.imageViewEscaner.setVisibility(View.VISIBLE);
                     binding.contenedorImagenNivelPeligro.setVisibility(View.VISIBLE);
-                    switch (medicionMasPeligrosa.getNivelPeligro()){
-
+                    binding.tvValorAQI.setText(medicionMasPeligrosa.getValorAQI()+" AQI");
+                    switch (Utilidades.obtenerNivelPeligroAQI(medicionMasPeligrosa.getValorAQI())){
                         case LEVE:
                             binding.textViewInforMedicion.setText("");
                             binding.contenedorImagenNivelPeligro.setCardBackgroundColor(ResourcesCompat.getColor(getResources(),R.color.verde_008a62,null));
@@ -135,9 +143,10 @@ public class EscanerFragment extends Fragment {
                 }else{
                     detenerServicio();
                     binding.imageViewEscaner.setVisibility(View.VISIBLE);
+                    binding.tvValorAQI.setText("");
                     binding.contenedorImagenNivelPeligro.setVisibility(View.VISIBLE);
                     binding.imageViewEscaner.setImageResource(R.drawable.icono_escaner3);
-                    binding.textViewInforMedicion.setVisibility(View.INVISIBLE);
+                    binding.textViewInforMedicion.setVisibility(View.GONE);
                     binding.botonEscanear.setText(getString(R.string.escanear));
                     binding.tituloDeActividadEscaner.setText(getString(R.string.escanear));
                     binding.botonEscanear.setTag("escanear");
@@ -182,7 +191,16 @@ public class EscanerFragment extends Fragment {
 
             }
         });
+        Context c = this.getContext();
+        binding.btInformacion.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Utilidades.showCustomDialog(c);
+
+            }
+        });
     }
+
 
     /**
      * En el momento que se pulse el botón, mira a ver si hay permisos de camara, sino hay los pide
@@ -230,8 +248,12 @@ public class EscanerFragment extends Fragment {
             return;
         }
 
+        PureLifeApplication application = (PureLifeApplication) getActivity().getApplication();
+        int idUsuario = application.getUsuario().getId();
+
         this.elIntentDelServicio = new Intent(getActivity(), ServicioEscucharBeacons.class);
         this.elIntentDelServicio.putExtra(MainActivity.NOMBRE_DISPOSITIVO_A_ESCUCHAR_INTENT,escanerViewModel.getNombreDispositivo());
+        this.elIntentDelServicio.putExtra(MainActivity.ID_USUARIO_INTENT,idUsuario);
         this.elIntentDelServicio.putExtra("tiempoDeEspera", (long) 5000);
         this.elIntentDelServicio.putExtra("MESSENGER", new Messenger(messageHandler)); // le pasamos el messenger para que se pueda comunicar con la activity
         getActivity().startService( this.elIntentDelServicio );
@@ -257,7 +279,7 @@ public class EscanerFragment extends Fragment {
     // ---------------------------------------------------------------------------------------------
     // ---------------------------------------------------------------------------------------------
     /**
-     * MessageHanlder.java
+     * MessageHandler.java
      * Clase para comunicar el servicio con la activity
      * @author Ruben Pardo Casanova
      * 03/11/2021
@@ -270,6 +292,10 @@ public class EscanerFragment extends Fragment {
                 escanerViewModel.setMedicionMasPeligrosaPeligro((Medicion) message.obj);
             }else if(message.obj instanceof RegistroAveriaSensor){
                 escanerViewModel.setEstoyEscaneando(false);
+            }else if (message.obj.equals("DistanciaMaxima")){
+                Log.d("DISTANCIA", "handleMessage: distancia MAXIMA");
+                escanerViewModel.setEstoyEscaneando(false);
+               // Toast.makeText(getContext(), getString(R.string.desconexionPorDistancia), Toast.LENGTH_SHORT).show();
             }
         }
     }

@@ -15,7 +15,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.rparcas.btleandroid2021.DialgoCarga;
 import com.example.rparcas.btleandroid2021.MainActivity;
+import com.example.rparcas.btleandroid2021.PureLifeApplication;
 import com.example.rparcas.btleandroid2021.R;
 import com.example.rparcas.btleandroid2021.databinding.FragmentLoginBinding;
 import com.example.rparcas.btleandroid2021.databinding.FragmentRegistroBinding;
@@ -32,7 +34,7 @@ public class RegistroFragment extends Fragment {
 
     private RegistroViewModel registroViewModel;
     private FragmentRegistroBinding binding; // este objeto hace referncia a un xml layout, no es una clase creada
-
+    private DialgoCarga elDialogoDeCarga;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -44,6 +46,7 @@ public class RegistroFragment extends Fragment {
         binding = FragmentRegistroBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
+        elDialogoDeCarga = new DialgoCarga(getActivity());
         initCallbacks();
         initObservablesViewModel();
 
@@ -61,28 +64,29 @@ public class RegistroFragment extends Fragment {
                 switch(estado){
                     case SIN_ACCION:
                         // no hacer nada
-                        binding.progressBarRegistro.setVisibility(View.INVISIBLE);
+                        esconderVentanaCarga();
                         break;
                     case EN_PROCESO:
                         // mostrar el progress bar y bloquear el formulario
-                        binding.progressBarRegistro.setVisibility(View.VISIBLE);
-                        // TODO bloquear los edit del registro
+                        mostrarVentanaCarga();
+                        binding.textViewError.setText("");
                         break;
                     case EXITO:
                         // esconder el progress bar e ir a main con el usuario resultado de la peticion
-                        binding.progressBarRegistro.setVisibility(View.INVISIBLE);
+                        esconderVentanaCarga();
                         Intent intentMainActivity = new Intent(getActivity(), MainActivity.class);
-                        // Usuario u = viewModel.getUser(); TODO hacer uusuario serializable
-                        // intentMainActivity.putExtra("usuario_registro",u)
+
+                        // guardamos el usuario de forma global
+                        PureLifeApplication appState = ((PureLifeApplication)getActivity().getApplication());
+                        appState.setUsuario(registroViewModel.getUsuario());
 
                         startActivity(intentMainActivity);
                         getActivity().finish();
                         break;
                     case ERROR:
                         // esconder el progress bar y mostrar error
-                        binding.progressBarRegistro.setVisibility(View.INVISIBLE);
+                        esconderVentanaCarga();
                         binding.textViewError.setText(registroViewModel.getError());
-                        // TODO Obtener error
                         break;
                 }
             }
@@ -108,6 +112,19 @@ public class RegistroFragment extends Fragment {
                 );
             }
         });
+    }
+
+
+    // ---------------------------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------
+    private void mostrarVentanaCarga() {
+        elDialogoDeCarga.empezarDialogoCarga(getString(R.string.iniciando_sesion));
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------
+    private void esconderVentanaCarga() {
+        elDialogoDeCarga.esconderDialogCarga();
     }
 
     @Override

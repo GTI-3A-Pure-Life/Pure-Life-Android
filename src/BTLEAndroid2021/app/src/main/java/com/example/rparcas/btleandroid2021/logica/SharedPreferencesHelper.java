@@ -3,6 +3,11 @@ package com.example.rparcas.btleandroid2021.logica;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.Log;
+
+import com.example.rparcas.btleandroid2021.modelo.Usuario;
+
+import org.json.JSONException;
 
 /**
  * @author Ruben Pardo Casanova
@@ -17,6 +22,7 @@ public class SharedPreferencesHelper {
     //private static final String PREF_NAME = "com.example.app.PREFERNCIAS";
     // claves de las variables
     private static final String KEY_AJUSTES_NIVEL_ALERTA_NOTIFICACION = "nivel_alerta_notificacion_gas";
+    private static final String KEY_USUARIO = "usuario";
 
     private static SharedPreferencesHelper sInstance;
     private final SharedPreferences mPref;
@@ -56,6 +62,44 @@ public class SharedPreferencesHelper {
     //----------------------------------------------------------------------------------------------
     //----------------------------------------------------------------------------------------------
     /**
+     * El usuario se guarda en json
+     * @return el usuario logeado guardado
+     */
+    public Usuario getUsuario() {
+        Usuario u = null;
+        try {
+            String json = mPref.getString(KEY_USUARIO,"");
+            if(!json.equals("")){
+                u = new Usuario(json);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return u;
+    }
+
+    //----------------------------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------
+    /**
+     *
+     * @return el usuario logeado guardado
+     */
+    public void setUsuario(Usuario u) {
+
+        SharedPreferences.Editor editor = mPref.edit();
+        String json = "";
+        if(u!=null){
+            json = u.toJSON();
+        }
+        editor.putString(KEY_USUARIO, json);
+        editor.commit();
+        editor.apply();
+
+    }
+
+    //----------------------------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------
+    /**
      *
      * Texto -> remove()
      *
@@ -81,7 +125,7 @@ public class SharedPreferencesHelper {
     }
 
 
-
+  
 }// class
 //----------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------

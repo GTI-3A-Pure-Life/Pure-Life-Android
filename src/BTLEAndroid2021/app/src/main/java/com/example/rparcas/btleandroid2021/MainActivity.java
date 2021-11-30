@@ -11,6 +11,7 @@ import android.os.Message;
 import android.util.Log;
 
 import com.example.rparcas.btleandroid2021.BroadCastReceiver.ConexionChangeReceiver;
+import com.example.rparcas.btleandroid2021.modelo.Usuario;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -29,6 +30,7 @@ import com.example.rparcas.btleandroid2021.databinding.ActivityMainBinding;
 public class MainActivity extends AppCompatActivity {
 
     public static final String NOMBRE_DISPOSITIVO_A_ESCUCHAR_INTENT = "nombre_dispositivo_intent";
+    public static final String ID_USUARIO_INTENT = "id_usuario_intent";
     private ActivityMainBinding binding;
     private NavController navController;
 
@@ -55,7 +57,10 @@ public class MainActivity extends AppCompatActivity {
         //NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
 
-
+        // obtener el usuario y guardarlo
+        PureLifeApplication appState = ((PureLifeApplication)getApplication());
+        Usuario u = appState.getUsuario();
+        Log.d("LOGIN--", "onCreate: main activity "+u);
 
     }
 

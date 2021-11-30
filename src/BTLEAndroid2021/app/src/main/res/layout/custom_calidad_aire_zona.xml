@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:id="@+id/customCalidadAire_linearCarga"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <ProgressBar
+            android:id="@+id/progressBar3"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="128dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/customCalidadAire_linearDatos"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="visible">
+
+        <LinearLayout
+            android:id="@+id/customCalidadAire_linearIcono"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#4CAF50"
+            android:orientation="vertical"
+            android:padding="32dp">
+
+            <ImageView
+                android:id="@+id/customCalidadAire_img_icono"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:minWidth="150dp"
+                android:minHeight="150dp"
+                tools:ignore="ContentDescription"
+                tools:src="@mipmap/ic_launcher" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/linearTexto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/customCalidadAire_tvNombreLugar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="8dp"
+                android:text="" />
+
+            <TextView
+                android:id="@+id/customCalidadAire_tvValorAQI"
+                style="@style/SubTitulo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                app:layout_constraintEnd_toEndOf="@id/customCalidadAire_img_icono"
+                app:layout_constraintStart_toStartOf="@id/customCalidadAire_img_icono"
+                app:layout_constraintTop_toBottomOf="@id/customCalidadAire_img_icono"
+                tools:text="120 AQI" />
+
+            <TextView
+                android:id="@+id/customCalidadAire_tvCalidadAire"
+                style="@style/Texto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                app:layout_constraintEnd_toEndOf="@id/customCalidadAire_img_icono"
+                app:layout_constraintStart_toStartOf="@id/customCalidadAire_img_icono"
+                app:layout_constraintTop_toBottomOf="@id/customCalidadAire_img_icono"
+                tools:text="" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

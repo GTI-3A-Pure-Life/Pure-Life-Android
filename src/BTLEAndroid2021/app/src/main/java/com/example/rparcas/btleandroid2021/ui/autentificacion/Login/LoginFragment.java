@@ -1,6 +1,7 @@
 package com.example.rparcas.btleandroid2021.ui.autentificacion.Login;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -15,7 +16,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.rparcas.btleandroid2021.DialgoCarga;
 import com.example.rparcas.btleandroid2021.MainActivity;
+import com.example.rparcas.btleandroid2021.PureLifeApplication;
+import com.example.rparcas.btleandroid2021.R;
 import com.example.rparcas.btleandroid2021.databinding.FragmentLoginBinding;
 import com.example.rparcas.btleandroid2021.logica.EstadoPeticion;
 import com.example.rparcas.btleandroid2021.ui.autentificacion.NavegacionAutentificacionListener;
@@ -31,6 +35,7 @@ public class LoginFragment extends Fragment {
     private LoginViewModel loginViewModel;
     private NavegacionAutentificacionListener autentificacionCallbacks;
     private FragmentLoginBinding binding; // este objeto hace referncia a un xml layout, no es una clase creada
+    private DialgoCarga elDialogoDeCarga;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -41,6 +46,8 @@ public class LoginFragment extends Fragment {
 
         binding = FragmentLoginBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
+
+        elDialogoDeCarga = new DialgoCarga(getActivity());
 
         initCallbacks();
         initObservablesViewModel();
@@ -58,32 +65,45 @@ public class LoginFragment extends Fragment {
                 switch(estado){
                     case SIN_ACCION:
                         // no hacer nada
-                        binding.progressBarLogin.setVisibility(View.INVISIBLE);
+                        esconderVentanaCarga();
                         break;
                     case EN_PROCESO:
                         // mostrar el progress bar y bloquear el formulario
-                        binding.progressBarLogin.setVisibility(View.VISIBLE);
-                        // TODO bloquear los edit del login
+                        mostrarVentanaCarga();
+                        binding.textViewError.setText("");
                         break;
                     case EXITO:
                         // esconder el progress bar e ir a main con el usuario resultado de la peticion
-                        binding.progressBarLogin.setVisibility(View.INVISIBLE);
+                        esconderVentanaCarga();
                         Intent intentMainActivity = new Intent(getActivity(), MainActivity.class);
-                        // Usuario u = viewModel.getUser(); TODO hacer uusuario serializable
-                        // intentMainActivity.putExtra("usuario_login",u)
+                        // guardamos el usuario de forma global
+                        PureLifeApplication appState = ((PureLifeApplication)getActivity().getApplication());
+                        appState.setUsuario(loginViewModel.getUsuario());
 
                         startActivity(intentMainActivity);
                         getActivity().finish();
                         break;
                     case ERROR:
                         // esconder el progress bar y mostrar error
-                        binding.progressBarLogin.setVisibility(View.INVISIBLE);
+                        esconderVentanaCarga();
                         binding.textViewError.setText(loginViewModel.getError());
-                        // TODO Obtener error
+
                         break;
                 }
             }
         });
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------
+    private void mostrarVentanaCarga() {
+        elDialogoDeCarga.empezarDialogoCarga(getString(R.string.iniciando_sesion));
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------
+    private void esconderVentanaCarga() {
+        elDialogoDeCarga.esconderDialogCarga();
     }
 
     // ---------------------------------------------------------------------------------------------
