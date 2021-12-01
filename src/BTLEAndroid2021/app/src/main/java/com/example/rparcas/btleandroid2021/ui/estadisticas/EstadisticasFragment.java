@@ -1,7 +1,6 @@
 package com.example.rparcas.btleandroid2021.ui.estadisticas;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,15 +19,21 @@ import com.example.rparcas.btleandroid2021.databinding.FragmentEstadisticasBindi
 import com.example.rparcas.btleandroid2021.modelo.Medicion;
 import com.example.rparcas.btleandroid2021.modelo.Usuario;
 import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.components.LimitLine;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.IValueFormatter;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
-import com.github.mikephil.charting.utils.ColorTemplate;
+import com.github.mikephil.charting.formatter.ValueFormatter;
+import com.github.mikephil.charting.highlight.Highlight;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
+import com.github.mikephil.charting.utils.ViewPortHandler;
 
-import java.text.SimpleDateFormat;
+import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Date;
 
 /**
  * EstadisticasFragment.java
@@ -42,7 +47,7 @@ public class EstadisticasFragment extends Fragment {
     private FragmentEstadisticasBinding binding;
 
 
-    private ArrayList<Entry> entryListGrafica;
+    private ArrayList<BarEntry> entryListGrafica;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -204,18 +209,51 @@ public class EstadisticasFragment extends Fragment {
     }
 
     private void inicializarGrafica(){
-        //binding.grafico.getXAxis().setValueFormatter(new MyXAxisValueFormatter());
+        binding.grafico.getXAxis().setValueFormatter(new TimeXAxisValueFormatter());
         binding.grafico.getAxisRight().setEnabled(false);
         binding.grafico.getXAxis().setDrawGridLines(false);
-        binding.grafico.getXAxis().setEnabled(false);
+        //binding.grafico.getXAxis().setEnabled(false);
         binding.grafico.getAxisLeft().setDrawGridLines(false);
         binding.grafico.getLegend().setEnabled(false);
-        binding.grafico.setTouchEnabled(false);
+        binding.grafico.setTouchEnabled(true);
         binding.grafico.setDragEnabled(false);
         binding.grafico.setScaleEnabled(false);
         binding.grafico.setPinchZoom(false);
-        binding.grafico.setAutoScaleMinMaxEnabled(true);
-        binding.grafico.getXAxis().setLabelCount(5);
+        // mostrar 8 labels de eje x y el true es para mostrar el ultimo si o si
+        binding.grafico.getXAxis().setLabelCount(8,true);
+        binding.grafico.getAxisLeft().setAxisMaximum(300);
+        binding.grafico.getAxisLeft().setAxisMinimum(0);
+
+        // añadimos las barras de limite
+
+        float longitudLinea = 4f;
+        float longitudEspacio = 4f;
+        float lineafase = 0f;
+        float anchoLinea = 1f;
+        // nivel moderado
+        LimitLine limiteModerado = new LimitLine(Medicion.VALOR_AQI.NIVEL_BUENO);
+        limiteModerado.setLineColor(getResources().getColor(R.color.amarillo_ffc300));
+        limiteModerado.enableDashedLine(longitudLinea,longitudEspacio,lineafase);
+        limiteModerado.setLineWidth(anchoLinea);
+
+        LimitLine limiteMalo = new LimitLine(Medicion.VALOR_AQI.NIVEL_MODERADO);
+        limiteMalo.setLineColor(getResources().getColor(R.color.rojo_e23636));
+        limiteMalo.enableDashedLine(longitudLinea,longitudEspacio,lineafase);
+        limiteMalo.setLineWidth(anchoLinea);
+
+        LimitLine limiteMuyMalo = new LimitLine(Medicion.VALOR_AQI.NIVEL_ALTO);
+        limiteMuyMalo.setLineColor(getResources().getColor(R.color.rojo_900C3F));
+        limiteMuyMalo.enableDashedLine(longitudLinea,longitudEspacio,lineafase);
+        limiteMuyMalo.setLineWidth(anchoLinea);
+
+        binding.grafico.getAxisLeft().addLimitLine(limiteMalo);
+        binding.grafico.getAxisLeft().addLimitLine(limiteModerado);
+        binding.grafico.getAxisLeft().addLimitLine(limiteMuyMalo);
+
+
+
+
+
     }
 
     /**
@@ -226,6 +264,7 @@ public class EstadisticasFragment extends Fragment {
      */
     private void mostrarGrafica(ArrayList<Medicion> mediciones, int color) {
 
+        ArrayList<Integer> coloresBarras = new ArrayList<>();
         entryListGrafica = new ArrayList<>();
         // variable para nuestra gráfica
 
@@ -233,41 +272,44 @@ public class EstadisticasFragment extends Fragment {
         binding.tablaGases.setVisibility(View.INVISIBLE);
         binding.cerrarGrafica.setVisibility(View.VISIBLE);
 
-
         if(!mediciones.isEmpty()){
-          // ArrayList<Medicion> medicionesAMostrar = Utilidades.transformarMedicionesAArrayMedicionesPorMinuto24Horas(mediciones);
-           //Log.d("GRAFICA", "mostrarGrafica: "+medicionesAMostrar);
-            for(int i = 0; i< mediciones.size(); i ++){
+            ArrayList<Medicion> medicionesAMostrar = Utilidades.transformarMedicionesAArrayMedicionesPorHora24Horas(mediciones);
+            for(int i = 0; i< medicionesAMostrar.size(); i ++){
 
-                Entry e = new Entry(i, (float)mediciones.get(i).getValor());
+                Log.d("GRAFICA", "mostrarGrafica: se añade el color: "+ Utilidades.obtenerColorPorValorAQI(
+                        (int) medicionesAMostrar.get(i).getValorAQI(),
+                        getContext())+ " para el valor: "+ (int) medicionesAMostrar.get(i).getValorAQI());
+
+                // por cada barra añadimos un color distinto
+                coloresBarras.add(Utilidades.obtenerColorPorValorAQI(
+                        (int) medicionesAMostrar.get(i).getValorAQI(),
+                        getContext()));
+
+                // creamos la barra
+                BarEntry e = new BarEntry(i,
+                        (float)medicionesAMostrar.get(i).getValorAQI());
+
+                // la añadimos
                 entryListGrafica.add(e);
             }
 
-            LineDataSet lineDataSet = new LineDataSet(entryListGrafica,null);
+            // creamos el data set con todas las barras
+            BarDataSet barDataSet = new BarDataSet(entryListGrafica,null);
+            // añadimos los colores
+            barDataSet.setColors(coloresBarras);
+
+            // descripicion del grafico
             Description desc = new Description();
-            desc.setText("Exposición (AQI) de "+mediciones.get(0).getTipoMedicion().getNombreGas());
+            desc.setText("Exposición (AQI) de "+medicionesAMostrar.get(0).getTipoMedicion().getNombreGas());
             binding.grafico.setDescription(desc);
 
 
+            // formateamos los valores de cada elemento
+            BarData barData = new BarData(barDataSet);
+            barData.setValueFormatter(new BarChartValueFormatter());
 
-
-            lineDataSet.setColors(ColorTemplate.PASTEL_COLORS);
-            lineDataSet.setColor(color);
-            lineDataSet.setFillColor(color);
-            //lineDataSet.setFillAlpha(300);
-            lineDataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-            lineDataSet.setCubicIntensity(.09f);
-            lineDataSet.setDrawFilled(true);
-            lineDataSet.setLineWidth(2);
-            lineDataSet.setDrawCircles(false);
-            lineDataSet.setValueTextSize(0f);
-
-            //lineDataSet.setM(10);
-
-            //actualizamos grafica si se actualizan los datos
-            LineData lineData = new LineData(lineDataSet);
-
-            binding.grafico.setData(lineData);
+            // mostramos la grafica
+            binding.grafico.setData(barData);
             binding.grafico.notifyDataSetChanged();
         }
 
@@ -322,21 +364,46 @@ public class EstadisticasFragment extends Fragment {
         binding = null;
     }
 
-    public class MyXAxisValueFormatter extends IndexAxisValueFormatter{
-
-
+    /**
+     * Clase para formatear el eje x de las graficas
+     * este formateo se le asigna el getAxisX()
+     */
+    public static class TimeXAxisValueFormatter extends IndexAxisValueFormatter{
 
         @Override
         public String getFormattedValue(float value) {
             // Convert float value to date string
             // Convert from days back to milliseconds to format time  to show to the user
+            int hora = (int) value;
 
-            // Show time in local version
-            Date timeMilliseconds = new Date((long)value);
-            SimpleDateFormat dateTimeFormat = new SimpleDateFormat( "HH:mm");
-
-
-            return dateTimeFormat.format(timeMilliseconds);
+            return hora>=10 ? String.valueOf(hora)+":00": "0"+hora+":00";
         }
+    }
+
+    /**
+     * Clase para formatear las etiquetas de los valores
+     * Por cada barra comprobamos si el valor es 0 no mostrarmos la etiqueta
+     *
+     * este formateo se le asigna al barData
+     *
+     */
+    public static class BarChartValueFormatter extends ValueFormatter {
+
+        @Override
+        public String getFormattedValue(float value) {
+
+            if(value > 0) {
+                // añadimos los colores de las barras a un array para luego añadirlo al data set cuando termine el
+                // formateo
+                return String.valueOf(Math.round(value));
+            } else {
+                return "";
+            }
+
+
+        }
+
+
+
     }
 }

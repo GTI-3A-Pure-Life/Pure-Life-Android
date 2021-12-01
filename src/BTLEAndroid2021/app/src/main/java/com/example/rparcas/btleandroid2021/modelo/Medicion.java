@@ -24,7 +24,7 @@ import java.util.List;
  */
 public class Medicion{
 
-    private final String FECHA_FROMATO = "yyyy-MM-dd hh:mm:ss";
+    private final String FECHA_FROMATO = "yyyy-MM-dd HH:mm:ss";
 
 
     private double medicion_valor;
@@ -33,7 +33,7 @@ public class Medicion{
     private final Posicion posicion;
     private  Timestamp medicion_fecha;
     private TipoMedicion tipoMedicion;
-    private final double valorAQI;
+    private double valorAQI;
 
     //----------------------------------------------------------------------------------------------
     //----------------------------------------------------------------------------------------------
@@ -143,12 +143,12 @@ public class Medicion{
     //----------------------------------------------------------------------------------------------
     //----------------------------------------------------------------------------------------------
     public Medicion(JSONObject json) throws JSONException {
-        this.medicion_valor = json.getDouble("valor");
+        // de la BD llega el valor AQI
+        this.valorAQI = json.getDouble("valor");
         this.posicion = new Posicion(json.getJSONObject("posMedicion"));
         this.sensor_id = json.getString("idSensor");
         this.usuario_id = json.getInt("idUsuario");
         this.tipoMedicion = TipoMedicion.getTipoById(json.getInt("tipoGas"));
-        this.valorAQI = Utilidades.calcularValorAQI(medicion_valor,tipoMedicion);
         this.medicion_fecha = Timestamp.valueOf(json.getString("fechaHora"));
 
     }
@@ -214,7 +214,17 @@ public class Medicion{
         return this.medicion_valor;
     }
     public Timestamp getMedicion_fecha() {return this.medicion_fecha;}
+    public void setValor(double valor) {
+        this.medicion_valor = valor;
+        this.valorAQI = Utilidades.calcularValorAQI(medicion_valor,tipoMedicion);
 
+    }
+    public double getValorAQI() {
+        return this.valorAQI;
+    }
+    public void setValorAQI(double valorAQI) {
+        this.valorAQI = valorAQI;
+    }
 
     //----------------------------------------------------------------------------------------------
     //----------------------------------------------------------------------------------------------
@@ -259,13 +269,7 @@ public class Medicion{
                 '}';
     }
 
-    public void setValor(double valor) {
-        this.medicion_valor = valor;
-    }
 
-    public double getValorAQI() {
-        return this.valorAQI;
-    }
 
 
     //----------------------------------------------------------------------------------------------
@@ -360,7 +364,7 @@ public class Medicion{
         public static int NIVEL_BUENO = 50;
         public static int NIVEL_MODERADO = 150;
         static public int NIVEL_ALTO = 200;
-        static public int NIVEL_MUY_ALTO = 350;
+        static public int NIVEL_MUY_ALTO = 300;
     } // class
 
     //---------------------------------------------------------------------------------------------
