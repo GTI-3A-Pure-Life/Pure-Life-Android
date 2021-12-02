@@ -7,17 +7,36 @@
     android:layout_height="match_parent"
     tools:context=".ui.escaner.EscanerFragment">
 
-    <TextView
-        android:id="@+id/tituloDeActividadEscaner"
-        style="@style/TituloDeActivity"
-        android:layout_width="0dp"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginTop="24dp"
-        android:text="@string/escaner"
-        app:layout_constraintEnd_toStartOf="@+id/btInformacion"
+        android:layout_marginEnd="24dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/tituloDeActividadEscaner"
+            style="@style/TituloDeActivity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/escaner" />
+
+        <ImageView
+            android:id="@+id/btInformacion"
+            android:layout_width="match_parent"
+            android:layout_height="24dp"
+            android:layout_gravity="center"
+            android:layout_weight="8"
+            android:contentDescription="Informacion sobre gases"
+            android:src="@drawable/ic_info"
+            android:visibility="visible"
+            tools:ignore="ImageContrastCheck" />
+    </LinearLayout>
 
     <Button
         android:id="@+id/botonEscanear"
@@ -33,33 +52,20 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <ImageView
-        android:id="@+id/btInformacion"
-        android:layout_width="24dp"
-        android:layout_height="23dp"
-        android:layout_marginEnd="24dp"
-        android:contentDescription="Informacion sobre gases"
-        android:src="@drawable/ic_baseline_info_24"
-        android:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="@+id/tituloDeActividadEscaner"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/tituloDeActividadEscaner"
-        tools:ignore="ImageContrastCheck" />
-
     <TextView
         android:id="@+id/tvValorAQI"
         style="@style/TituloDeActivity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
-        app:layout_constraintBottom_toTopOf="@+id/contenedorImagenNivelPeligro"
+        app:layout_constraintBottom_toTopOf="@+id/guideline2"
         app:layout_constraintEnd_toEndOf="@+id/contenedorImagenNivelPeligro"
         app:layout_constraintStart_toStartOf="@+id/contenedorImagenNivelPeligro" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/contenedorImagenNivelPeligro"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_marginStart="24dp"
         android:layout_marginEnd="24dp"
         android:elevation="0dp"
@@ -67,11 +73,11 @@
         android:visibility="invisible"
         app:cardCornerRadius="10dp"
         app:cardElevation="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/botonEscanear"
+        app:layout_constraintBottom_toTopOf="@+id/guideline3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewInforMedicion">
+        app:layout_constraintTop_toTopOf="@+id/guideline2">
 
         <ImageView
             android:id="@+id/imageViewEscaner"
@@ -80,8 +86,8 @@
             android:adjustViewBounds="false"
             android:background="@drawable/bottom_border"
             android:fitsSystemWindows="false"
-            android:scaleType="centerInside"
-            android:src="@drawable/ic_nivel2" />
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_escaner" />
 
     </androidx.cardview.widget.CardView>
 
@@ -97,6 +103,20 @@
         app:layout_constraintEnd_toEndOf="@+id/tituloDeActividadEscaner"
         app:layout_constraintStart_toStartOf="@+id/tituloDeActividadEscaner"
         app:layout_constraintTop_toBottomOf="@+id/tituloDeActividadEscaner" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.25" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.75" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -145,7 +145,7 @@ public class EscanerFragment extends Fragment {
                     binding.imageViewEscaner.setVisibility(View.VISIBLE);
                     binding.tvValorAQI.setText("");
                     binding.contenedorImagenNivelPeligro.setVisibility(View.VISIBLE);
-                    binding.imageViewEscaner.setImageResource(R.drawable.icono_escaner3);
+                    binding.imageViewEscaner.setImageResource(R.drawable.ic_escaner);
                     binding.textViewInforMedicion.setVisibility(View.GONE);
                     binding.botonEscanear.setText(getString(R.string.escanear));
                     binding.tituloDeActividadEscaner.setText(getString(R.string.escanear));

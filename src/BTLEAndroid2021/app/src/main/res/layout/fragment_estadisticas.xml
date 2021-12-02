@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".ui.estadisticas.EstadisticasFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
+    tools:context=".ui.estadisticas.EstadisticasFragment"
     tools:ignore="UselessParent">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="24dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -36,11 +35,11 @@
             <ImageView
                 android:id="@+id/btInformacion2"
                 android:layout_width="match_parent"
-                android:layout_height="23dp"
+                android:layout_height="24dp"
                 android:layout_gravity="center"
                 android:layout_weight="8"
                 android:contentDescription="Informacion sobre gases"
-                android:src="@drawable/ic_baseline_info_24"
+                android:src="@drawable/ic_info"
                 android:visibility="visible"
                 tools:ignore="ImageContrastCheck" />
 
@@ -308,7 +307,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                app:icono="@drawable/ic_home_black_24dp"
+                app:icono="@drawable/ic_home"
                 app:nombreSitio="@string/casa" />
 
             <com.example.rparcas.btleandroid2021.customViews.CalidadAireZona
@@ -316,7 +315,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                app:icono="@drawable/ic_zona_exterior"
+                app:icono="@drawable/ic_exterior"
                 app:nombreSitio="@string/Exterior" />
 
             <com.example.rparcas.btleandroid2021.customViews.CalidadAireZona
@@ -324,12 +323,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                app:icono="@drawable/ic_zona_trabajo"
+                app:icono="@drawable/ic_trabajo"
                 app:nombreSitio="@string/Trabajo" />
 
 
         </LinearLayout>
-
 
 
     </LinearLayout>
