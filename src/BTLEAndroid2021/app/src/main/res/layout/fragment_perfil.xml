@@ -6,26 +6,45 @@
     android:layout_height="match_parent"
     tools:context=".ui.perfil.PerfilFragment">
 
-    <TextView
-        android:id="@+id/tituloDeActividadPerfil"
-        style="@style/TituloDeActivity"
-        android:layout_width="0dp"
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="25dp"
-        android:layout_marginTop="25dp"
-        android:text="Perfil"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="24dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/tituloDeActividadPerfil"
+            style="@style/TituloDeActivity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Perfil" />
+
+        <ImageView
+            android:id="@+id/botonAjustes"
+            style="@style/BotonEnImagen"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_weight="8"
+            android:src="@drawable/ic_config" />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/textViewNombre"
         style="@style/Texto"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="24dp"
         android:text="Nombre: "
-        app:layout_constraintStart_toStartOf="@+id/tituloDeActividadPerfil"
-        app:layout_constraintTop_toBottomOf="@+id/tituloDeActividadPerfil" />
+        app:layout_constraintStart_toStartOf="@+id/linearLayout"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
     <TextView
         android:id="@+id/textViewCorreo"
@@ -105,17 +124,5 @@
         android:text=""
         app:layout_constraintStart_toEndOf="@+id/textViewUbiTrabajo"
         app:layout_constraintTop_toTopOf="@+id/textViewUbiTrabajo" />
-
-    <ImageButton
-        android:id="@+id/botonAjustes"
-        style="@style/BotonEnImagen"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="25dp"
-        android:padding="8dp"
-        android:src="@drawable/ic_baseline_settings_24"
-        app:layout_constraintBottom_toBottomOf="@+id/tituloDeActividadPerfil"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/tituloDeActividadPerfil" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
