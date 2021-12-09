@@ -1,5 +1,7 @@
 package com.example.rparcas.btleandroid2021;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.IntentService;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -9,6 +11,11 @@ import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanResult;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
@@ -17,6 +24,7 @@ import android.util.Log;
 
 import com.example.rparcas.btleandroid2021.logica.Logica;
 import com.example.rparcas.btleandroid2021.logica.ManejadorNotificaciones;
+import com.example.rparcas.btleandroid2021.logica.PeticionarioREST;
 import com.example.rparcas.btleandroid2021.logica.SharedPreferencesHelper;
 import com.example.rparcas.btleandroid2021.modelo.Medicion;
 import com.example.rparcas.btleandroid2021.modelo.Posicion;
@@ -24,9 +32,15 @@ import com.example.rparcas.btleandroid2021.modelo.RegistroAveriaSensor;
 import com.example.rparcas.btleandroid2021.modelo.RegistroBateriaSensor;
 import com.example.rparcas.btleandroid2021.modelo.TramaIBeacon;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 
 
@@ -36,7 +50,7 @@ import androidx.core.app.NotificationCompat;
  * Servicio Que escucha IBeacons periodicamente
  * @author Rubén Pardo Casanova 21/09/2021
  */
-public class ServicioEscucharBeacons extends IntentService {
+public class ServicioEscucharBeacons extends IntentService implements LocationListener {
 
     // ---------------------------------------------------------------------------------------------
     // ---------------------------------------------------------------------------------------------
@@ -93,6 +107,20 @@ public class ServicioEscucharBeacons extends IntentService {
 
     private Medicion medicionMasAltaRegistrada;
     private int idUsuario;
+
+
+    // ---------------------------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------
+    // Atributos para controlar la localizacion
+    private LocationManager manejador;
+    private Posicion ultimaLocalizacion;
+    private Posicion posicionEstacionMasCercana;
+    private float valorPosicionEstacionMasCercana;
+    private String proveedor;
+    private static final long TIEMPO_MIN_REFRESCO_LOCALIZACION = 5 * 1000 ; // 5 segundos
+    private static final long DISTANCIA_MIN_REFRESCO_LOCALIZACION = 5; // 5 metros
+
+
 
 
     // ---------------------------------------------------------------------------------------------
@@ -180,6 +208,7 @@ public class ServicioEscucharBeacons extends IntentService {
      * parar()
      * Metodo para detener el servicio y su broadcast receiver
      */
+    @SuppressLint("MissingPermission")
     public void parar () {
 
         Log.d(ETIQUETA_LOG, " ServicioEscucharBeacons.parar() " );
@@ -194,6 +223,10 @@ public class ServicioEscucharBeacons extends IntentService {
             this.callbackDelEscaneo = null;
         }
 
+        // quitar las actualizaciones de la posiciones
+        if(manejador!=null){
+            manejador.removeUpdates(this);
+        }
 
         this.seguir = false;
         this.stopSelf();
@@ -353,6 +386,8 @@ public class ServicioEscucharBeacons extends IntentService {
         this.dispositivoABuscar = intent.getStringExtra(MainActivity.NOMBRE_DISPOSITIVO_A_ESCUCHAR_INTENT);
         this.idUsuario = intent.getIntExtra(MainActivity.ID_USUARIO_INTENT,-1);
         inicializarBlueTooth();
+        initLocation();
+        obtenerValorEstacionMasCercana(ultimaLocalizacion);
         buscarEsteDispositivoBTLE(this.dispositivoABuscar);
 
         medicionesAEnviar = new ArrayList<>();
@@ -510,7 +545,7 @@ public class ServicioEscucharBeacons extends IntentService {
         String dispositivo = Utilidades.bytesToString(tib.getUUID()).split("%")[0];
 
 
-        if(dispositivo.equals(dispositivoBuscado)){
+        if(dispositivo.equals(dispositivoBuscado) && ultimaLocalizacion!=null){
             comprobarDesconexionPorDistancia(Utilidades.calcularDistanciaDispositivoBluetooth(rssi,tib.getTxPower()));
             Log.d(ETIQUETA_LOG, "tratarTramaBeacon: nombre: " + dispositivo);
             if(major == 1000){
@@ -519,7 +554,7 @@ public class ServicioEscucharBeacons extends IntentService {
                 notificarBateria(dispositivo,minor);
             }else{
                 // medicion
-                Medicion m = new Medicion(minor,this.idUsuario,dispositivo,new Posicion(38.995524,-0.164662),
+                Medicion m = new Medicion(minor,this.idUsuario,dispositivo,ultimaLocalizacion,
                         Medicion.TipoMedicion.getTipoById(major));
 
                 comprobarNivelPeligroGas(m); // lanzar notificacion
@@ -789,6 +824,93 @@ public class ServicioEscucharBeacons extends IntentService {
         l.guardarMedicionesEnLocal(m,context);
 
     }
+
+
+    /**
+     * Realiza una peticion REST a API externa
+     * Devuelve el valor AQI de la estacion mas cercana
+     * @author Ruben Pardo Casanova
+     * 09/12/2021
+     *
+     * Posicion -> obtenerValorEstacionMasCercana() ->
+     * <- Posicion, R
+     *
+     * @param posiconActual objeto Posicion con coordenadas actuales
+     *
+     */
+    private void obtenerValorEstacionMasCercana(Posicion posiconActual){
+        Logica l = new Logica();
+        l.obtenerValorEstacionMasCercana(posiconActual, new PeticionarioREST.RespuestaREST() {
+            @Override
+            public void callback(int codigo, String cuerpo) {
+                if(codigo == 200){
+                    try {
+                        Log.d("ESTACION","----------------cuerpo: "+cuerpo);
+                        JSONObject json = new JSONObject(cuerpo);
+                        JSONObject data = json.getJSONObject("data");
+                        JSONArray posEstacion = data.getJSONObject("city").getJSONArray("geo");
+
+                        // valor AQI
+                        valorPosicionEstacionMasCercana = data.getInt("aqi");
+                        // posicion de estacion mas cercana
+                        posicionEstacionMasCercana = new Posicion(posEstacion.getDouble(0),
+                                posEstacion.getDouble(1));
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+    }
+
+
+    // ---------------------------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------
+    // LOCALIZACION
+    //----------------------------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------
+    @SuppressLint("MissingPermission") // en teoria para llegar aqui se pide el permiso
+    private void initLocation() {
+
+        manejador = (LocationManager) getApplicationContext().getSystemService(LOCATION_SERVICE);
+
+        Criteria criterio = new Criteria();
+        criterio.setCostAllowed(false);
+        criterio.setAltitudeRequired(false);
+        criterio.setAccuracy(Criteria.ACCURACY_FINE);
+        proveedor = manejador.getBestProvider(criterio, true);
+
+        if(proveedor!=null){
+            Location location = manejador.getLastKnownLocation(proveedor);
+            if(location!=null){
+                ultimaLocalizacion = new Posicion(location.getLatitude(),location.getLongitude());
+            }
+            if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+                manejador.requestLocationUpdates(proveedor, TIEMPO_MIN_REFRESCO_LOCALIZACION, DISTANCIA_MIN_REFRESCO_LOCALIZACION,
+                        this);
+            }
+        }
+
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------
+    @Override
+    public void onLocationChanged(@NonNull Location location) {
+
+        if(location!=null){
+            ultimaLocalizacion = new Posicion(location.getLatitude(),location.getLongitude());
+        }
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------
+    @Override
+    public void onProviderEnabled(@NonNull String provider) {
+        initLocation();
+    }
+
 
 
 } // class

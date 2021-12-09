@@ -8,6 +8,7 @@
     tools:context=".ui.escaner.EscanerFragment">
 
     <LinearLayout
+        android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -96,13 +97,12 @@
         style="@style/SubTitulo"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="16dp"
         android:text="@string/info_escaner_mediciones"
         android:textAlignment="textStart"
-        android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="@+id/tituloDeActividadEscaner"
-        app:layout_constraintStart_toStartOf="@+id/tituloDeActividadEscaner"
-        app:layout_constraintTop_toBottomOf="@+id/tituloDeActividadEscaner" />
+        android:visibility="invisible"
+        app:layout_constraintStart_toStartOf="@+id/linearLayout2"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline2"

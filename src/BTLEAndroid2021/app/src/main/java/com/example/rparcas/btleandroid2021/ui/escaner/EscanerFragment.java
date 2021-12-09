@@ -210,17 +210,21 @@ public class EscanerFragment extends Fragment {
     private void empezarAEscanearQR() {
 
 
-        // permisos de camara y bluetooth
+        // permisos de camara bluetooth y posicion
         if(ActivityCompat.checkSelfPermission(getActivity().getBaseContext(),
                 Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED &&
+
                 ActivityCompat.checkSelfPermission(getActivity().getBaseContext(),
-                        Manifest.permission.BLUETOOTH) == PackageManager.PERMISSION_GRANTED) {
+                        Manifest.permission.BLUETOOTH) == PackageManager.PERMISSION_GRANTED &&
+
+                ActivityCompat.checkSelfPermission(getActivity().getBaseContext(),
+                        Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
             //lanzamos actividad cuando hacemos click en el boton
             Intent i = new Intent(getActivity(), QrCodeActivity.class);
             startActivityForResult(i, REQUEST_CODE_QR_SCAN);
         } else {
-            solicitarPermiso(new String[] {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.CAMERA},
+            solicitarPermiso(new String[] {Manifest.permission.BLUETOOTH,Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.CAMERA},
                     "Sin el permiso de cámara no se puede acceder a la lectura de código QR",
                     this.getActivity(), REQUEST_CODE_CAMERA);
         }

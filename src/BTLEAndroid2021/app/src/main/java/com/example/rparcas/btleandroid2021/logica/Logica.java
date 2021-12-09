@@ -6,6 +6,7 @@ import android.util.Log;
 import com.example.rparcas.btleandroid2021.Constantes.RESTConstantes;
 import com.example.rparcas.btleandroid2021.SQLITE.MedicionDBHelper;
 import com.example.rparcas.btleandroid2021.modelo.Medicion;
+import com.example.rparcas.btleandroid2021.modelo.Posicion;
 import com.example.rparcas.btleandroid2021.modelo.RegistroAveriaSensor;
 import com.example.rparcas.btleandroid2021.modelo.RegistroBateriaSensor;
 import com.example.rparcas.btleandroid2021.modelo.Usuario;
@@ -317,6 +318,30 @@ public class Logica {
                 +"?fecha_inicio="+fechaIni+"&fecha_fin="+fechaFin
                 +"&idUsuario="+idUsuario;
 
+        elPeticionarioREST.hacerPeticionREST("GET", restEndpoint,
+                null, laRespuesta);
+    }
+
+    /**
+     * Realiza una peticion REST a API externa
+     * Devuelve el valor AQI de la estacion mas cercana
+     * @author Ruben Pardo Casanova
+     * 09/12/2021
+     *
+     * Posicion -> obtenerValorEstacionMasCercana() ->
+     * <- Posicion, R
+     *
+     * @param posiconActual objeto Posicion con coordenadas actuales
+     *
+     */
+    public void obtenerValorEstacionMasCercana(Posicion posiconActual, PeticionarioREST.RespuestaREST laRespuesta) {
+        PeticionarioREST elPeticionarioREST = new PeticionarioREST();
+        // GET/https://api.waqi.info/feed/geo:38.816385;-0.607236/?token=token
+        String restEndpoint = RESTConstantes.URL_WAQI
+                +"geo:"+posiconActual.getLatitud()+";"+posiconActual.getLongitud()
+                +"/?token="+RESTConstantes.TOKEN_WAQI;
+
+        Log.d("ESTACION", "OBTENER VALOR ESTACION CERCANA: rest: "+restEndpoint);
         elPeticionarioREST.hacerPeticionREST("GET", restEndpoint,
                 null, laRespuesta);
     }

@@ -2,7 +2,10 @@ package com.example.rparcas.btleandroid2021.Constantes;
 
 public class RESTConstantes {
 
-    public static final String URL = "http://rparcas.upv.edu.es:80/"; //CAMBIAR DEPENDE DE LA RED
+    public static final String URL = "http://rparcas.upv.edu.es:80/";
+    public static final String URL_WAQI = "https://api.waqi.info/feed/";
+    public static final String TOKEN_WAQI = "7c7d70d4cd3fed72c7756498fbecc70b8b5e7193";
+
 
     public static final String RESCURSO_MEDICIONES = "mediciones";
     public static final String RESCURSO_MEDICIONES_USUARIO = "mediciones/usuario";
