@@ -40,4 +40,33 @@ public class Posicion implements Serializable {
                 ", longitud=" + longitud +
                 '}';
     }
+
+
+    /**
+     * Calcula la distancia entre dos puntos de coordenadas
+     * @author Ruben Pardo Casanova
+     * 09/12/2021
+     * Posicion -> calcularDistanciaA() -> R
+     * @param posicionEstacionMasCercana posicion a calcular la distancia
+     * @return distancia en metros
+     */
+    public double calcularDistanciaA(Posicion posicionEstacionMasCercana) {
+
+        double lat1 = this.latitud;
+        double lng1 = this.longitud;
+        double lat2 = posicionEstacionMasCercana.latitud;
+        double lng2 = posicionEstacionMasCercana.longitud;
+        //double radioTierra = 3958.75;//en millas
+        double radioTierra = 6371000;//en metros
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLng = Math.toRadians(lng2 - lng1);
+        double sindLat = Math.sin(dLat / 2);
+        double sindLng = Math.sin(dLng / 2);
+        double va1 = Math.pow(sindLat, 2) + Math.pow(sindLng, 2)
+                * Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2));
+        double va2 = 2 * Math.atan2(Math.sqrt(va1), Math.sqrt(1 - va1));
+        double distancia = radioTierra * va2;
+
+        return distancia;
+    }
 }

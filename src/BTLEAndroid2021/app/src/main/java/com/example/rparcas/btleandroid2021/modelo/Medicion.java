@@ -225,7 +225,9 @@ public class Medicion{
     public void setValorAQI(double valorAQI) {
         this.valorAQI = valorAQI;
     }
-
+    public Posicion getPosicion() {
+        return posicion;
+    }
     //----------------------------------------------------------------------------------------------
     //----------------------------------------------------------------------------------------------
     /**

@@ -55,6 +55,7 @@ public class ServicioEscucharBeacons extends IntentService implements LocationLi
     // ---------------------------------------------------------------------------------------------
     // ---------------------------------------------------------------------------------------------
     private static final String ETIQUETA_LOG = ">>>>";
+    private static final int DISTANCIA_CERCA_ESTACION = 20;//metros
 
     private long tiempoDeEspera = 50; // decimas de segundo
     private final int tiempoDeEsperaINT = 50; // decimas de segundo
@@ -117,7 +118,8 @@ public class ServicioEscucharBeacons extends IntentService implements LocationLi
     private Posicion posicionEstacionMasCercana;
     private float valorPosicionEstacionMasCercana;
     private String proveedor;
-    private static final long TIEMPO_MIN_REFRESCO_LOCALIZACION = 5 * 1000 ; // 5 segundos
+    private static final long TIEMPO_MIN_REFRESCO_LOCALIZACION = 1 * 1000 ; // 5 segundos
+    private static final long TIEMPO_REFRESCO_ESTACION_CERCANA = 10000 ; // milisegundos
     private static final long DISTANCIA_MIN_REFRESCO_LOCALIZACION = 5; // 5 metros
 
 
@@ -261,6 +263,7 @@ public class ServicioEscucharBeacons extends IntentService implements LocationLi
         // esto lo ejecuta un WORKER THREAD !
 
         long contador = 1;
+        long contadorESTACION = 1;
         int tiempoRestanteParaAveria =  tiempoDeEsperaAveria; // reinciamos
 
         Log.d(ETIQUETA_LOG, " ServicioEscucharBeacons.onHandleIntent: empieza : thread=" + Thread.currentThread().getId() );
@@ -274,6 +277,17 @@ public class ServicioEscucharBeacons extends IntentService implements LocationLi
                 tiempoRestanteParaAveria -= tiempoDeEsperaINT;
                 comprobarAveriaSensor(tiempoRestanteParaAveria);
 
+                // cada X tiempo refrescar la mas cercana
+                Log.d("ESTACION", "onHandleIntent: tiempo refresco estacion: "+(TIEMPO_REFRESCO_ESTACION_CERCANA-tiempoDeEspera*contadorESTACION));
+                Log.d("ESTACION", "onHandleIntent: tiempo refresco contador: "+contadorESTACION);
+                if(TIEMPO_REFRESCO_ESTACION_CERCANA-(tiempoDeEspera*contadorESTACION) <= 0){
+                    Log.d("ESTACION", "onHandleIntent: refrescar estacion");
+                    contadorESTACION = 0;
+                    Log.d("ESTACION", "onHandleIntent: ultimaLocalizacion: "+ultimaLocalizacion);
+                    if(ultimaLocalizacion!=null){
+                        obtenerValorEstacionMasCercana(ultimaLocalizacion);
+                    }
+                }
 
                 Log.d(ETIQUETA_LOG, "ServicioEscucharBeacons.onHandleIntent: hay "+medicionesAEnviar.size() + " mediciones");
 
@@ -301,6 +315,7 @@ public class ServicioEscucharBeacons extends IntentService implements LocationLi
 
 
                 contador++;
+                contadorESTACION++;
             }
 
             Log.d(ETIQUETA_LOG, " ServicioEscucharBeacons.onHandleIntent : tarea terminada ( tras while(true) )" );
@@ -387,7 +402,9 @@ public class ServicioEscucharBeacons extends IntentService implements LocationLi
         this.idUsuario = intent.getIntExtra(MainActivity.ID_USUARIO_INTENT,-1);
         inicializarBlueTooth();
         initLocation();
-        obtenerValorEstacionMasCercana(ultimaLocalizacion);
+        if(ultimaLocalizacion!=null){
+            obtenerValorEstacionMasCercana(ultimaLocalizacion);
+        }
         buscarEsteDispositivoBTLE(this.dispositivoABuscar);
 
         medicionesAEnviar = new ArrayList<>();
@@ -548,22 +565,66 @@ public class ServicioEscucharBeacons extends IntentService implements LocationLi
         if(dispositivo.equals(dispositivoBuscado) && ultimaLocalizacion!=null){
             comprobarDesconexionPorDistancia(Utilidades.calcularDistanciaDispositivoBluetooth(rssi,tib.getTxPower()));
             Log.d(ETIQUETA_LOG, "tratarTramaBeacon: nombre: " + dispositivo);
+            // si el major es 1000 significa que el minor es el valor de la bateria
             if(major == 1000){
                 Log.d(ETIQUETA_LOG, "tratarTramaBeacon: bateria: " + minor);
                 // tipo bateria
                 notificarBateria(dispositivo,minor);
             }else{
+                // por otra parte el major indica el tipo de medicion y el minor su valor
                 // medicion
                 Medicion m = new Medicion(minor,this.idUsuario,dispositivo,ultimaLocalizacion,
                         Medicion.TipoMedicion.getTipoById(major));
 
                 comprobarNivelPeligroGas(m); // lanzar notificacion
+
                 enviarMensajeALaHostActivity(calcularMedicionMasPeligrosa(m)); // avisar a la activity host
 
+                // si esta descalibrado poner que su valor sea la de la estacion
+                if(comprobarDescalibrado(m,posicionEstacionMasCercana,valorPosicionEstacionMasCercana)){
+                    m.setValor(valorPosicionEstacionMasCercana);
+                }
                 medicionesAEnviar.add(m);
 
             }
         }
+    }
+
+    /**
+     *
+     * Comprueba si esta cerca de la medicion, si lo esta y si su valor se va un 20 % de la estacion
+     * enviar notificacion de descalibrado
+     *
+     * medicion:Medicion, posicionEstacion:Posicion, valorEstacion:R -> comprobarCalibracion()->
+     * <-
+     *
+     * @author Ruben Pardo Casanova
+     * 09/12/2021
+     *
+     * @param m Medicion actual
+     * @param posicionEstacionMasCercana la posicion de la estacion de gas mas cercana
+     * @param valorPosicionEstacionMasCercana valor de la estacion en AQI
+     *
+     * @return T/F si esta descalibrado
+     */
+    private boolean comprobarDescalibrado(Medicion m, Posicion posicionEstacionMasCercana, float valorPosicionEstacionMasCercana) {
+
+        double distancia = m.getPosicion().calcularDistanciaA(posicionEstacionMasCercana);
+        Log.d("ESTACION", "valor (AQI) medicion: "+ m.getValorAQI());
+        Log.d("ESTACION", "comprobarDescalibrado distancia(m): "+ distancia);
+        Log.d("ESTACION", "descalibrado: "+ m.getValorAQI()/valorPosicionEstacionMasCercana);
+
+        if(distancia>DISTANCIA_CERCA_ESTACION){
+            if(m.getValorAQI()/valorPosicionEstacionMasCercana < 0.8
+            || m.getValorAQI()/valorPosicionEstacionMasCercana > 1.2){
+                // se va un vente por ciento por arriba o por abajo
+                //new Logica().guardarRegistroDescalibrado(RegistroDescalibrado);
+                Log.d("ESTACION", "esta descalibrado");
+                return true;
+            }
+        }
+
+        return false;
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -839,6 +900,7 @@ public class ServicioEscucharBeacons extends IntentService implements LocationLi
      *
      */
     private void obtenerValorEstacionMasCercana(Posicion posiconActual){
+        Log.d("ESTACION", "obtenerValorEstacionMasCercana: posicion: "+posiconActual);
         Logica l = new Logica();
         l.obtenerValorEstacionMasCercana(posiconActual, new PeticionarioREST.RespuestaREST() {
             @Override
@@ -856,6 +918,18 @@ public class ServicioEscucharBeacons extends IntentService implements LocationLi
                         posicionEstacionMasCercana = new Posicion(posEstacion.getDouble(0),
                                 posEstacion.getDouble(1));
 
+                        comprobarDescalibrado(new Medicion(
+                                3.08, 1, "GTI-3A-1",
+                                new Posicion(38.9375,-0.4424), Medicion.TipoMedicion.CO
+                                ), posicionEstacionMasCercana,valorPosicionEstacionMasCercana);
+                        comprobarDescalibrado(new Medicion(
+                                3.52, 1, "GTI-3A-1",
+                                new Posicion(38.9375,-0.4424), Medicion.TipoMedicion.CO
+                        ), posicionEstacionMasCercana,valorPosicionEstacionMasCercana);
+                        comprobarDescalibrado(new Medicion(
+                                7, 1, "GTI-3A-1",
+                                new Posicion(38.9375,-0.4424), Medicion.TipoMedicion.CO
+                        ), posicionEstacionMasCercana,valorPosicionEstacionMasCercana);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -898,7 +972,6 @@ public class ServicioEscucharBeacons extends IntentService implements LocationLi
     // ---------------------------------------------------------------------------------------------
     @Override
     public void onLocationChanged(@NonNull Location location) {
-
         if(location!=null){
             ultimaLocalizacion = new Posicion(location.getLatitude(),location.getLongitude());
         }
