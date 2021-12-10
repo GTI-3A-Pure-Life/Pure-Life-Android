@@ -72,17 +72,21 @@
     <string name="SO2">SO2:</string>
     <string name="O3">O3:</string>
     <string name="NO2">NO2:</string>
-    <string name="leve">LEVE</string>
-    <string name="moderado">MODERADO</string>
-    <string name="alto">ALTO</string>
-    <string name="muyalto">MUY ALTO</string>
+
+    <string name="leve">LEVE &lt; 50</string>
+    <string name="moderado">MODERADO &lt; 150</string>
+    <string name="alto">ALTO &lt; 200</string>
+    <string name="muyalto">MUY ALTO > 200</string>
+
     <string name="tituloEfectos">Efectos de los gases</string>
     <string name="leer_m_s">Leer más</string>
     <string name="volver">Volver</string>
+
     <string name="buena">Buena</string>
     <string name="moderada">Moderada</string>
     <string name="mala">Mala</string>
     <string name="muy_mala">Muy mala</string>
+
     <string name="estas_mas_expuesto_a">Estas mas expuesto a:</string>
     <string name="no_tienes_posicion_asignada_de">No tienes posicion asignada de</string>
     <string name="casa">Casa</string>
@@ -90,4 +94,5 @@
     <string name="Exterior">Exterior</string>
     <string name="error_calidad_aire">Error inesperado</string>
     <string name="la_calidad_de_aire_respirada_hoy">La calidad de aire respirada hoy es</string>
+
 </resources>
