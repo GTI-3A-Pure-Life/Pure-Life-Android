@@ -9,6 +9,7 @@ import com.example.rparcas.btleandroid2021.modelo.Medicion;
 import com.example.rparcas.btleandroid2021.modelo.Posicion;
 import com.example.rparcas.btleandroid2021.modelo.RegistroAveriaSensor;
 import com.example.rparcas.btleandroid2021.modelo.RegistroBateriaSensor;
+import com.example.rparcas.btleandroid2021.modelo.RegistroDescalibrado;
 import com.example.rparcas.btleandroid2021.modelo.Usuario;
 import com.google.gson.JsonParser;
 
@@ -151,6 +152,30 @@ public class Logica {
 
         elPeticionarioREST.hacerPeticionREST("POST", restEndpoint,
                 "{\"res\": "+ registroAveriaSensor.toJSON()+"}" ,
+                new PeticionarioREST.RespuestaREST () {
+                    @Override
+                    public void callback(int codigo, String cuerpo) {
+
+                        Log.d ("PRUEBA","codigo respuesta: " + codigo + " <-> \n" + cuerpo);
+
+                    }
+                });
+    }
+
+    /**
+     * RegistroDescalibradoSensor -> guardarRegistroDescalibrado() <-
+     * @author Ruben Pardo Casanova
+     * @param registroDescalibrado registro a enviar al servidor
+     */
+    public void guardarRegistroDescalibrado(RegistroDescalibrado registroDescalibrado) {
+        PeticionarioREST elPeticionarioREST = new PeticionarioREST();
+
+        String restEndpoint = RESTConstantes.URL + RESTConstantes.RESCURSO_REGISTRO_ESTADO_DESCALIBRADO;
+
+        Log.d("PRUEBA", "guardarRegistroBateria endpoint: "+restEndpoint);
+
+        elPeticionarioREST.hacerPeticionREST("POST", restEndpoint,
+                "{\"res\": "+ registroDescalibrado.toJSON()+"}" ,
                 new PeticionarioREST.RespuestaREST () {
                     @Override
                     public void callback(int codigo, String cuerpo) {
@@ -345,4 +370,6 @@ public class Logica {
         elPeticionarioREST.hacerPeticionREST("GET", restEndpoint,
                 null, laRespuesta);
     }
+
+
 }

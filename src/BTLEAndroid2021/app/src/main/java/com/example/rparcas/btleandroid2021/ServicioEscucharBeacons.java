@@ -30,6 +30,7 @@ import com.example.rparcas.btleandroid2021.modelo.Medicion;
 import com.example.rparcas.btleandroid2021.modelo.Posicion;
 import com.example.rparcas.btleandroid2021.modelo.RegistroAveriaSensor;
 import com.example.rparcas.btleandroid2021.modelo.RegistroBateriaSensor;
+import com.example.rparcas.btleandroid2021.modelo.RegistroDescalibrado;
 import com.example.rparcas.btleandroid2021.modelo.TramaIBeacon;
 
 import org.json.JSONArray;
@@ -581,9 +582,9 @@ public class ServicioEscucharBeacons extends IntentService implements LocationLi
                 enviarMensajeALaHostActivity(calcularMedicionMasPeligrosa(m)); // avisar a la activity host
 
                 // si esta descalibrado poner que su valor sea la de la estacion
-                if(comprobarDescalibrado(m,posicionEstacionMasCercana,valorPosicionEstacionMasCercana)){
-                    m.setValor(valorPosicionEstacionMasCercana);
-                }
+                comprobarDescalibrado(m,posicionEstacionMasCercana,valorPosicionEstacionMasCercana);
+
+
                 medicionesAEnviar.add(m);
 
             }
@@ -605,9 +606,9 @@ public class ServicioEscucharBeacons extends IntentService implements LocationLi
      * @param posicionEstacionMasCercana la posicion de la estacion de gas mas cercana
      * @param valorPosicionEstacionMasCercana valor de la estacion en AQI
      *
-     * @return T/F si esta descalibrado
+     *
      */
-    private boolean comprobarDescalibrado(Medicion m, Posicion posicionEstacionMasCercana, float valorPosicionEstacionMasCercana) {
+    private void comprobarDescalibrado(Medicion m, Posicion posicionEstacionMasCercana, float valorPosicionEstacionMasCercana) {
 
         double distancia = m.getPosicion().calcularDistanciaA(posicionEstacionMasCercana);
         Log.d("ESTACION", "valor (AQI) medicion: "+ m.getValorAQI());
@@ -615,16 +616,16 @@ public class ServicioEscucharBeacons extends IntentService implements LocationLi
         Log.d("ESTACION", "descalibrado: "+ m.getValorAQI()/valorPosicionEstacionMasCercana);
 
         if(distancia>DISTANCIA_CERCA_ESTACION){
-            if(m.getValorAQI()/valorPosicionEstacionMasCercana < 0.8
-            || m.getValorAQI()/valorPosicionEstacionMasCercana > 1.2){
-                // se va un vente por ciento por arriba o por abajo
-                //new Logica().guardarRegistroDescalibrado(RegistroDescalibrado);
+            double factorDescalibracion = m.getValorAQI()/valorPosicionEstacionMasCercana;
+            boolean estaDesaclibrado = factorDescalibracion <= 0.8 || factorDescalibracion >= 1.2;
+
+                new Logica().guardarRegistroDescalibrado(new RegistroDescalibrado(m.getSensorID(),estaDesaclibrado,factorDescalibracion));
                 Log.d("ESTACION", "esta descalibrado");
-                return true;
-            }
+
+
         }
 
-        return false;
+
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -917,19 +918,6 @@ public class ServicioEscucharBeacons extends IntentService implements LocationLi
                         // posicion de estacion mas cercana
                         posicionEstacionMasCercana = new Posicion(posEstacion.getDouble(0),
                                 posEstacion.getDouble(1));
-
-                        comprobarDescalibrado(new Medicion(
-                                3.08, 1, "GTI-3A-1",
-                                new Posicion(38.9375,-0.4424), Medicion.TipoMedicion.CO
-                                ), posicionEstacionMasCercana,valorPosicionEstacionMasCercana);
-                        comprobarDescalibrado(new Medicion(
-                                3.52, 1, "GTI-3A-1",
-                                new Posicion(38.9375,-0.4424), Medicion.TipoMedicion.CO
-                        ), posicionEstacionMasCercana,valorPosicionEstacionMasCercana);
-                        comprobarDescalibrado(new Medicion(
-                                7, 1, "GTI-3A-1",
-                                new Posicion(38.9375,-0.4424), Medicion.TipoMedicion.CO
-                        ), posicionEstacionMasCercana,valorPosicionEstacionMasCercana);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
