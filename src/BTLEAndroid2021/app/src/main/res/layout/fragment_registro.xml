@@ -25,11 +25,11 @@
         style="@style/BotonPrimario"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
         android:text="@string/crear_cuenta"
         app:layout_constraintEnd_toEndOf="@+id/editTextRepetirContrasenya"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/editTextRepetirContrasenya"
-        app:layout_constraintTop_toBottomOf="@+id/textViewError" />
+        app:layout_constraintTop_toBottomOf="@+id/checkTerminos" />
 
     <EditText
         android:id="@+id/editTextCorreo"
@@ -120,6 +120,24 @@
         app:layout_constraintEnd_toEndOf="@+id/editTextContrasenya"
         app:layout_constraintStart_toStartOf="@+id/editTextContrasenya"
         app:layout_constraintTop_toBottomOf="@+id/editTextRepetirContrasenya" />
+
+    <CheckBox
+        android:id="@+id/checkTerminos"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Acepto los "
+        app:layout_constraintStart_toStartOf="@+id/textViewError"
+        app:layout_constraintTop_toBottomOf="@+id/textViewError" />
+
+    <Button
+        android:id="@+id/botonTerminos"
+        style="@style/BotonSinBordes"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Términos y Condiciones"
+        app:layout_constraintBottom_toBottomOf="@+id/checkTerminos"
+        app:layout_constraintStart_toEndOf="@+id/checkTerminos"
+        app:layout_constraintTop_toTopOf="@+id/checkTerminos" />
 
     <TextView
         android:id="@+id/textViewError"

@@ -54,7 +54,7 @@ public class RegistroViewModel extends ViewModel {
     // ---------------------------------------------------------------------------------------------
 
     /**
-     * Texto, Texto, Texto, Texto, Texto, Texto -> crearCuenta() -> Texto, Usuario, EstadoPeticion
+     * Texto, Texto, Texto, Texto, Texto, Texto, boolean -> crearCuenta() -> Texto, Usuario, EstadoPeticion
      *
      * Inicia la peticion de crear cuenta al servidor
      * ciframos la contrasenya de lado del cliente siempre
@@ -68,14 +68,15 @@ public class RegistroViewModel extends ViewModel {
      * @param contrasenya la contrasenya
      * @param repetirContrasenya repetir la contrasenya para evitar que se equivoque
      * @param telefono telefono de contacto (opcional)
+     * @param terminos si ha aceptado o no los terminos
      */
     public void crearCuenta(String nombre, String apellido, String correo, String contrasenya,
-                            String repetirContrasenya, String telefono){
+                            String repetirContrasenya, String telefono, boolean terminos){
 
         estadoIniciarSesion.setValue(EstadoPeticion.EN_PROCESO);
 
         // comprobamos el formulario
-        if(comprobarFormulario(nombre,apellido,correo,contrasenya,repetirContrasenya)){
+        if(comprobarFormulario(nombre,apellido,correo,contrasenya,repetirContrasenya, terminos)){
             // formulario correcto, hacemos peticion
             estadoIniciarSesion.setValue(EstadoPeticion.EN_PROCESO);
 
@@ -129,7 +130,7 @@ public class RegistroViewModel extends ViewModel {
     }
 
     /**
-     *  Texto, Texto, Texto, Texto, Texto -> crearCuenta() -> T/F
+     *  Texto, Texto, Texto, Texto, Texto, boolean -> crearCuenta() -> T/F
      * Comprueba que el formulario este correcto, ningun campo vacio y las contrasenyas iguales
      * @author Ruben Pardo Casanova
      * 10/11/2021
@@ -138,9 +139,10 @@ public class RegistroViewModel extends ViewModel {
      * @param correo el correo del usuario
      * @param contrasenya la contrasenya
      * @param repetirContrasenya repetir la contrasenya anterior
+     * @param terminos si ha aceptado o no los terminos
      * @return True o False si el formulario es correcto
      */
-    private boolean comprobarFormulario(String nombre, String apellido, String correo, String contrasenya, String repetirContrasenya) {
+    private boolean comprobarFormulario(String nombre, String apellido, String correo, String contrasenya, String repetirContrasenya, boolean terminos) {
 
         boolean valido = true;
 
@@ -152,6 +154,9 @@ public class RegistroViewModel extends ViewModel {
             valido = false;
         }else if(!contrasenya.equals(repetirContrasenya)){
             errorDeLaPeticion = "Las contraseñas deben coincidir";
+            valido = false;
+        } else if(!terminos){
+            errorDeLaPeticion = "Tienes que aceptar los términos";
             valido = false;
         }
 

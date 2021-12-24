@@ -1,6 +1,7 @@
 package com.example.rparcas.btleandroid2021.ui.autentificacion.Registro;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -97,6 +98,16 @@ public class RegistroFragment extends Fragment {
     // ---------------------------------------------------------------------------------------------
     private void initCallbacks() {
 
+        binding.botonTerminos.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String url = "https://www.google.com";
+
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(url));
+                startActivity(i);
+            }
+        });
 
         binding.botonCrearCuenta.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -108,7 +119,8 @@ public class RegistroFragment extends Fragment {
                         binding.editTextCorreo.getText().toString(),
                         binding.editTextContrasenya.getText().toString(),
                         binding.editTextRepetirContrasenya.getText().toString(),
-                        binding.editTextPhone.getText().toString()
+                        binding.editTextPhone.getText().toString(),
+                        binding.checkTerminos.isChecked()
                 );
             }
         });
